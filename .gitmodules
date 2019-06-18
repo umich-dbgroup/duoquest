@@ -1,0 +1,3 @@
+[submodule "systems/syntaxSQL"]
+	path = systems/syntaxSQL
+	url = git@github.com:chrisjbaik/syntaxSQL.git
