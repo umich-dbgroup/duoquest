@@ -5,6 +5,7 @@ def main():
     parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
+    parser.add_argument('--mixtape', action='store_true', help='Enable Mixtape')
     parser.add_argument('--b', default=5, type=int,
         help='Beam search parameter')
     parser.add_argument('--n', default=5, type=int,
