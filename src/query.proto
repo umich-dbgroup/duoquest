@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+message Query {
+  // Whether this query contains a set operation
+  SetOp set_op = 1;
+
+  // Query structure
+  // -1 (False), 0 (Indeterminate), 1 (True)
+  sint32 has_where = 2;
+  sint32 has_group_by = 3;
+  sint32 has_having = 4;
+  sint32 has_order_by = 5;
+  sint32 has_limit = 6;
+
+  // Query data
+  repeated AggregatedColumn select = 7;
+  SelectionClause where = 8;
+  repeated AggregatedColumn group_by = 9;
+  SelectionClause having = 10;
+  repeated OrderedColumn order_by = 11;
+
+  // Subqueries if set operation exists
+  Query left = 12;
+  Query right = 13;
+}
+
+message AggregatedColumn {
+  int32 col_id = 1;
+  Aggregate agg = 2;
+}
+
+message OrderedColumn {
+  AggregatedColumn agg_col = 1;
+  OrderDirection dir = 2;
+}
+
+message SelectionClause {
+  repeated Predicate predicates = 1;
+  AndOr and_or = 2;               // Only applicable if more than one predicate
+}
+
+message Predicate {
+  int32 col_id = 1;
+  Op op = 2;
+
+  repeated string value = 4;  // Multiple values for IN, NOT IN, BETWEEN
+  Query subquery = 5;         // If value is subquery instead
+
+  Aggregate agg = 6;          // Only applicable for HAVING
+}
+
+// ENUMERATIONS
+enum SetOp {
+  NO_SET_OP = 0;
+  INTERSECT = 1;
+  EXCEPT = 2;
+  UNION = 3;
+}
+
+enum Aggregate {
+  NO_AGG = 0;
+  MAX = 1;
+  MIN = 2;
+  COUNT = 3;
+  SUM = 4;
+  AVG = 5;
+}
+
+enum AndOr {
+  AND = 0;
+  OR = 1;
+}
+
+enum Op {
+  EQUALS = 0;
+  GT = 1;
+  LT = 2;
+  GEQ = 3;
+  LEQ = 4;
+  NEQ = 5;
+  LIKE = 6;
+  IN = 7;
+  NOT_IN = 8;
+  BETWEEN = 9;
+}
+
+enum OrderDirection {
+  ASC = 0;
+  DESC = 1;
+}
