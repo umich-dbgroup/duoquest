@@ -1,0 +1,7 @@
+[spider]
+dev_path = ../data/spider/dev.json
+dev_db_path = ../data/spider/database
+dev_tables_path = ../data/spider/tables.json
+test_path = ../data/spider_test/test.json
+test_db_path = ../data/spider_test/database
+test_tables_path = ../data/spider_test/tables.json
