@@ -16,7 +16,6 @@ class TaskClient:
         task.db_name = db_name
         task.nlq = nlq
 
-        print('sending: {}'.format(task.SerializeToString()))
         self.conn.send_bytes(task.SerializeToString())
         msg = self.conn.recv_bytes()
         proto_cands = ProtoCandidates()
