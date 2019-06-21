@@ -49,7 +49,7 @@ def main():
         for i, task in enumerate(data):
             print('{}/{} || Database: {} || NLQ: {}'.format(i, len(data),
                 task['db_id'], task['question']))
-            cqs = client.run(task['db_id'], task['question'])
+            cqs = client.run(task['db_id'], task['question_toks'])
             if cqs:
                 f.write(u'\t'.join(cqs))
             else:

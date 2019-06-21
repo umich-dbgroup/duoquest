@@ -2,7 +2,7 @@ syntax = "proto3";
 
 message ProtoTask {
   string db_name = 1;
-  string nlq = 2;
+  repeated string nlq_tokens = 2;
 }
 
 message ProtoCandidates {

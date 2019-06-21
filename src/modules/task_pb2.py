@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x10proto/task.proto\")\n\tProtoTask\x12\x0f\n\x07\x64\x62_name\x18\x01 \x01(\t\x12\x0b\n\x03nlq\x18\x02 \x01(\t\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
+  serialized_pb=_b('\n\x10proto/task.proto\"0\n\tProtoTask\x12\x0f\n\x07\x64\x62_name\x18\x01 \x01(\t\x12\x12\n\nnlq_tokens\x18\x02 \x03(\t\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
 )
 
 
@@ -41,9 +41,9 @@ _PROTOTASK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='nlq', full_name='ProtoTask.nlq', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='nlq_tokens', full_name='ProtoTask.nlq_tokens', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -60,7 +60,7 @@ _PROTOTASK = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=20,
-  serialized_end=61,
+  serialized_end=68,
 )
 
 
@@ -90,8 +90,8 @@ _PROTOCANDIDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=63,
-  serialized_end=92,
+  serialized_start=70,
+  serialized_end=99,
 )
 
 DESCRIPTOR.message_types_by_name['ProtoTask'] = _PROTOTASK

@@ -14,7 +14,11 @@ class TaskClient:
     def run(self, db_name, nlq):
         task = ProtoTask()
         task.db_name = db_name
-        task.nlq = nlq
+        if isinstance(nlq, list):
+            for token in nlq:
+                task.nlq_tokens.append(token)
+        else:
+            task.nlq_tokens.append(nlq)
 
         self.conn.send_bytes(task.SerializeToString())
         msg = self.conn.recv_bytes()
