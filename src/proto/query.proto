@@ -1,32 +1,42 @@
 syntax = "proto3";
 
-message Query {
+// MAIN INTERFACE MESSAGES
+message ProtoQueryList {
+  repeated ProtoQuery queries = 1;
+}
+
+message ProtoResult {
+  repeated Tribool results = 1;
+}
+
+// HELPERS
+message ProtoQuery {
   // Whether this query contains a set operation
   SetOp set_op = 1;
 
   // Query structure
-  // -1 (False), 0 (Indeterminate), 1 (True)
-  sint32 has_where = 2;
-  sint32 has_group_by = 3;
-  sint32 has_having = 4;
-  sint32 has_order_by = 5;
-  sint32 has_limit = 6;
+  Tribool has_where = 2;
+  Tribool has_group_by = 3;
+  Tribool has_having = 4;
+  Tribool has_order_by = 5;
+  Tribool has_limit = 6;
 
   // Query data
   repeated AggregatedColumn select = 7;
   SelectionClause where = 8;
-  repeated AggregatedColumn group_by = 9;
+  repeated int32 group_by = 9;
   SelectionClause having = 10;
   repeated OrderedColumn order_by = 11;
 
   // Subqueries if set operation exists
-  Query left = 12;
-  Query right = 13;
+  ProtoQuery left = 12;
+  ProtoQuery right = 13;
 }
 
 message AggregatedColumn {
   int32 col_id = 1;
-  Aggregate agg = 2;
+  Tribool has_agg = 2;
+  Aggregate agg = 3;
 }
 
 message OrderedColumn {
@@ -36,20 +46,28 @@ message OrderedColumn {
 
 message SelectionClause {
   repeated Predicate predicates = 1;
-  AndOr and_or = 2;               // Only applicable if more than one predicate
+  LogicalOp logical_op = 2;
 }
 
 message Predicate {
   int32 col_id = 1;
   Op op = 2;
 
+  Tribool has_subquery = 3;
   repeated string value = 4;  // Multiple values for IN, NOT IN, BETWEEN
-  Query subquery = 5;         // If value is subquery instead
+  ProtoQuery subquery = 5;    // If value is subquery instead
 
-  Aggregate agg = 6;          // Only applicable for HAVING
+  Tribool has_agg = 6;
+  Aggregate agg = 7;          // Only applicable for HAVING
 }
 
 // ENUMERATIONS
+enum Tribool {
+  FALSE = 0;
+  UNKNOWN = 1;
+  TRUE = 2;
+}
+
 enum SetOp {
   NO_SET_OP = 0;
   INTERSECT = 1;
@@ -66,9 +84,10 @@ enum Aggregate {
   AVG = 5;
 }
 
-enum AndOr {
-  AND = 0;
-  OR = 1;
+enum LogicalOp {
+  NO_COND = 0;
+  AND = 1;
+  OR = 2;
 }
 
 enum Op {
