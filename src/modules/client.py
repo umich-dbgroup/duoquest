@@ -1,6 +1,6 @@
 from multiprocessing.connection import Client
 
-from ..proto.task_pb2 import ProtoTask, ProtoCandidates
+from task_pb2 import ProtoTask, ProtoCandidates
 
 class TaskClient:
     def __init__(self, port, authkey):
