@@ -958,7 +958,7 @@ if __name__ == "__main__":
 
     # TODO: more elaborate prediction output names
     pred = os.path.join(args.prediction_dir,
-        '{}_{}_{}.sql'.format(args.system, args.dataset, args.mode))
+        '{}_{}_{}.sqls'.format(args.system, args.dataset, args.mode))
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)
