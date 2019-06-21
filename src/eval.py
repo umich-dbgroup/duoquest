@@ -939,7 +939,7 @@ if __name__ == "__main__":
     parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
-    parser.add_argument('--prediction_dir', default='predictions/')
+    parser.add_argument('--prediction_dir', default='../results/')
     parser.add_argument('--etype', choices=['all', 'exec', 'match'],
         default='match')
     parser.add_argument('--no_print', action='store_true')
@@ -956,8 +956,9 @@ if __name__ == "__main__":
         # TODO
         pass
 
+    # TODO: more elaborate prediction output names
     pred = os.path.join(args.prediction_dir,
-        'predicted_{}_{}_{}.sql'.format(args.system, args.dataset, args.mode))
+        '{}_{}_{}.sql'.format(args.system, args.dataset, args.mode))
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)
