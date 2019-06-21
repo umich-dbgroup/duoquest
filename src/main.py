@@ -42,7 +42,7 @@ def main():
 
     # Set out_path
     # TODO: add other options (n, b, mixtape, cache, batch) into name
-    basename = '_'.join(args.system, args.dataset, args.mode)
+    basename = '_'.join([args.system, args.dataset, args.mode])
     out_path = os.path.join('../results', '{}.sqls'.format(basename))
 
     # Run each task
