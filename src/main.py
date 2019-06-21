@@ -46,10 +46,10 @@ def main():
         client = TaskClient(args.port, args.authkey)
         client.connect()
         f = open(args.out_path, 'w+')
-        for task in data:
+        for i, task in enumerate(data):
             cqs = client.run(task['db_id'], task['question'])
-            print('Database: {} || NLQ: {}'.format(task['db_id'],
-                task['question']))
+            print('{}/{} || Database: {} || NLQ: {}'.format(i, len(data),
+                task['db_id'], task['question']))
             if cqs:
                 f.write(u'\t'.join(cqs))
             else:
