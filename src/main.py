@@ -30,10 +30,7 @@ def main():
     # Load dataset
     data = None
     if args.dataset == 'spider':
-        if args.mode == 'dev':
-            data = json.load(open(config['spider']['dev_path']))
-        elif args.mode == 'test':
-            data = json.load(open(config['spider']['test_path']))
+        data = config['spider']['{}_path'.format(args.mode)]
     elif args.dataset == 'wikisql':
         # TODO
         pass

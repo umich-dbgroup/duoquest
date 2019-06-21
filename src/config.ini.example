@@ -2,6 +2,9 @@
 dev_path = ../data/spider/dev.json
 dev_db_path = ../data/spider/database
 dev_tables_path = ../data/spider/tables.json
+dev_gold_path = ../data/spider/dev_gold.sql
+
 test_path = ../data/spider_test/test.json
 test_db_path = ../data/spider_test/database
 test_tables_path = ../data/spider_test/tables.json
+test_gold_path = ../data/spider_test/test_gold.sql
