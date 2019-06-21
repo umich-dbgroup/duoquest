@@ -44,6 +44,7 @@ def main():
         pass
     else:
         client = TaskClient(args.port, args.authkey)
+        client.connect()
         f = open(args.out_path, 'w+')
         for task in data:
             cqs = client.run(task['db_id'], task['question'])
