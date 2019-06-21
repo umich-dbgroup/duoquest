@@ -19,8 +19,9 @@ class TaskClient:
         print('sending: {}'.format(task.SerializeToString()))
         self.conn.send_bytes(task.SerializeToString())
         msg = self.conn.recv_bytes()
-        sqls = ProtoCandidates.ParseFromString(msg)
-        return sqls
+        proto_cands = ProtoCandidates()
+        proto_cands.ParseFromString(msg)
+        return list(proto_cands.cq)
 
     def close(self):
         self.conn.send_bytes(b'close')
