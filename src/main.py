@@ -55,7 +55,7 @@ def main():
         client.connect()
         f = open(out_path, 'w+')
         for i, task in enumerate(data):
-            print('{}/{} || Database: {} || NLQ: {}'.format(i, len(data),
+            print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(data),
                 task['db_id'], task['question_toks']))
             cqs = client.run(task['db_id'], task['question_toks'])
             if cqs:
