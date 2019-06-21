@@ -3,7 +3,6 @@ import configparser
 import json
 
 from modules.client import TaskClient
-from proto.task_pb2 import ProtoTask, ProtoCandidates
 
 def main():
     parser = argparse.ArgumentParser()
