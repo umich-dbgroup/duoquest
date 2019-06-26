@@ -55,7 +55,7 @@ class MixtapeServer:
         while True:
             msg = conn.recv_bytes()
 
-            if msg == 'close':
+            if msg.decode('utf-8') == 'close':
                 conn.close()
                 break
 
