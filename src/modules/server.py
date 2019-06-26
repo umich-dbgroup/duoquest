@@ -62,7 +62,7 @@ class MixtapeServer:
             protolist.ParseFromString(msg)
 
             response = ProtoResult()
-            for query in protolist:
+            for query in protolist.queries:
                 if tsq is not None:
                     result = self.mixtape.verify(query, tsq)
 
