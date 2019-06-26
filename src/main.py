@@ -44,10 +44,10 @@ def main():
     out_path = os.path.join('../results', f'{basename}.sqls')
 
     mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
-    server = MixtapeServer(config['mixtape']['port'],
+    server = MixtapeServer(int(config['mixtape']['port']),
         config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path, args.n,
         args.b)
-    nlqc = NLQClient(config['nlq']['port'],
+    nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
     server.run_tasks(nlqc, data)
 
