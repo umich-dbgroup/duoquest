@@ -1,5 +1,5 @@
 import threading
-import tribool
+from tribool import Tribool
 
 from multiprocessing.connection import Listener
 from threading import Event, Thread

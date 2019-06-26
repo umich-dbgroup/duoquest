@@ -1,4 +1,4 @@
-import tribool
+from tribool import Tribool
 
 class Mixtape:
     def __init__(self, enabled=False, use_cache=False):
