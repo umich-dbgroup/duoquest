@@ -3,7 +3,6 @@ import threading
 from multiprocessing.connection import Listener
 from threading import Event, Thread
 
-from .nlq_client import NLQClient
 from .query_pb2 import FALSE, UNKNOWN, TRUE
 
 class MixtapeServer:

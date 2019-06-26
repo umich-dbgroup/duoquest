@@ -4,6 +4,7 @@ import json
 import os
 
 from modules.mixtape import Mixtape
+from modules.nlq_client import NLQClient
 from modules.server import MixtapeServer
 
 def main():
