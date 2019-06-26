@@ -3,8 +3,8 @@ import threading
 from multiprocessing.connection import Listener
 from threading import Event, Thread
 
-from modules.nlq_client import NLQClient
-from query_pb2 import FALSE, UNKNOWN, TRUE
+from .nlq_client import NLQClient
+from .query_pb2 import FALSE, UNKNOWN, TRUE
 
 class MixtapeServer:
     def __init__(self, port, authkey, mixtape, out_path, n, b):
