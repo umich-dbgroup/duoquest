@@ -3,7 +3,7 @@ import threading
 from multiprocessing.connection import Listener
 from threading import Event, Thread
 
-from .query_pb2 import FALSE, UNKNOWN, TRUE
+from .query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 
 class MixtapeServer:
     def __init__(self, port, authkey, mixtape, out_path, n, b):
