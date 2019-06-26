@@ -14,23 +14,25 @@ class Mixtape:
         pass
 
     def verify(self, query, tsq):
-        if not query.joinpath:
+        return Tribool(None)
+
+        # if not query.joinpath:
             # TODO: calculate join path
-            pass
+            # pass
 
         # stores tsq positions fulfilling each proj
-        proj_tsq_poses = []
+        # proj_tsq_poses = []
 
         # TODO: check projs size and tsq cols size
         # TODO: check projs types and tsq cols types
 
-        for proj in query.projs():
+        # for proj in query.projs():
             # TODO: returns Tribool result and tsq positions fulfilling it
-            result, tsq_poses = self.prune_by_column(proj, tsq)
+            # result, tsq_poses = self.prune_by_column(proj, tsq)
 
-            if not result.value:
+            # if not result.value:
                 # TODO: cache bad projection somehow
-                return Tribool(False)
+                # return Tribool(False)
 
         # TODO: check each permutation of proj ordering matching tsqs
         # for each valid permutation:
@@ -42,4 +44,4 @@ class Mixtape:
             # run query and check ordering, flip if necessary
 
         # TODO: T, F, or None for indeterminate goes in constructor
-        return Tribool()
+        # return Tribool()
