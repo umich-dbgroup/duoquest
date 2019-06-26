@@ -1,4 +1,5 @@
 import threading
+import tribool
 
 from multiprocessing.connection import Listener
 from threading import Event, Thread
@@ -63,7 +64,8 @@ class MixtapeServer:
 
             response = ProtoResult()
             for query in protolist.queries:
-                if tsq is not None:
+                result = Tribool(None)
+                if self.mixtape.enabled and tsq is not None:
                     result = self.mixtape.verify(query, tsq)
 
                 if result.value is None:
