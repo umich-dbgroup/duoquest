@@ -2,7 +2,7 @@ from multiprocessing.connection import Client
 
 from .task_pb2 import ProtoTask, ProtoCandidates
 
-class TaskClient:
+class NLQClient:
     def __init__(self, port, authkey):
         self.port = port
         self.authkey = authkey
@@ -11,8 +11,11 @@ class TaskClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, db_name, nlq):
+    def run(self, n, b, db_name, nlq, enable_mixtape):
         task = ProtoTask()
+        task.n = n
+        task.b = b
+        task.enable_mixtape = enable_mixtape
         task.db_name = db_name
         if isinstance(nlq, list):
             for token in nlq:

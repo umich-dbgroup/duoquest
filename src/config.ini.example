@@ -1,4 +1,13 @@
+[nlq]
+port = 6000
+authkey = mixtape
+
+[mixtape]
+port = 6001
+authkey = mixtape
+
 [spider]
+# Note: Use absolute paths, as relative paths may break!
 dev_path = ../data/spider/dev.json
 dev_db_path = ../data/spider/database
 dev_tables_path = ../data/spider/tables.json
@@ -8,3 +17,8 @@ test_path = ../data/spider_test/test.json
 test_db_path = ../data/spider_test/database
 test_tables_path = ../data/spider_test/tables.json
 test_gold_path = ../data/spider_test/test_gold.sql
+
+[syntaxsql]
+# Note: Use absolute paths, as relative paths may break!
+models_path = generated_data_augment/saved_models/
+glove_path = glove/

@@ -3,6 +3,10 @@ syntax = "proto3";
 message ProtoTask {
   string db_name = 1;
   repeated string nlq_tokens = 2;
+  int32 n = 3;
+  int32 b = 4;
+
+  bool enable_mixtape = 5;
 }
 
 message ProtoCandidates {
