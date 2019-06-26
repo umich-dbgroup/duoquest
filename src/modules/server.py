@@ -21,15 +21,19 @@ class MixtapeServer:
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
 
-            tsq = task['tsq'] if 'tsq' in task else None
+            if self.mixtape.enabled:
+                tsq = task['tsq'] if 'tsq' in task else None
+                ready = Event()
+                t = threading.Thread(target=self.run_task,
+                    args=(nlqc, tsq, ready))
+                t.start()
+                ready.wait()
 
-            ready = Event()
-            t = threading.Thread(target=self.run_task, args=(nlqc, tsq, ready))
-            t.start()
-            ready.wait()
             cqs = nlqc.run(self.n, self.b, task['db_id'],
                 task['question_toks'], self.mixtape.enabled)
-            t.join()
+
+            if self.mixtape.enabled:
+                t.join()
 
             if cqs:
                 f.write(u'\t'.join(cqs))
