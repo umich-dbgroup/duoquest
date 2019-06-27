@@ -24,7 +24,9 @@ class MixtapeServer:
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
 
-            if self.mixtape.enabled:
+            mixtape_enabled = (tsq_level != 'no_mixtape')
+
+            if mixtape_enabled:
                 schema = schemas[task['db_id']]
                 tsq = db.generate_tsq(schema, task['query'], task['sql'],
                     tsq_level, tsq_rows)
@@ -39,9 +41,9 @@ class MixtapeServer:
                 ready.wait()
 
             cqs = nlqc.run(self.n, self.b, task['db_id'],
-                task['question_toks'], self.mixtape.enabled)
+                task['question_toks'], mixtape_enabled)
 
-            if self.mixtape.enabled:
+            if mixtape_enabled:
                 t.join()
 
             if cqs:

@@ -57,7 +57,7 @@ def main():
     print(f'Output sent to file <{out_path}>...')
     print(f'Gold results sent to file <{gold_path}>...')
 
-    mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
+    mixtape = Mixtape(use_cache=args.cache)
     server = MixtapeServer(int(config['mixtape']['port']),
         config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path,
         gold_path, args.n, args.b)

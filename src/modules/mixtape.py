@@ -3,8 +3,7 @@ from tribool import Tribool
 from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG
 
 class Mixtape:
-    def __init__(self, enabled=False, use_cache=False):
-        self.enabled = enabled
+    def __init__(self, use_cache=False):
         if use_cache:
             # TODO: initialize cache
             pass
