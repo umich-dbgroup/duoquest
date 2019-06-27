@@ -972,7 +972,7 @@ if __name__ == "__main__":
         # TODO
         pass
 
-    out_path = results_path(config, args.system, args.dataset, args.mode,
+    pred = results_path(config, args.system, args.dataset, args.mode,
         args.n, args.b, args.tsq_level, args.tsq_rows, args.mixtape, args.cache)
 
     tables_data = json.load(open(table))
