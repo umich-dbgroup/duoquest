@@ -23,8 +23,9 @@ class MixtapeServer:
                 task['db_id'], task['question_toks']))
 
             if self.mixtape.enabled:
-                tsq = db.generate_tsq(schemas[task['db_id']], task['query'],
-                    task['sql'], tsq_level, tsq_rows)
+                schema = schemas[task['db_id']]
+                tsq = db.generate_tsq(schema, task['query'], task['sql'],
+                    tsq_level, tsq_rows)
                 if tsq is None:
                     print('Skipping task because it is out of scope.')
                     continue

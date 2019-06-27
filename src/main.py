@@ -1,9 +1,9 @@
 import argparse
 import configparser
 import json
-import os
 
 from modules.database import Database
+from modules.files import results_path
 from modules.mixtape import Mixtape
 from modules.nlq_client import NLQClient
 from modules.schema import Schema
@@ -54,11 +54,8 @@ def main():
         # TODO
         pass
 
-    # Set out_path
-    basename = '_'.join([args.system, args.dataset, args.mode, f'n{args.n}',
-        f'b{args.b}', args.tsq_level, f'r{args.tsq_rows}',
-        f'm{int(args.mixtape)}', f'c{int(args.cache)}'])
-    out_path = os.path.join('../results', f'{basename}.sqls')
+    out_path = results_path(config, args.system, args.dataset, args.mode,
+        args.n, args.b, args.tsq_level, args.tsq_rows, args.mixtape, args.cache)
 
     mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
     server = MixtapeServer(int(config['mixtape']['port']),

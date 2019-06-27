@@ -5,6 +5,7 @@ authkey = mixtape
 [mixtape]
 port = 6001
 authkey = mixtape
+results_dir = ../results
 
 [spider]
 # Note: Use absolute paths, as relative paths may break!

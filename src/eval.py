@@ -30,6 +30,8 @@ import argparse
 from libs.process_sql import tokenize, get_schema, get_tables_with_alias, \
     Schema, get_sql, get_nestedSQL, wikisql_query_to_schema
 
+from modules.files import results_path
+
 # Flag to disable value evaluation
 DISABLE_VALUE = True
 # Flag to disable distinct in select evaluation
@@ -939,7 +941,21 @@ if __name__ == "__main__":
     parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
-    parser.add_argument('--prediction_dir', default='../results/')
+    parser.add_argument('tsq_level', choices=['default', 'no_range',
+        'no_values', 'no_type'])
+    parser.add_argument('--tsq_rows', type=int, default=1)
+
+    # NLQ parameters
+    parser.add_argument('--n', default=1, type=int,
+        help='Max number of final queries to output')
+    parser.add_argument('--b', default=1, type=int,
+        help='Beam search parameter')
+
+    parser.add_argument('--mixtape', action='store_true', help='Enable Mixtape')
+
+    # TODO
+    parser.add_argument('--cache', action='store_true', help='Enable cache')
+
     parser.add_argument('--etype', choices=['all', 'exec', 'match'],
         default='match')
     parser.add_argument('--no_print', action='store_true')
@@ -956,9 +972,8 @@ if __name__ == "__main__":
         # TODO
         pass
 
-    # TODO: more elaborate prediction output names
-    pred = os.path.join(args.prediction_dir,
-        '{}_{}_{}.sqls'.format(args.system, args.dataset, args.mode))
+    out_path = results_path(config, args.system, args.dataset, args.mode,
+        args.n, args.b, args.tsq_level, args.tsq_rows, args.mixtape, args.cache)
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)
