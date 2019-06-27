@@ -56,7 +56,7 @@ def main():
 
     out_path = results_path(config, args.system, args.dataset, args.mode,
         args.n, args.b, args.tsq_level, args.tsq_rows, args.mixtape, args.cache)
-    print(f'Output sent to file {out_path}...')
+    print(f'Output sent to file <{out_path}>...')
 
     mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
     server = MixtapeServer(int(config['mixtape']['port']),
