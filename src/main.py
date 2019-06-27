@@ -5,13 +5,24 @@ import os
 
 from modules.mixtape import Mixtape
 from modules.nlq_client import NLQClient
+from modules.schema import Schema
 from modules.server import MixtapeServer
+
+def load_schemas(schemas_path):
+    schemas = []
+    schema_file = json.load(open(schemas_path))
+    for schema_info in schema_file:
+        schemas.append(Schema(schema_info))
+    return schemas
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
+    parser.add_argument('tsq_level', choices=['default', 'no_range',
+        'no_exact', 'no_type'])
+    parser.add_argument('tsq_rows', type=int, default=1)
 
     # NLQ parameters
     parser.add_argument('--n', default=1, type=int,
@@ -32,8 +43,12 @@ def main():
 
     # Load dataset
     data = None
+    db_path = None
+    schemas_path = None
     if args.dataset == 'spider':
         data = json.load(open(config['spider'][f'{args.mode}_path']))
+        db_path = config['spider'][f'{args.mode}_db_path']
+        schemas_path = config['spider'][f'{args.mode}_tables_path']
     elif args.dataset == 'wikisql':
         # TODO
         pass
@@ -47,9 +62,13 @@ def main():
     server = MixtapeServer(int(config['mixtape']['port']),
         config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path, args.n,
         args.b)
+
+    schemas = load_schemas(schemas_path)
+    db = Database(db_path, args.dataset)
+
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
-    server.run_tasks(nlqc, data)
+    server.run_tasks(schemas, db, nlqc, data, tsq_level)
 
 if __name__ == '__main__':
     main()

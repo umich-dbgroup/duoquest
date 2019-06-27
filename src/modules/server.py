@@ -15,7 +15,7 @@ class MixtapeServer:
         self.n = n
         self.b = b
 
-    def run_tasks(self, nlqc, tasks):
+    def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         for i, task in enumerate(tasks):
@@ -23,7 +23,12 @@ class MixtapeServer:
                 task['db_id'], task['question_toks']))
 
             if self.mixtape.enabled:
-                tsq = task['tsq'] if 'tsq' in task else None
+                tsq = db.generate_tsq(schemas[task['db_id']], task['query'],
+                    task['sql'], tsq_level, tsq_rows)
+                if tsq is None:
+                    print('Skipping task because it is out of scope.')
+                    continue
+                print(tsq)
                 ready = Event()
                 t = threading.Thread(target=self.run_task,
                     args=(nlqc, tsq, ready))
