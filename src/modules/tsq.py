@@ -24,6 +24,10 @@ class TableSketchQuery:
             raise Exception(
                 f'{row} does not match number of columns: {self.num_cols}')
 
+        # if all are None, don't add
+        if all(map(lambda x: x is None, row)):
+            return
+
         self.values.append(row)
 
     def set_values(self, values):
