@@ -2,6 +2,7 @@ class TableSketchQuery:
     def __init__(self, num_cols, types=None, values=None, order=False,
         limit=None):
         self.num_cols = num_cols
+        self.types = None
         self.values = []
 
         self.set_types(types)    # array of 'string' or 'number' values
