@@ -10,10 +10,10 @@ from modules.schema import Schema
 from modules.server import MixtapeServer
 
 def load_schemas(schemas_path):
-    schemas = []
+    schemas = {}
     schema_file = json.load(open(schemas_path))
     for schema_info in schema_file:
-        schemas.append(Schema(schema_info))
+        schemas[schema_info['db_id']] = Schema(schema_info)
     return schemas
 
 def main():
