@@ -70,7 +70,7 @@ def main():
 
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
-    server.run_tasks(schemas, db, nlqc, data, tsq_level)
+    server.run_tasks(schemas, db, nlqc, data, args.tsq_level)
 
 if __name__ == '__main__':
     main()
