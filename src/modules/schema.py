@@ -1,6 +1,3 @@
-import numpy as np
-import re
-
 from queue import Queue
 
 class FromClause(object):
