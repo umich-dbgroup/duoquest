@@ -81,7 +81,7 @@ class MixtapeServer:
             response = ProtoResult()
             for query in protolist.queries:
                 result = Tribool(None)
-                if self.mixtape.enabled and tsq is not None:
+                if tsq is not None:
                     result = self.mixtape.verify(schema, query, tsq)
 
                 if result.value is None:
