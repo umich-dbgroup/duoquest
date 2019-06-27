@@ -44,7 +44,7 @@ class Database(object):
     # ----------
     #            non-aggs |  agg  | types |
     # 'default':   exact  | range |   Y   |
-    # 'no_agg':    exact  |   N   |   Y   |
+    # 'no_range':  exact  |   N   |   Y   |
     # 'no_values':   N    |   N   |   Y   |
     # 'no_type':     N    |   N   |   N   |
 
