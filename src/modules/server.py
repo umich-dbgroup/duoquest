@@ -54,6 +54,7 @@ class MixtapeServer:
             f.write('\n')
 
             gold_f.write(task['query'])
+            gold_f.write(f'\t{task['db_id']}')
             gold_f.write('\n')
         f.close()
         gold_f.close()
