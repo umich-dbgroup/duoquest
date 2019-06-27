@@ -26,13 +26,14 @@ class MixtapeServer:
 
             mixtape_enabled = (tsq_level != 'no_mixtape')
 
+            schema = schemas[task['db_id']]
+            tsq = db.generate_tsq(schema, task['query'], task['sql'],
+                tsq_level, tsq_rows)
+            if tsq is None:
+                print('Skipping task because it is out of scope.')
+                continue
+
             if mixtape_enabled:
-                schema = schemas[task['db_id']]
-                tsq = db.generate_tsq(schema, task['query'], task['sql'],
-                    tsq_level, tsq_rows)
-                if tsq is None:
-                    print('Skipping task because it is out of scope.')
-                    continue
                 print(tsq)
                 ready = Event()
                 t = threading.Thread(target=self.run_task,
