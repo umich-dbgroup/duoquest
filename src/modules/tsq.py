@@ -12,6 +12,7 @@ class TableSketchQuery:
 
     def set_types(self, types):
         if types is None:
+            self.types = types
             return
 
         if len(types) != self.num_cols:
