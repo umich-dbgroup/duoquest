@@ -37,6 +37,10 @@ class Database(object):
 
         col = schema.get_col(col_id)
 
+        # star cannot have value
+        if col.syn_name == '*':
+            return False
+
         cur.execute('SELECT 1 FROM "{}" WHERE "{}" = ? LIMIT 1'.format(
             col.table.syn_name, col.syn_name
         ), (value,))

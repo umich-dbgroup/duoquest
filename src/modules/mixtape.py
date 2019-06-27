@@ -35,8 +35,11 @@ class Mixtape:
                 elif isinstance(row[pos], list):    # range constraint
                     pass
                 else:                               # exact constraint
-                    if not db.has_exact(schema, agg_col.col_id, row[pos]):
-                        return Tribool(False)
+                    if agg_col.has_agg:
+                        pass                        # TODO
+                    else:
+                        if not db.has_exact(schema, agg_col.col_id, row[pos]):
+                            return Tribool(False)
 
         return None
 
