@@ -22,7 +22,7 @@ def main():
     parser.add_argument('mode', choices=['dev', 'test'])
     parser.add_argument('tsq_level', choices=['default', 'no_range',
         'no_exact', 'no_type'])
-    parser.add_argument('tsq_rows', type=int, default=1)
+    parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
     parser.add_argument('--n', default=1, type=int,
