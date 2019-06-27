@@ -7,7 +7,6 @@ message ProtoTask {
   int32 b = 4;
 
   bool enable_mixtape = 5;
-  int32 num_cols = 6;
 }
 
 message ProtoCandidates {

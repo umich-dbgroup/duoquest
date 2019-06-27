@@ -11,13 +11,12 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, n, b, db_name, nlq, enable_mixtape, num_cols):
+    def run(self, n, b, db_name, nlq, enable_mixtape):
         task = ProtoTask()
         task.n = n
         task.b = b
         task.enable_mixtape = enable_mixtape
         task.db_name = db_name
-        task.num_cols = num_cols
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)

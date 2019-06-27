@@ -32,11 +32,9 @@ class MixtapeServer:
             if tsq is None:
                 print('Skipping task because it is out of scope.')
                 continue
-            num_cols = 0
 
             if mixtape_enabled:
                 print(tsq)
-                num_cols = tsq.num_cols
                 ready = Event()
                 t = threading.Thread(target=self.run_task,
                     args=(schema, nlqc, tsq, ready))
@@ -44,7 +42,7 @@ class MixtapeServer:
                 ready.wait()
 
             cqs = nlqc.run(self.n, self.b, task['db_id'],
-                task['question_toks'], mixtape_enabled, num_cols)
+                task['question_toks'], mixtape_enabled)
 
             if mixtape_enabled:
                 t.join()

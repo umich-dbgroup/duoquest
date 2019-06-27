@@ -17,6 +17,9 @@ class Mixtape:
     def verify(self, schema, query, tsq):
         # check types
         if tsq.types and query.select:
+            if len(tsq.types) != len(query.select):
+                return Tribool(False)
+
             for i, agg_col in enumerate(query.select):
                 tsq_type = tsq.types[i]
                 col_type = schema.get_col(agg_col.col_id).type
