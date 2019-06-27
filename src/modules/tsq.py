@@ -40,6 +40,6 @@ class TableSketchQuery:
             self.values = []
 
     def __str__(self):
-        return 'num_cols: {}\ntypes:{}\nvalues:{}\norder:{}\nlimit:{}'.format(
+        return 'TSQ\n num_cols: {}\n types:{}\n values:{}\n order:{}\n limit:{}'.format(
             self.num_cols, self.types, self.values, self.order, self.limit
         )
