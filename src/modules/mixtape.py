@@ -17,8 +17,10 @@ class Mixtape:
     def verify(self, schema, query, tsq):
         # check types
         if tsq.types and query.select:
-            if len(tsq.types) != len(query.select):
-                return Tribool(False)
+            if len(tsq.types) > len(query.select):
+                return Tribool(None)     # may not be finished generating SQL
+            elif len(tsq.types) < len(query.select):
+                return Tribool(False)    # exceeded max columns already
 
             for i, agg_col in enumerate(query.select):
                 tsq_type = tsq.types[i]
