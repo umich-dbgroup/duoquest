@@ -54,7 +54,7 @@ class Mixtape:
     def verify(self, db, schema, query, tsq):
         # check types
         if query.select:
-            check_num_cols = self.check_num_cols(query, tsq)
+            check_num_cols = self.prune_by_num_cols(query, tsq)
             if check_num_cols is not None:
                 return check_num_cols
 
