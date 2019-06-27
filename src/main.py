@@ -55,7 +55,8 @@ def main():
 
     # Set out_path
     basename = '_'.join([args.system, args.dataset, args.mode, f'n{args.n}',
-        f'b{args.b}', f'm{int(args.mixtape)}', f'c{int(args.cache)}'])
+        f'b{args.b}', args.tsq_level, f'r{args.tsq_rows}',
+        f'm{int(args.mixtape)}', f'c{int(args.cache)}'])
     out_path = os.path.join('../results', f'{basename}.sqls')
 
     mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
