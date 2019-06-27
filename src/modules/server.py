@@ -7,17 +7,19 @@ from threading import Event, Thread
 from .query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 
 class MixtapeServer:
-    def __init__(self, port, authkey, mixtape, out_path, n, b):
+    def __init__(self, port, authkey, mixtape, out_path, gold_path, n, b):
         self.port = port
         self.authkey = authkey
         self.mixtape = mixtape
         self.out_path = out_path
+        self.gold_path = gold_path
         self.n = n
         self.b = b
 
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows):
         nlqc.connect()
         f = open(self.out_path, 'w+')
+        gold_f = open(self.gold_path, 'w+')
         for i, task in enumerate(tasks):
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
@@ -47,7 +49,11 @@ class MixtapeServer:
             else:
                 f.write('SELECT A FROM B')  # failure
             f.write('\n')
+
+            gold_f.write(task['query'])
+            gold_f.write('\n')
         f.close()
+        gold_f.close()
         nlqc.close()
 
     def run_task(self, schema, nlqc, tsq, ready):

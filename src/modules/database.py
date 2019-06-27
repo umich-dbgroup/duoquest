@@ -46,7 +46,7 @@ class Database(object):
     # 'default':   exact  | range |   Y   |
     # 'no_range':  exact  |   N   |   Y   |
     # 'no_values':   N    |   N   |   Y   |
-    # 'no_type':     N    |   N   |   N   |
+    # 'no_mixtape':  N    |   N   |   N   |
 
     def generate_tsq(self, schema, sql_str, sql, tsq_level, tsq_rows):
         aggs = []

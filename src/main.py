@@ -22,7 +22,7 @@ def main():
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
     parser.add_argument('tsq_level', choices=['default', 'no_range',
-        'no_values', 'no_type'])
+        'no_values', 'no_mixtape'])
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
@@ -30,8 +30,6 @@ def main():
         help='Max number of final queries to output')
     parser.add_argument('--b', default=1, type=int,
         help='Beam search parameter')
-
-    parser.add_argument('--mixtape', action='store_true', help='Enable Mixtape')
 
     # TODO
     parser.add_argument('--cache', action='store_true', help='Enable cache')
@@ -54,14 +52,15 @@ def main():
         # TODO
         pass
 
-    out_path = results_path(config, args.system, args.dataset, args.mode,
-        args.n, args.b, args.tsq_level, args.tsq_rows, args.mixtape, args.cache)
+    out_path, gold_path = results_path(config, args.system, args.dataset,
+        args.mode, args.n, args.b, args.tsq_level, args.tsq_rows, args.cache)
     print(f'Output sent to file <{out_path}>...')
+    print(f'Gold results sent to file <{gold_path}>...')
 
     mixtape = Mixtape(enabled=args.mixtape, use_cache=args.cache)
     server = MixtapeServer(int(config['mixtape']['port']),
-        config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path, args.n,
-        args.b)
+        config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path,
+        gold_path, args.n, args.b)
 
     schemas = load_schemas(schemas_path)
     db = Database(db_path, args.dataset)
