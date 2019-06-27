@@ -3,6 +3,7 @@ import configparser
 import json
 import os
 
+from modules.database import Database
 from modules.mixtape import Mixtape
 from modules.nlq_client import NLQClient
 from modules.schema import Schema
