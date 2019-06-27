@@ -31,6 +31,26 @@ class Database(object):
             conn = self.conn
         return conn
 
+    def has_exact(self, schema, col_id, value):
+        conn = self.get_conn(db_name=schema.db_id)
+        cur = conn.cursor()
+
+        col = schema.get_col(col_id)
+
+        cur.execute('SELECT 1 FROM "{}" WHERE "{}" = ? LIMIT 1'.format(
+            col.table.syn_name, col.syn_name
+        ), (value,))
+
+        valid = False
+        if cur.fetchone():
+            valid = True
+
+        cur.close()
+        conn.close()
+
+        return valid
+
+
     # TSQ generation process
     # ----------------------
     # Assume: User will always correctly specify presence of ORDER BY + LIMIT.
