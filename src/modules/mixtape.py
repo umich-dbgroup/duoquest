@@ -1,5 +1,7 @@
 from tribool import Tribool
 
+from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG
+
 class Mixtape:
     def __init__(self, enabled=False, use_cache=False):
         self.enabled = enabled
@@ -13,8 +15,29 @@ class Mixtape:
     def prune_by_row(self, query, tsq):
         pass
 
-    def verify(self, query, tsq):
-        return Tribool(None)
+    def verify(self, schema, query, tsq):
+        # check types
+        if tsq.types and query.select:
+            for i, agg_col in enumerate(query.select):
+                tsq_type = tsq.types[i]
+                col_type = schema.get_col(agg_col.col_id).type
+                if agg_col.has_agg == TRUE:
+                    # count/sum must produce a number
+                    if agg_col.agg in (COUNT, SUM) and tsq_type != 'number':
+                        return Tribool(False)
+                    # min/max/avg can never produce a string
+                    if agg_col.agg in (MIN, MAX, AVG) and tsq_type == 'string':
+                        return Tribool(False)
+                elif agg_col.has_agg == UNKNOWN:
+                    # no agg func can convert num -> str
+                    if col_type == 'number' and tsq_type == 'string':
+                        return Tribool(False)
+                else:
+                    # col type must match tsq type
+                    if col_type != tsq_type:
+                        return Tribool(False)
+
+        return Tribool(None)        # return indeterminate
 
         # if not query.joinpath:
             # TODO: calculate join path

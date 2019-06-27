@@ -31,7 +31,7 @@ class MixtapeServer:
                 print(tsq)
                 ready = Event()
                 t = threading.Thread(target=self.run_task,
-                    args=(nlqc, tsq, ready))
+                    args=(schema, nlqc, tsq, ready))
                 t.start()
                 ready.wait()
 
@@ -49,7 +49,7 @@ class MixtapeServer:
         f.close()
         nlqc.close()
 
-    def run_task(self, nlqc, tsq, ready):
+    def run_task(self, schema, nlqc, tsq, ready):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -71,7 +71,7 @@ class MixtapeServer:
             for query in protolist.queries:
                 result = Tribool(None)
                 if self.mixtape.enabled and tsq is not None:
-                    result = self.mixtape.verify(query, tsq)
+                    result = self.mixtape.verify(schema, query, tsq)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)
