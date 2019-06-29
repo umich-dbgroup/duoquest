@@ -48,7 +48,8 @@ class MixtapeServer:
                 t.join()
 
             if cqs:
-                f.write(u'\t'.join(cqs))
+                escaped = u'\t'.join(cqs).encode('unicode_escape')
+                f.write(escaped.decode('utf-8'))
             else:
                 f.write('SELECT A FROM B')  # failure
             f.write('\n')
