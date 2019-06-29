@@ -49,7 +49,7 @@ class MixtapeServer:
 
             if cqs:
                 escaped = u'\t'.join(
-                    map(lambda x: str(x).encode('unicode_escape'),
+                    map(lambda x: str(x).encode('unicode_escape').decode('utf-8'),
                     cqs)
                 )
                 f.write(escaped)
