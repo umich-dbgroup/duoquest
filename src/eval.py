@@ -946,7 +946,7 @@ if __name__ == "__main__":
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
-    parser.add_argument('--n', default=1, type=int,
+    parser.add_argument('--n', default=10, type=int,
         help='Max number of final queries to output')
     parser.add_argument('--b', default=1, type=int,
         help='Beam search parameter')
