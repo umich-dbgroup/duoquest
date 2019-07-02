@@ -6,11 +6,11 @@ from threading import Event, Thread
 
 from .query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 
-class MixtapeServer:
-    def __init__(self, port, authkey, mixtape, out_path, gold_path, n, b):
+class DuoquestServer:
+    def __init__(self, port, authkey, duoquest, out_path, gold_path, n, b):
         self.port = port
         self.authkey = authkey
-        self.mixtape = mixtape
+        self.duoquest = duoquest
         self.out_path = out_path
         self.gold_path = gold_path
         self.n = n
@@ -24,7 +24,7 @@ class MixtapeServer:
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
 
-            mixtape_enabled = (tsq_level != 'no_mixtape')
+            duoquest_enabled = (tsq_level != 'no_duoquest')
 
             schema = schemas[task['db_id']]
             tsq = db.generate_tsq(schema, task['query'], task['sql'],
@@ -33,7 +33,7 @@ class MixtapeServer:
                 print('Skipping task because it is out of scope.')
                 continue
 
-            if mixtape_enabled:
+            if duoquest_enabled:
                 print(tsq)
                 ready = Event()
                 t = threading.Thread(target=self.run_task,
@@ -42,9 +42,9 @@ class MixtapeServer:
                 ready.wait()
 
             cqs = nlqc.run(self.n, self.b, task['db_id'],
-                task['question_toks'], mixtape_enabled)
+                task['question_toks'], duoquest_enabled)
 
-            if mixtape_enabled:
+            if duoquest_enabled:
                 t.join()
 
             if cqs:
@@ -68,10 +68,10 @@ class MixtapeServer:
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
-        print(f'MixtapeServer listening on port {self.port}...')
+        print(f'DuoquestServer listening on port {self.port}...')
 
         conn = listener.accept()
-        print('MixtapeServer connection accepted from:', listener.last_accepted)
+        print('DuoquestServer connection accepted from:', listener.last_accepted)
         while True:
             msg = conn.recv_bytes()
 
@@ -86,7 +86,7 @@ class MixtapeServer:
             for query in protolist.queries:
                 result = Tribool(None)
                 if tsq is not None:
-                    result = self.mixtape.verify(db, schema, query, tsq)
+                    result = self.duoquest.verify(db, schema, query, tsq)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)

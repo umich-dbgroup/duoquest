@@ -4,10 +4,10 @@ import json
 
 from modules.database import Database
 from modules.files import results_path
-from modules.mixtape import Mixtape
+from modules.duoquest import Duoquest
 from modules.nlq_client import NLQClient
 from modules.schema import Schema
-from modules.server import MixtapeServer
+from modules.server import DuoquestServer
 
 def load_schemas(schemas_path):
     schemas = {}
@@ -22,7 +22,7 @@ def main():
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
     parser.add_argument('tsq_level', choices=['default', 'no_range',
-        'no_values', 'no_mixtape'])
+        'no_values', 'no_duoquest'])
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
@@ -57,9 +57,9 @@ def main():
     print(f'Output sent to file <{out_path}>...')
     print(f'Gold results sent to file <{gold_path}>...')
 
-    mixtape = Mixtape(use_cache=args.cache)
-    server = MixtapeServer(int(config['mixtape']['port']),
-        config['mixtape']['authkey'].encode('utf-8'), mixtape, out_path,
+    duoquest = Duoquest(use_cache=args.cache)
+    server = DuoquestServer(int(config['duoquest']['port']),
+        config['duoquest']['authkey'].encode('utf-8'), duoquest, out_path,
         gold_path, args.n, args.b)
 
     schemas = load_schemas(schemas_path)

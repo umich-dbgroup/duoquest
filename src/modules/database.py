@@ -66,11 +66,11 @@ class Database(object):
     #
     # TSQ levels
     # ----------
-    #            non-aggs |  agg  | types |
-    # 'default':   exact  | range |   Y   |
-    # 'no_range':  exact  |   N   |   Y   |
-    # 'no_values':   N    |   N   |   Y   |
-    # 'no_mixtape':  N    |   N   |   N   |
+    #             non-aggs |  agg  | types |
+    # 'default':    exact  | range |   Y   |
+    # 'no_range':   exact  |   N   |   Y   |
+    # 'no_values':    N    |   N   |   Y   |
+    # 'no_duoquest':  N    |   N   |   N   |
 
     def generate_tsq(self, schema, sql_str, sql, tsq_level, tsq_rows):
         aggs = []

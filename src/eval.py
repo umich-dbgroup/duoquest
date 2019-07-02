@@ -942,7 +942,7 @@ if __name__ == "__main__":
     parser.add_argument('dataset', choices=['spider', 'wikisql'])
     parser.add_argument('mode', choices=['dev', 'test'])
     parser.add_argument('tsq_level', choices=['default', 'no_range',
-        'no_values', 'no_mixtape'])
+        'no_values', 'no_duoquest'])
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters

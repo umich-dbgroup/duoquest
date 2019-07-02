@@ -6,7 +6,7 @@ message ProtoTask {
   int32 n = 3;
   int32 b = 4;
 
-  bool enable_mixtape = 5;
+  bool enable_duoquest = 5;
 }
 
 message ProtoCandidates {

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\ntask.proto\"^\n\tProtoTask\x12\x0f\n\x07\x64\x62_name\x18\x01 \x01(\t\x12\x12\n\nnlq_tokens\x18\x02 \x03(\t\x12\t\n\x01n\x18\x03 \x01(\x05\x12\t\n\x01\x62\x18\x04 \x01(\x05\x12\x16\n\x0e\x65nable_mixtape\x18\x05 \x01(\x08\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
+  serialized_pb=_b('\n\ntask.proto\"_\n\tProtoTask\x12\x0f\n\x07\x64\x62_name\x18\x01 \x01(\t\x12\x12\n\nnlq_tokens\x18\x02 \x03(\t\x12\t\n\x01n\x18\x03 \x01(\x05\x12\t\n\x01\x62\x18\x04 \x01(\x05\x12\x17\n\x0f\x65nable_duoquest\x18\x05 \x01(\x08\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
 )
 
 
@@ -62,7 +62,7 @@ _PROTOTASK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='enable_mixtape', full_name='ProtoTask.enable_mixtape', index=4,
+      name='enable_duoquest', full_name='ProtoTask.enable_duoquest', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -81,7 +81,7 @@ _PROTOTASK = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=14,
-  serialized_end=108,
+  serialized_end=109,
 )
 
 
@@ -111,8 +111,8 @@ _PROTOCANDIDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=110,
-  serialized_end=139,
+  serialized_start=111,
+  serialized_end=140,
 )
 
 DESCRIPTOR.message_types_by_name['ProtoTask'] = _PROTOTASK

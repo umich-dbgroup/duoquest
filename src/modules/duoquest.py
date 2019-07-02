@@ -1,8 +1,10 @@
 from tribool import Tribool
 
-from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG
+from .query import Query
+from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
+    NO_SET_OP, INTERSECT, EXCEPT, UNION
 
-class Mixtape:
+class Duoquest:
     def __init__(self, use_cache=False):
         if use_cache:
             # TODO: initialize cache
@@ -43,25 +45,46 @@ class Mixtape:
 
         return None
 
-    def ready_for_row_check(self, query):
-        # TODO: what happens when there are set ops?
-
-        # If there MIGHT be an aggregate anywhere and
-        #   WHERE or GROUP BY is incomplete
-        if any(map(lambda x: x.has_agg != FALSE, query.select)):
-            if query.has_where == UNKNOWN or \
-                (query.has_where == TRUE and not query.where.predicates):
+    def ready_for_row_check(self, query, tsq):
+        if query.set_op == NO_SET_OP:
+            # query must have same # of columns as TSQ
+            if tsq.num_cols != len(query.select):
                 return False
 
-            if query.has_group_by == UNKNOWN or \
-                (query.has_group_by == TRUE and not query.group_by):
-                return False
+            # if query contains AVG/COUNT/SUM, then GROUP BY must be complete
+            # this is because these functions change the output domain
+            if any(map(lambda x: x.agg in (AVG, COUNT, SUM), query.select)):
+                if query.has_group_by == UNKNOWN or \
+                    (query.has_group_by == TRUE and not query.group_by):
+                    return False
+        elif query.set_op == UNION:
+            # if UNION, both subqueries must be ready
+            return self.ready_for_row_check(query.left) and \
+                self.ready_for_row_check(query.right)
+        elif query.set_op == INTERSECT:
+            # if INTERSECT, at least one subquery must be ready
+            return self.ready_for_row_check(query.left) or \
+                self.ready_for_row_check(query.right)
+        elif query.set_op == EXCEPT:
+            # if EXCEPT, only left subquery must be ready
+            return self.ready_for_row_check(query.left)
+        else:
+            raise Exception(f'Unknown set_op: {query.set_op}')
 
         return True
 
     def prune_by_row(self, db, schema, query, tsq):
-        # TODO
-        pass
+        query = Query(schema, query)
+
+        for sql, jp in query.sqls():
+            # TODO: cache join path generation somehow
+
+            # TODO: wrap SQL query to check TSQ values
+            pass
+
+        # TODO: if none of the SQLs worked, return Tribool(False)
+
+        return None
 
     def prune_by_num_cols(self, query, tsq):
         if tsq.num_cols > len(query.select):
@@ -84,8 +107,9 @@ class Mixtape:
             if check_col is not None:
                 return check_col
 
-        # TODO
-        # if self.ready_for_row_check(query):
-        #     self.prune_by_row(db, schema, query, tsq)
+        if self.ready_for_row_check(query, tsq):
+            check_row = self.prune_by_row(db, schema, query, tsq)
+            if check_row is not None:
+                return check_row
 
         return Tribool(None)        # return indeterminate
