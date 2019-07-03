@@ -75,9 +75,12 @@ class DuoquestServer:
         while True:
             msg = conn.recv_bytes()
 
-            if msg.decode('utf-8') == 'close':
-                conn.close()
-                break
+            try:
+                if msg.decode('utf-8') == 'close':
+                    conn.close()
+                    break
+            except Exception:
+                pass
 
             protolist = ProtoQueryList()
             protolist.ParseFromString(msg)
