@@ -1,6 +1,4 @@
-# virtual environment
 venv
-
 __pycache__
-
 config.ini
+*.out
