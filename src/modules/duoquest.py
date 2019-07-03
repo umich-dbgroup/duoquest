@@ -107,9 +107,10 @@ class Duoquest:
             if check_col is not None:
                 return check_col
 
-        if self.ready_for_row_check(query, tsq):
-            check_row = self.prune_by_row(db, schema, query, tsq)
-            if check_row is not None:
-                return check_row
+        # TODO
+        # if self.ready_for_row_check(query, tsq):
+        #     check_row = self.prune_by_row(db, schema, query, tsq)
+        #     if check_row is not None:
+        #         return check_row
 
         return Tribool(None)        # return indeterminate

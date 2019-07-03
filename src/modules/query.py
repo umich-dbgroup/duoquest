@@ -1,5 +1,6 @@
 class Query:
-    def __init__(self, protoquery):
+    def __init__(self, schema, protoquery):
+        self.schema = schema
         self.protoquery = protoquery
 
     def sql(self):
