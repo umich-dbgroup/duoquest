@@ -28,7 +28,7 @@ def main():
     # NLQ parameters
     parser.add_argument('--n', default=10, type=int,
         help='Max number of final queries to output')
-    parser.add_argument('--b', default=None, type=int,
+    parser.add_argument('--b', default=0, type=int,
         help='Beam search parameter')
 
     # TODO
