@@ -3,9 +3,11 @@ from multiprocessing.connection import Client
 from .task_pb2 import ProtoTask, ProtoCandidates
 
 class NLQClient:
-    def __init__(self, port, authkey):
+    def __init__(self, port, authkey, dataset, mode):
         self.port = port
         self.authkey = authkey
+        self.dataset = dataset
+        self.mode = mode
 
     def connect(self):
         address = ('localhost', self.port)
@@ -13,6 +15,8 @@ class NLQClient:
 
     def run(self, n, b, db_name, nlq, enable_duoquest):
         task = ProtoTask()
+        task.dataset = self.dataset
+        task.mode = self.mode
         task.n = n
         task.b = b
         task.enable_duoquest = enable_duoquest

@@ -66,7 +66,7 @@ def main():
     db = Database(db_path, args.dataset)
 
     nlqc = NLQClient(int(config['nlq']['port']),
-        config['nlq']['authkey'].encode('utf-8'))
+        config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows)
 
 if __name__ == '__main__':

@@ -1,12 +1,15 @@
 syntax = "proto3";
 
 message ProtoTask {
-  string db_name = 1;
-  repeated string nlq_tokens = 2;
-  int32 n = 3;
-  int32 b = 4;
+  string dataset = 1;
+  string mode = 2;
 
-  bool enable_duoquest = 5;
+  string db_name = 3;
+  repeated string nlq_tokens = 4;
+  int32 n = 5;
+  int32 b = 6;
+
+  bool enable_duoquest = 7;
 }
 
 message ProtoCandidates {
