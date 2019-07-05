@@ -35,7 +35,7 @@ class Duoquest:
                 if row[pos] is None:                # empty cell
                     continue
                 elif isinstance(row[pos], list):    # range constraint
-                    pass
+                    pass                            # TODO
                 else:                               # exact constraint
                     if agg_col.has_agg:
                         pass                        # TODO
@@ -87,9 +87,7 @@ class Duoquest:
         return None
 
     def prune_by_num_cols(self, query, tsq):
-        if tsq.num_cols > len(query.select):
-            return Tribool(None)     # may not be finished generating SQL
-        elif tsq.num_cols < len(query.select):
+        if tsq.num_cols < len(query.select):
             return Tribool(False)    # exceeded max columns already
         else:
             return None              # nothing to prune
@@ -98,6 +96,7 @@ class Duoquest:
         if not query.select:
             return Tribool(None)    # hasn't even started with select
 
+        # TODO: can do early pruning even if only 1 column in select is generated!!
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
             return check_num_cols
