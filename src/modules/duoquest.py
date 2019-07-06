@@ -101,7 +101,7 @@ class Duoquest:
             return None              # nothing to prune
 
     def prune_by_structure(self, query, tsq):
-        order = to_tribool_proto(query.has_order)
+        order = to_tribool_proto(query.has_order_by)
 
         if order.value and not tsq.order:
             return Tribool(False)
