@@ -104,9 +104,8 @@ enum Aggregate {
 }
 
 enum LogicalOp {
-  NO_COND = 0;
-  AND = 1;
-  OR = 2;
+  AND = 0;
+  OR = 1;
 }
 
 enum Op {
