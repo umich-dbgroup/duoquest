@@ -4,6 +4,14 @@ from .query import Query
 from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
     NO_SET_OP, INTERSECT, EXCEPT, UNION
 
+def to_tribool_proto(proto_tribool):
+    if proto_tribool == UNKNOWN:
+        return Tribool(None)
+    elif proto_tribool == TRUE:
+        return Tribool(True)
+    else:
+        return Tribool(False)
+
 class Duoquest:
     def __init__(self, use_cache=False):
         if use_cache:
@@ -92,7 +100,30 @@ class Duoquest:
         else:
             return None              # nothing to prune
 
+    def prune_by_structure(self, query, tsq):
+        order = to_tribool_proto(query.has_order)
+
+        if order.value and not tsq.order:
+            return Tribool(False)
+
+        if order.value == False and tsq.order:
+            return Tribool(False)
+
+        limit = to_tribool_proto(query.has_limit)
+
+        if limit.value and tsq.limit is None:
+            return Tribool(False)
+
+        if limit.value == False and tsq.limit:
+            return Tribool(False)
+
+        return None
+
     def verify(self, db, schema, query, tsq):
+        check_structure = self.prune_by_structure(query, tsq)
+        if check_structure is not None:
+            return check_structure
+
         if not query.select:
             return Tribool(None)    # hasn't even started with select
 
