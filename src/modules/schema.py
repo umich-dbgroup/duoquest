@@ -397,14 +397,12 @@ class Schema(object):
         if col.syn_name == '*':
             return '*'
 
+        # change col if it is an fk and primary key is in table set already
+        if col.fk and self.get_col(col.fk_ref).table.syn_name in aliases:
+            col = self.get_col(col.fk_ref)
+
         if col.table.syn_name in aliases and aliases[col.table.syn_name]:
             return '{}."{}"'.format(aliases[col.table.syn_name],
                 col.syn_name)
-        elif col.fk:
-            col = self.get_col(col.fk_ref)
-            if col.table.syn_name in aliases and aliases[col.table.syn_name]:
-                return '{}."{}"'.format(aliases[col.table.syn_name], col.syn_name)
-            else:
-                return '"{}"'.format(col.syn_name)
         else:
             return '"{}"'.format(col.syn_name)
