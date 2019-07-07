@@ -397,18 +397,14 @@ class Schema(object):
         if col.syn_name == '*':
             return '*'
 
-        if col.table.syn_name in aliases:
-            if aliases[col.table.syn_name]:
-                return '{}."{}"'.format(aliases[col.table.syn_name],
-                    col.syn_name)
+        if col.table.syn_name in aliases and aliases[col.table.syn_name]:
+            return '{}."{}"'.format(aliases[col.table.syn_name],
+                col.syn_name)
+        elif col.fk:
+            col = self.get_col(col.fk_ref)
+            if col.table.syn_name in aliases and aliases[col.table.syn_name]:
+                return '{}."{}"'.format(aliases[col.table.syn_name], col.syn_name)
             else:
                 return '"{}"'.format(col.syn_name)
         else:
-            if col.fk:
-                col = self.get_col(col.fk_ref)
-                if col.table.syn_name in aliases and aliases[col.table.syn_name]:
-                    return '{}."{}"'.format(aliases[col.table.syn_name], col.syn_name)
-                else:
-                    return '"{}"'.format(col.syn_name)
-            else:
-                return '"{}"'.format(col.syn_name)
+            return '"{}"'.format(col.syn_name)
