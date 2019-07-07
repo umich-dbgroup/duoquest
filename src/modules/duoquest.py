@@ -19,6 +19,11 @@ class Duoquest:
             pass
 
     def prune_select_column(self, db, schema, agg_col, tsq, pos):
+        if agg_col.col_id == 0:
+            # only permit COUNT aggregate on * column
+            if agg_col.has_agg and agg_col.agg != COUNT:
+                return Tribool(False)
+
         if tsq.types:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
@@ -127,7 +132,6 @@ class Duoquest:
         if not query.select:
             return Tribool(None)    # hasn't even started with select
 
-        # TODO: can do early pruning even if only 1 column in select is generated!!
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
             return check_num_cols
