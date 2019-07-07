@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--b', default=0, type=int,
         help='Beam search parameter')
 
+    parser.add_argument('--tid', default=None, help='debug task id')
+
     # TODO
     parser.add_argument('--cache', action='store_true', help='Enable cache')
     # parser.add_argument('--batch', action='store_true', help='Enable batching')
@@ -67,7 +69,8 @@ def main():
 
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
-    server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows)
+    server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
+        tid=args.tid)
 
 if __name__ == '__main__':
     main()

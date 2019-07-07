@@ -16,11 +16,15 @@ class DuoquestServer:
         self.n = n
         self.b = b
 
-    def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows):
+    def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
+        tid=None):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
         for i, task in enumerate(tasks):
+            if tid and (i+1) != tid:
+                continue
+    
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
 
