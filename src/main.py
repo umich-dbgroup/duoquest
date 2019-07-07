@@ -31,7 +31,7 @@ def main():
     parser.add_argument('--b', default=0, type=int,
         help='Beam search parameter')
 
-    parser.add_argument('--tid', default=None, help='debug task id')
+    parser.add_argument('--tid', default=None, type=int, help='debug task id')
 
     # TODO
     parser.add_argument('--cache', action='store_true', help='Enable cache')
