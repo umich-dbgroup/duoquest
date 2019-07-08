@@ -20,6 +20,10 @@ class Duoquest:
 
     def prune_select_column(self, db, schema, agg_col, tsq, pos):
         if agg_col.col_id == 0:
+            # C0 for TSQ generation
+            if agg_col.has_agg == FALSE:
+                return Tribool(False)
+            
             # only permit COUNT aggregate on * column
             if agg_col.has_agg and agg_col.agg != COUNT:
                 return Tribool(False)

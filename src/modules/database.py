@@ -63,6 +63,7 @@ class Database(object):
     # C1. Superlatives (ORDER BY + LIMIT) will have empty `values'.
     # C2. If any queries contain nested subqueries in WHERE or HAVING clauses,
     #     `values' will be empty.
+    # C3. If MIN/MAX/AVG is applied to a text column, throw the task out.
     #
     # TSQ levels
     # ----------
@@ -84,10 +85,17 @@ class Database(object):
 
             aggs.append(agg)   # store for later when getting `values'
 
-            if agg == 3:   # COUNT is always numeric result
+            col_type = schema.get_col(col_id).type
+
+            # check C3
+            if agg in (1, 2, 5) and col_type == 'text':
+                return None
+
+            # COUNT/SUM must produce a number
+            if agg in (3, 4):
                 types.append('number')
             else:
-                types.append(schema.get_col(col_id).type)
+                types.append(col_type)
 
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)
