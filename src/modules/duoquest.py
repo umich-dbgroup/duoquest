@@ -18,7 +18,7 @@ class Duoquest:
             # TODO: initialize cache
             pass
 
-    def prune_select_column(self, db, schema, agg_col, tsq, pos):
+    def prune_select_col_types(self, db, schema, agg_col, tsq, pos):
         if agg_col.col_id == 0:
             # C0 for TSQ generation
             if agg_col.has_agg == FALSE:
@@ -45,46 +45,32 @@ class Duoquest:
                 if col_type != tsq_type:
                     return Tribool(False)
 
-        if tsq.values:
-            for row in tsq.values:
-                if row[pos] is None:                # empty cell
-                    continue
-                elif isinstance(row[pos], list):    # range constraint
-                    pass                            # TODO
-                else:                               # exact constraint
-                    if agg_col.has_agg:
-                        pass                        # TODO
-                    else:
-                        if not db.has_exact(schema, agg_col.col_id, row[pos]):
-                            return Tribool(False)
+    def prune_select_col_values(self, db, schema, agg_col, tsq, pos):
+        for row in tsq.values:
+            if row[pos] is None:                # empty cell
+                continue
+            elif isinstance(row[pos], list):    # range constraint
+                pass                            # TODO
+            else:                               # exact constraint
+                if agg_col.has_agg:
+                    pass                        # TODO
+                else:
+                    if not db.has_exact(schema, agg_col.col_id, row[pos]):
+                        return Tribool(False)
 
         return None
 
     def ready_for_row_check(self, query, tsq):
-        if query.set_op == NO_SET_OP:
-            # query must have same # of columns as TSQ
-            if tsq.num_cols != len(query.select):
-                return False
+        # query must have same # of columns as TSQ
+        if tsq.num_cols != len(query.select):
+            return False
 
-            # if query contains AVG/COUNT/SUM, then GROUP BY must be complete
-            # this is because these functions change the output domain
-            if any(map(lambda x: x.agg in (AVG, COUNT, SUM), query.select)):
-                if query.has_group_by == UNKNOWN or \
-                    (query.has_group_by == TRUE and not query.group_by):
-                    return False
-        elif query.set_op == UNION:
-            # if UNION, both subqueries must be ready
-            return self.ready_for_row_check(query.left) and \
-                self.ready_for_row_check(query.right)
-        elif query.set_op == INTERSECT:
-            # if INTERSECT, at least one subquery must be ready
-            return self.ready_for_row_check(query.left) or \
-                self.ready_for_row_check(query.right)
-        elif query.set_op == EXCEPT:
-            # if EXCEPT, only left subquery must be ready
-            return self.ready_for_row_check(query.left)
-        else:
-            raise Exception(f'Unknown set_op: {query.set_op}')
+        # if query contains AVG/COUNT/SUM, then GROUP BY must be complete
+        # this is because these functions change the output domain
+        if any(map(lambda x: x.agg in (AVG, COUNT, SUM), query.select)):
+            if query.has_group_by == UNKNOWN or \
+                (query.has_group_by == TRUE and not query.group_by):
+                return False
 
         return True
 
@@ -126,25 +112,49 @@ class Duoquest:
 
         return None
 
-    def verify(self, db, schema, query, tsq):
-        check_structure = self.prune_by_structure(query, tsq)
-        if check_structure is not None:
-            return check_structure
+    def verify(self, db, schema, query, tsq, set_op=NO_SET_OP, lr=None):
+        if query.set_op != NO_SET_OP:
+            left = verify(db, schema, query.left, tsq, set_op=query.set_op,
+                lr='left')
+            right = verify(db, schema, query.right, tsq, set_op=query.set_op,
+                lr='right')
+            if left.value == False or right.value == False:
+                return Tribool(False)
+            else:
+                return Tribool(None)
 
-        if not query.select:
-            return Tribool(None)    # hasn't even started with select
+        # only check structure if not child of a set op
+        if lr is None:
+            check_structure = self.prune_by_structure(query, tsq)
+            if check_structure is not None:
+                return check_structure
+
+        if not query.select:        # hasn't even started with select
+            return Tribool(None)
 
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
             return check_num_cols
 
+        # if not child of UNION or right child of EXCEPT, can check values
+        can_check_values = tsq.values and \
+            set_op != UNION and \
+            not (set_op == EXCEPT and lr == 'right')
+
         for i, aggcol in enumerate(query.select):
-            check_col = self.prune_select_column(db, schema, aggcol, tsq, i)
-            if check_col is not None:
-                return check_col
+            check_types = self.prune_select_col_types(db, schema, aggcol, tsq,
+                i)
+            if check_types is not None:
+                return check_types
+
+            if can_check_values:
+                check_values = self.prune_select_col_values(db, schema, aggcol,
+                    tsq, i)
+                if check_values is not None:
+                    return check_values
 
         # TODO
-        # if self.ready_for_row_check(query, tsq):
+        # if can_check_values and self.ready_for_row_check(query, tsq):
         #     check_row = self.prune_by_row(db, schema, query, tsq)
         #     if check_row is not None:
         #         return check_row
