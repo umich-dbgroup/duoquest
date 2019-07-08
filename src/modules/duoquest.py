@@ -65,6 +65,10 @@ class Duoquest:
         if tsq.num_cols != len(query.select):
             return False
 
+        # if any select are not yet complete (i.e. UNKNOWN), not ready
+        if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
+            return False
+
         # if query contains AVG/COUNT/SUM, then GROUP BY must be complete
         # this is because these functions change the output domain
         if any(map(lambda x: x.agg in (AVG, COUNT, SUM), query.select)):
