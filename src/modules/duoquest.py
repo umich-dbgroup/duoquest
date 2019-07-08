@@ -114,10 +114,10 @@ class Duoquest:
 
     def verify(self, db, schema, query, tsq, set_op=NO_SET_OP, lr=None):
         if query.set_op != NO_SET_OP:
-            left = verify(db, schema, query.left, tsq, set_op=query.set_op,
+            left = self.verify(db, schema, query.left, tsq, set_op=query.set_op,
                 lr='left')
-            right = verify(db, schema, query.right, tsq, set_op=query.set_op,
-                lr='right')
+            right = self.verify(db, schema, query.right, tsq,
+                set_op=query.set_op, lr='right')
             if left.value == False or right.value == False:
                 return Tribool(False)
             else:
