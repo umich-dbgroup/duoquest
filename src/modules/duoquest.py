@@ -25,7 +25,7 @@ class Duoquest:
                 return Tribool(False)
 
             # only permit COUNT aggregate on * column
-            if agg_col.has_agg and agg_col.agg != COUNT:
+            if agg_col.has_agg == TRUE and agg_col.agg != COUNT:
                 return Tribool(False)
 
         if tsq.types:
