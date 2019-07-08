@@ -24,7 +24,7 @@ class DuoquestServer:
         for i, task in enumerate(tasks):
             if tid and (i+1) != tid:
                 continue
-    
+
             print('{}/{} || Database: {} || NLQ: {}'.format(i+1, len(tasks),
                 task['db_id'], task['question_toks']))
 
@@ -45,7 +45,7 @@ class DuoquestServer:
                 t.start()
                 ready.wait()
 
-            cqs = nlqc.run(self.n, self.b, task['db_id'],
+            cqs = nlqc.run(i+1, self.n, self.b, task['db_id'],
                 task['question_toks'], duoquest_enabled)
 
             if duoquest_enabled:

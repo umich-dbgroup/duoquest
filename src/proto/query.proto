@@ -22,20 +22,28 @@ message ProtoQuery {
   Tribool has_limit = 6;
 
   // Query data
-  ProtoJoinPath from_clause = 12;
-  repeated AggregatedColumn select = 7;
-  SelectionClause where = 8;
-  repeated int32 group_by = 9;
-  SelectionClause having = 10;
-  repeated OrderedColumn order_by = 11;
-  int32 limit = 16;
+  ProtoJoinPath from_clause = 7;
+  repeated AggregatedColumn select = 8;
+  SelectionClause where = 9;
+  repeated int32 group_by = 10;
+  SelectionClause having = 11;
+  repeated OrderedColumn order_by = 12;
+  int32 limit = 13;
 
   // Subqueries if set operation exists
-  ProtoQuery left = 13;
-  ProtoQuery right = 14;
+  ProtoQuery left = 14;
+  ProtoQuery right = 15;
 
   // If select requires DISTINCT prefix
-  bool distinct = 15;
+  bool distinct = 16;
+
+  // If clauses completed or not
+  bool done_select = 17;
+  bool done_where = 18;
+  bool done_group_by = 19;
+  bool done_having = 20;
+  bool done_order_by = 21;
+  bool done_limit = 22;
 }
 
 message ProtoJoinPath {

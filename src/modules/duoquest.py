@@ -52,8 +52,10 @@ class Duoquest:
             elif isinstance(row[pos], list):    # range constraint
                 pass                            # TODO
             else:                               # exact constraint
-                if agg_col.has_agg:
+                if agg_col.has_agg == TRUE:
                     pass                        # TODO
+                elif agg_col.has_agg == UNKNOWN:
+                    pass
                 else:
                     if not db.has_exact(schema, agg_col.col_id, row[pos]):
                         return Tribool(False)
@@ -69,25 +71,22 @@ class Duoquest:
         if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
             return False
 
-        # if query contains AVG/COUNT/SUM, then GROUP BY must be complete
-        # this is because these functions change the output domain
-        if any(map(lambda x: x.agg in (AVG, COUNT, SUM), query.select)):
-            if query.has_group_by == UNKNOWN or \
-                (query.has_group_by == TRUE and not query.group_by):
+        # if query contains any aggregate, then both WHERE and GROUP BY
+        # must be done, if present.
+        if any(map(lambda x: x.has_agg == TRUE, query.select)):
+            if query.has_where == UNKNOWN or \
+                (query.has_where == TRUE and not query.done_where) or \
+                query.has_group_by == UNKNOWN or \
+                (query.has_group_by == TRUE and not query.done_group_by):
                 return False
 
         return True
 
     def prune_by_row(self, db, schema, query, tsq):
-        query = Query(schema, query)
+        # TODO: generate SQL query, but also add verification for TSQ values
+        pass
 
-        for sql, jp in query.sqls():
-            # TODO: cache join path generation somehow
-
-            # TODO: wrap SQL query to check TSQ values
-            pass
-
-        # TODO: if none of the SQLs worked, return Tribool(False)
+        # TODO: if did not work, return Tribool(False)
 
         return None
 

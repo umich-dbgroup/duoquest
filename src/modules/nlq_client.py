@@ -13,8 +13,9 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, n, b, db_name, nlq, enable_duoquest):
+    def run(self, tid, n, b, db_name, nlq, enable_duoquest):
         task = ProtoTask()
+        task.id = tid
         task.dataset = self.dataset
         task.mode = self.mode
         task.n = n

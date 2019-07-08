@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\ntask.proto\"~\n\tProtoTask\x12\x0f\n\x07\x64\x61taset\x18\x01 \x01(\t\x12\x0c\n\x04mode\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x62_name\x18\x03 \x01(\t\x12\x12\n\nnlq_tokens\x18\x04 \x03(\t\x12\t\n\x01n\x18\x05 \x01(\x05\x12\t\n\x01\x62\x18\x06 \x01(\x05\x12\x17\n\x0f\x65nable_duoquest\x18\x07 \x01(\x08\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
+  serialized_pb=_b('\n\ntask.proto\"\x8a\x01\n\tProtoTask\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0f\n\x07\x64\x61taset\x18\x02 \x01(\t\x12\x0c\n\x04mode\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x62_name\x18\x04 \x01(\t\x12\x12\n\nnlq_tokens\x18\x05 \x03(\t\x12\t\n\x01n\x18\x06 \x01(\x05\x12\t\n\x01\x62\x18\x07 \x01(\x05\x12\x17\n\x0f\x65nable_duoquest\x18\x08 \x01(\x08\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
 )
 
 
@@ -34,50 +34,57 @@ _PROTOTASK = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='dataset', full_name='ProtoTask.dataset', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='id', full_name='ProtoTask.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mode', full_name='ProtoTask.mode', index=1,
+      name='dataset', full_name='ProtoTask.dataset', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='db_name', full_name='ProtoTask.db_name', index=2,
+      name='mode', full_name='ProtoTask.mode', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='nlq_tokens', full_name='ProtoTask.nlq_tokens', index=3,
-      number=4, type=9, cpp_type=9, label=3,
+      name='db_name', full_name='ProtoTask.db_name', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='nlq_tokens', full_name='ProtoTask.nlq_tokens', index=4,
+      number=5, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='n', full_name='ProtoTask.n', index=4,
-      number=5, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='b', full_name='ProtoTask.b', index=5,
+      name='n', full_name='ProtoTask.n', index=5,
       number=6, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='enable_duoquest', full_name='ProtoTask.enable_duoquest', index=6,
-      number=7, type=8, cpp_type=7, label=1,
+      name='b', full_name='ProtoTask.b', index=6,
+      number=7, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='enable_duoquest', full_name='ProtoTask.enable_duoquest', index=7,
+      number=8, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -94,8 +101,8 @@ _PROTOTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14,
-  serialized_end=140,
+  serialized_start=15,
+  serialized_end=153,
 )
 
 
@@ -125,8 +132,8 @@ _PROTOCANDIDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=142,
-  serialized_end=171,
+  serialized_start=155,
+  serialized_end=184,
 )
 
 DESCRIPTOR.message_types_by_name['ProtoTask'] = _PROTOTASK
