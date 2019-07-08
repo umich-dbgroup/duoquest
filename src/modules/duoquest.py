@@ -23,7 +23,7 @@ class Duoquest:
             # C0 for TSQ generation
             if agg_col.has_agg == FALSE:
                 return Tribool(False)
-            
+
             # only permit COUNT aggregate on * column
             if agg_col.has_agg and agg_col.agg != COUNT:
                 return Tribool(False)
@@ -32,11 +32,9 @@ class Duoquest:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
-                # count/sum must produce a number
-                if agg_col.agg in (COUNT, SUM) and tsq_type != 'number':
-                    return Tribool(False)
-                # min/max/avg can never produce a string
-                if agg_col.agg in (MIN, MAX, AVG) and tsq_type == 'text':
+                # all aggs must produce a number
+                if agg_col.agg in (MIN, MAX, AVG, COUNT, SUM) and \
+                    tsq_type != 'number':
                     return Tribool(False)
             elif agg_col.has_agg == UNKNOWN:
                 # no agg func can convert num -> str

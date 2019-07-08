@@ -63,7 +63,8 @@ class Database(object):
     # C1. Superlatives (ORDER BY + LIMIT) will have empty `values'.
     # C2. If any queries contain nested subqueries in WHERE or HAVING clauses,
     #     `values' will be empty.
-    # C3. If MIN/MAX/AVG is applied to a text column, throw the task out.
+    # C3. If MIN/MAX/AVG/SUM is applied to a non-numeric column,
+    #       throw the task out.
     #
     # TSQ levels
     # ----------
@@ -88,11 +89,11 @@ class Database(object):
             col_type = schema.get_col(col_id).type
 
             # check C3
-            if agg in (1, 2, 5) and col_type == 'text':
+            if agg in (1, 2, 4, 5) and col_type != 'number':
                 return None
 
-            # COUNT/SUM must produce a number
-            if agg in (3, 4):
+            # all aggs must produce a number
+            if agg > 0:
                 types.append('number')
             else:
                 types.append(col_type)
