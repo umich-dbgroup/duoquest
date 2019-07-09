@@ -418,11 +418,14 @@ def verify_sql_str(pq, schema, tsq_row):
     if verify_agg and not verify_non_agg and pq.has_group_by == FALSE:
         select_aliases = []
         where_preds = []
-        for i, item in enumerate(verify_agg):
+        for i, agg_col in enumerate(pq.select):
+            tsq_const = tsq_row[i]
+            if tsq_const is None:
+                continue
+
             select_alias = f's{i}'
             select_aliases.append(select_alias)
 
-            agg_col, tsq_const = item
             col_type = schema.get_col(agg_col.col_id).type
 
             if isinstance(tsq_const, list):         # range constraint
