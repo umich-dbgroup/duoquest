@@ -98,7 +98,7 @@ class DuoquestServer:
                         print()
                         raise Exception('Rank is lower than compare!')
             else:
-                print('RANK\n: {}'.format(og_rank))
+                print('RANK: {}\n'.format(og_rank))
 
             if cqs:
                 f.write(u'\t'.join(cqs))
