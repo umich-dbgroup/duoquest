@@ -71,12 +71,13 @@ class DuoquestServer:
 
             og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs)
             total_tasks += 1
-            if og_rank == 1:
-                top_1 += 1
-            if og_rank <= 5:
-                top_5 += 1
-            if og_rank <= 10:
-                top_10 += 1
+            if og_rank:
+                if og_rank == 1:
+                    top_1 += 1
+                if og_rank <= 5:
+                    top_5 += 1
+                if og_rank <= 10:
+                    top_10 += 1
 
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
@@ -110,7 +111,7 @@ class DuoquestServer:
         print(f'Top 1: {top_1}/{total_Tasks}')
         print(f'Top 5: {top_5}/{total_Tasks}')
         print(f'Top 10: {top_10}/{total_Tasks}')
-        
+
         f.close()
         gold_f.close()
         nlqc.close()
