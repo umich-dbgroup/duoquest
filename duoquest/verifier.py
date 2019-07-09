@@ -33,8 +33,11 @@ class DuoquestVerifier:
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
                 # all aggs must produce a number
-                if agg_col.agg in (MIN, MAX, AVG, COUNT, SUM) and \
-                    tsq_type != 'number':
+                if tsq_type != 'number':
+                    return Tribool(False)
+
+                # only COUNT is permitted for text
+                if col_type == 'text' and agg_col.agg != COUNT:
                     return Tribool(False)
             elif agg_col.has_agg == UNKNOWN:
                 # no agg func can convert num -> str
