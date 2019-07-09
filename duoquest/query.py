@@ -147,7 +147,8 @@ def from_clause_str(pq, schema, alias_prefix):
     aliases = {}
     join_exprs = ['FROM']
 
-    tables = map(lambda x: schema.get_table(x), pq.from_clause.edge_map.keys())
+    tables = list(map(lambda x: schema.get_table(x),
+        pq.from_clause.edge_map.keys()))
     tbl = min(tables, key=lambda x: x.syn_name)
 
     # single table case, no aliases
