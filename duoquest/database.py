@@ -57,14 +57,18 @@ class Database(object):
 
     # TSQ generation process
     # ----------------------
-    # Assume: User will always correctly specify presence of ORDER BY + LIMIT.
-    # C0. Do not permit any tasks with `*' projection without COUNT
-    #     (ambiguous TSQ).
-    # C1. Superlatives (ORDER BY + LIMIT) will have empty `values'.
-    # C2. If any queries contain nested subqueries in WHERE or HAVING clauses,
+    # Invalid task conditions:
+    # I1. Do not permit tasks where MIN/MAX/AVG/SUM is applied to a non-numeric
+    #     column.
+    # I2. Do not permit tasks where there is (a) a non-aggregated projection;
+    #     (b) an aggregated projection; and (c) no GROUP BY.
+    # I3. Do not permit tasks with * projection without COUNT.
+    #
+    # TSQ generation conditions:
+    # C1. User will always correctly specify presence of ORDER BY + LIMIT.
+    # C2. Superlatives (ORDER BY + LIMIT) will have empty `values'.
+    # C3. If any queries contain nested subqueries in WHERE or HAVING clauses,
     #     `values' will be empty.
-    # C3. If MIN/MAX/AVG/SUM is applied to a non-numeric column,
-    #       throw the task out.
     #
     # TSQ levels
     # ----------
@@ -77,10 +81,14 @@ class Database(object):
     def generate_tsq(self, schema, sql_str, sql, tsq_level, tsq_rows):
         aggs = []
         types = []
+
+        agg_present = False
+        non_agg_present = False
+
         for agg, val_unit in sql['select'][1]:
             _, col_id, _ = val_unit[1]
 
-            # check C0
+            # check I3
             if col_id == 0 and agg != 3:
                 return None
 
@@ -88,9 +96,12 @@ class Database(object):
 
             col_type = schema.get_col(col_id).type
 
-            # check C3
+            # check I1
             if agg in (1, 2, 4, 5) and col_type != 'number':
                 return None
+
+            agg_present = agg_present or agg > 0
+            non_agg_present = non_agg_present or agg == 0
 
             # all aggs must produce a number
             if agg > 0:
@@ -98,9 +109,15 @@ class Database(object):
             else:
                 types.append(col_type)
 
+        # check I2
+        if agg_present and non_agg_present and \
+            not ('groupBy' in sql and sql['groupBy']):
+            return None
+
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)
 
+        # perform C1
         has_order = 'orderBy' in sql and sql['orderBy']
         has_limit = 'limit' in sql and sql['limit']
         if has_order:
@@ -112,11 +129,11 @@ class Database(object):
         if tsq_level in ('no_values', 'no_type'):
             return tsq
 
-        # check C1
+        # perform C2
         if has_order and has_limit:
             return tsq
 
-        # check C2
+        # perform C3
         for item in sql['where']:
             if isinstance(item, list):
                 val1 = item[3]

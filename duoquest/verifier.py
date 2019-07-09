@@ -20,7 +20,7 @@ class DuoquestVerifier:
 
     def prune_select_col_types(self, db, schema, agg_col, tsq, pos):
         if agg_col.col_id == 0:
-            # C0 for TSQ generation
+            # see I3 in database.py:generate_tsq
             if agg_col.has_agg == FALSE:
                 return Tribool(False)
 
@@ -110,21 +110,27 @@ class DuoquestVerifier:
             return None              # nothing to prune
 
     def prune_by_structure(self, query, tsq):
-        order = to_tribool_proto(query.has_order_by)
-
-        if order.value and not tsq.order:
+        if query.has_order_by == TRUE and not tsq.order:
             return Tribool(False)
 
-        if order.value == False and tsq.order:
+        if query.has_order_by == FALSE and tsq.order:
             return Tribool(False)
 
-        limit = to_tribool_proto(query.has_limit)
-
-        if limit.value and tsq.limit is None:
+        if query.has_limit == TRUE and not tsq.limit:
             return Tribool(False)
 
-        if limit.value == False and tsq.limit:
+        if query.has_limit == FALSE and tsq.limit:
             return Tribool(False)
+
+        # see I2 in database.py:generate_tsq
+        agg_present = False
+        non_agg_present = False
+        for agg_col in query.select:
+            agg_present = agg_present or agg_col.has_agg == TRUE
+            non_agg_present = non_agg_present or agg_col.has_agg == FALSE
+
+            if agg_present and non_agg_present and query.has_group_by == FALSE:
+                return Tribool(False)
 
         return None
 
