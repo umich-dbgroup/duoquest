@@ -68,7 +68,7 @@ class DuoquestServer:
                 cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
                     cm_cqs)
 
-                print('{} rank: {}; {} rank: {}'.format(
+                print('\n{} RANK: {}\n{} RANK: {}\n'.format(
                     tsq_level, og_rank, compare, cm_rank
                 ))
 
