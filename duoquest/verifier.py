@@ -118,16 +118,24 @@ class DuoquestVerifier:
             return None              # nothing to prune
 
     def prune_by_structure(self, query, tsq):
+        # check order by
         if query.has_order_by == TRUE and not tsq.order:
             return Tribool(False)
-
         if query.has_order_by == FALSE and tsq.order:
             return Tribool(False)
 
+        # check limit
         if query.has_limit == TRUE and not tsq.limit:
             return Tribool(False)
-
         if query.has_limit == FALSE and tsq.limit:
+            return Tribool(False)
+
+        # ensure there are no * in where, group by, order by
+        if any(map(lambda x: x.col_id == 0, query.where.predicates)):
+            return Tribool(False)
+        if any(map(lambda x: x == 0, query.group_by)):
+            return Tribool(False)
+        if any(map(lambda x: x.agg_col.col_id == 0, query.order_by)):
             return Tribool(False)
 
         agg_present = False
