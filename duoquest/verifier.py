@@ -84,6 +84,14 @@ class DuoquestVerifier:
                 (query.has_group_by == TRUE and not query.done_group_by):
                 return False
 
+        # if subquery present and it's not completely finished
+        if any(map(lambda x: x.has_subquery == TRUE and \
+                not x.subquery.done_limit, query.where.predicates)):
+            return False
+        if any(map(lambda x: x.has_subquery == TRUE and \
+                not x.subquery.done_limit, query.having.predicates)):
+            return False
+
         return True
 
     def prune_by_row(self, db, schema, query, tsq):
