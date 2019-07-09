@@ -130,15 +130,19 @@ class DuoquestVerifier:
         if query.has_limit == FALSE and tsq.limit:
             return Tribool(False)
 
-        # see I2 in database.py:generate_tsq
         agg_present = False
         non_agg_present = False
         for agg_col in query.select:
             agg_present = agg_present or agg_col.has_agg == TRUE
             non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-            if agg_present and non_agg_present and query.has_group_by == FALSE:
-                return Tribool(False)
+        # see I2 in database.py:generate_tsq
+        if agg_present and non_agg_present and query.has_group_by == FALSE:
+            return Tribool(False)
+
+        # see I4 in database.py:generate_tsq
+        if agg_present != non_agg_present and query.has_group_by == TRUE:
+            return Tribool(False)
 
         return None
 

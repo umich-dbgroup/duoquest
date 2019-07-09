@@ -277,10 +277,10 @@ def where_clause_str(pq, schema, aliases, verify=None):
     return u'WHERE {}'.format(u' AND '.join(where_exprs))
 
 def group_by_clause_str(pq, schema, aliases):
-    group_by_exprs = ['GROUP BY']
+    group_by_cols = []
     for col_id in pq.group_by:
-        group_by_exprs.append(schema.get_aliased_col(aliases, col_id))
-    return u' '.join(group_by_exprs)
+        group_by_cols.append(schema.get_aliased_col(aliases, col_id))
+    return u'GROUP BY {}'.format(u', '.join(group_by_cols))
 
 def having_clause_str(pq, schema, aliases, verify=None):
     having_exprs = []
