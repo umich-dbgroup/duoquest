@@ -8,10 +8,10 @@ from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank
 
 class DuoquestServer:
-    def __init__(self, port, authkey, duoquest, out_path, gold_path, n, b):
+    def __init__(self, port, authkey, verifier, out_path, gold_path, n, b):
         self.port = port
         self.authkey = authkey
-        self.duoquest = duoquest
+        self.verifier = verifier
         self.out_path = out_path
         self.gold_path = gold_path
         self.n = n
@@ -110,7 +110,7 @@ class DuoquestServer:
             for query in protolist.queries:
                 result = Tribool(None)
                 if tsq is not None:
-                    result = self.duoquest.verify(db, schema, query, tsq)
+                    result = self.verifier.verify(db, schema, query, tsq)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)
