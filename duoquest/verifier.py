@@ -54,11 +54,12 @@ class DuoquestVerifier:
             else:                               # exact constraint
                 if agg_col.has_agg == TRUE:
                     pass                        # TODO
-                elif agg_col.has_agg == UNKNOWN:
-                    pass
-                else:
+                elif agg_col.has_agg == FALSE or \
+                    (tsq.types and tsq.types[pos] == 'text'):
                     if not db.has_exact(schema, agg_col.col_id, row[pos]):
                         return Tribool(False)
+                else:        # if aggregate is UNKNOWN
+                    pass
 
         return None
 
