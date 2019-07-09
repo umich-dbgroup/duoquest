@@ -1,5 +1,6 @@
 import argparse
 import configparser
+import json
 
 from duoquest.files import results_path
 from duoquest.external.eval import build_foreign_key_map_from_json, evaluate
