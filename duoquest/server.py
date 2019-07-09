@@ -110,9 +110,9 @@ class DuoquestServer:
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
 
-        print(f'Top 1: {top_1}/{total_Tasks}')
-        print(f'Top 5: {top_5}/{total_Tasks}')
-        print(f'Top 10: {top_10}/{total_Tasks}')
+        print(f'Top 1: {top_1}/{total_tasks}')
+        print(f'Top 5: {top_5}/{total_tasks}')
+        print(f'Top 10: {top_10}/{total_tasks}')
 
         f.close()
         gold_f.close()
