@@ -47,7 +47,7 @@ class DuoquestServer:
         return cqs
 
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        tid=None, compare=None):
+        tid=None, compare=None, kmaps=None):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
@@ -63,8 +63,10 @@ class DuoquestServer:
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
-                og_rank = correct_rank(db, task['db_id'], task['query'], cqs)
-                cm_rank = correct_rank(db, task['db_id'], task['query'], cm_cqs)
+                og_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
+                    cqs)
+                cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
+                    cm_cqs)
 
                 if cm_rank is not None:
                     if og_rank is None or og_rank > cm_rank:

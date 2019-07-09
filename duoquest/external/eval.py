@@ -507,7 +507,7 @@ def print_scores(n, scores, etype):
             this_scores = [scores[level]['partial'][type_]['f1'] for level in levels]
             print("{:20} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f}".format(type_, *this_scores))
 
-def correct_rank(db, db_name, g_str, p_strs):
+def correct_rank(db, db_name, kmaps, g_str, p_strs):
     db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
     schema = Schema(get_schema(db_path))
 

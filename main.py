@@ -12,9 +12,12 @@ from duoquest.server import DuoquestServer
 def load_schemas(schemas_path):
     schemas = {}
     schema_file = json.load(open(schemas_path))
+
+    kmaps = build_foreign_key_map_from_json(schema_file)
+
     for schema_info in schema_file:
         schemas[schema_info['db_id']] = Schema(schema_info)
-    return schemas
+    return schemas, kmaps
 
 def main():
     parser = argparse.ArgumentParser()
@@ -68,13 +71,13 @@ def main():
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_path,
         gold_path, args.n, args.b)
 
-    schemas = load_schemas(schemas_path)
+    schemas, kmaps = load_schemas(schemas_path)
     db = Database(db_path, args.dataset)
 
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
-        tid=args.tid, compare=args.compare)
+        tid=args.tid, compare=args.compare, kmaps=kmaps)
 
 if __name__ == '__main__':
     main()
