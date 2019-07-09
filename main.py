@@ -44,7 +44,7 @@ def main():
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('../config.ini')
+    config.read('config.ini')
 
     # Load dataset
     data = None

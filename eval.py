@@ -28,7 +28,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('../config.ini')
+    config.read('config.ini')
 
     if args.dataset == 'spider':
         db_dir = config['spider'][f'{args.mode}_db_path']
