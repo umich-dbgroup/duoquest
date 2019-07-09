@@ -244,7 +244,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
         predicates.append(pred_str)
 
     if predicates:
-        where_exprs.append('({})'.format(u' '.join(predicates)))
+        where_exprs.append(u'({})'.format(u' '.join(predicates)))
 
     if verify:
         verify_preds = []
@@ -268,9 +268,9 @@ def where_clause_str(pq, schema, aliases, verify=None):
                 verify_preds.append(
                     u' '.join([aliased_col, '=', str(tsq_const)])
                 )
-        where_exprs.append('({})'.format(u' '.join(verify_preds)))
+        where_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
-    return u'WHERE {}'.format(u' AND '.format(where_exprs))
+    return u'WHERE {}'.format(u' AND '.join(where_exprs))
 
 def group_by_clause_str(pq, schema, aliases):
     group_by_exprs = ['GROUP BY']
@@ -311,7 +311,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
         predicates.append(pred_str)
 
     if predicates:
-        having_exprs.append('({})'.format(u' '.join(predicates)))
+        having_exprs.append(u'({})'.format(u' '.join(predicates)))
 
     if verify:
         verify_preds = []
@@ -338,9 +338,9 @@ def having_clause_str(pq, schema, aliases, verify=None):
                 verify_preds.append(
                     u' '.join([having_col, '=', str(tsq_const)])
                 )
-        having_exprs.append('({})'.format(u' '.join(verify_preds)))
+        having_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
-    return u'WHERE {}'.format(u' AND '.format(having_exprs))
+    return u'WHERE {}'.format(u' AND '.join(having_exprs))
 
 def order_by_clause_str(pq, schema, aliases):
     order_by_exprs = ['ORDER BY']
