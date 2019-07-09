@@ -68,11 +68,13 @@ class DuoquestServer:
                 cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
                     cm_cqs)
 
+                print('{} rank: {}; {} rank: {}'.format(
+                    tsq_level, og_rank, compare, cm_rank
+                ))
+
                 if cm_rank is not None:
                     if og_rank is None or og_rank > cm_rank:
-                        print('Warning: {} rank: {} vs. {} rank: {}'.format(
-                            tsq_level, og_rank, compare, cm_rank
-                        ))
+                        raise Exception('Rank is lower than compare!')
 
             if cqs is None:         # invalid task
                 continue
