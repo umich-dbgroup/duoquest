@@ -60,6 +60,9 @@ class DuoquestServer:
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
                 tsq_level, tsq_rows)
 
+            if cqs is None:         # invalid task
+                continue
+
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
@@ -81,9 +84,7 @@ class DuoquestServer:
                         print()
                         raise Exception('Rank is lower than compare!')
 
-            if cqs is None:         # invalid task
-                continue
-            elif cqs:
+            if cqs:
                 f.write(u'\t'.join(cqs))
             else:
                 f.write('SELECT A FROM B')  # failure
