@@ -3,6 +3,7 @@ import configparser
 import json
 
 from duoquest.database import Database
+from duoquest.external.eval import build_foreign_key_map_from_json
 from duoquest.files import results_path
 from duoquest.verifier import DuoquestVerifier
 from duoquest.nlq_client import NLQClient
