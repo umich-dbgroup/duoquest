@@ -348,7 +348,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
                 ]))
         having_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
-    return u'WHERE {}'.format(u' AND '.join(having_exprs))
+    return u'HAVING {}'.format(u' AND '.join(having_exprs))
 
 def order_by_clause_str(pq, schema, aliases):
     order_by_exprs = ['ORDER BY']
