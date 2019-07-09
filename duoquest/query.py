@@ -254,14 +254,14 @@ def where_clause_str(pq, schema, aliases, verify=None):
             aliased_col = schema.get_aliased_col(aliases, agg_col.col_id)
             if isinstance(tsq_const, list):         # range constraint
                 verify_preds.append(
-                    u' '.join([aliased_col, '>=', tsq_const[0]])
+                    u' '.join([aliased_col, '>=', str(tsq_const[0])])
                 )
                 verify_preds.append(
-                    u' '.join([aliased_col, '<=', tsq_const[1]])
+                    u' '.join([aliased_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
                 verify_preds.append(
-                    u' '.join([aliased_col, '=', tsq_const])
+                    u' '.join([aliased_col, '=', str(tsq_const)])
                 )
         return u'WHERE ({}) AND ({})'.format(
             u' '.join(predicates), u' '.join(verify_preds)
@@ -321,14 +321,14 @@ def having_clause_str(pq, schema, aliases, verify=None):
             )
             if isinstance(tsq_const, list):         # range constraint
                 verify_preds.append(
-                    u' '.join([having_col, '>=', tsq_const[0]])
+                    u' '.join([having_col, '>=', str(tsq_const[0])])
                 )
                 verify_preds.append(
-                    u' '.join([having_col, '<=', tsq_const[1]])
+                    u' '.join([having_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
                 verify_preds.append(
-                    u' '.join([having_col, '=', tsq_const])
+                    u' '.join([having_col, '=', str(tsq_const)])
                 )
         return u'HAVING ({}) AND ({})'.format(
             u' '.join(predicates), u' '.join(verify_preds)
