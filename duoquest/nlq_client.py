@@ -1,6 +1,6 @@
 from multiprocessing.connection import Client
 
-from .task_pb2 import ProtoTask, ProtoCandidates
+from .proto.task_pb2 import ProtoTask, ProtoCandidates
 
 class NLQClient:
     def __init__(self, port, authkey, dataset, mode):
@@ -32,7 +32,10 @@ class NLQClient:
         msg = self.conn.recv_bytes()
         proto_cands = ProtoCandidates()
         proto_cands.ParseFromString(msg)
-        return list(proto_cands.cq)
+        return list(
+            map(lambda x: str(x).encode('unicode_escape').decode('utf-8'),
+                proto_cands.cq)
+        )
 
     def close(self):
         self.conn.send_bytes(b'close')

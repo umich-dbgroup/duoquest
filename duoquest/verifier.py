@@ -1,7 +1,7 @@
 from tribool import Tribool
 
 from .query import Query
-from .query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
+from .proto.query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
     NO_SET_OP, INTERSECT, EXCEPT, UNION
 
 def to_tribool_proto(proto_tribool):
@@ -12,7 +12,7 @@ def to_tribool_proto(proto_tribool):
     else:
         return Tribool(False)
 
-class Duoquest:
+class DuoquestVerifier:
     def __init__(self, use_cache=False):
         if use_cache:
             # TODO: initialize cache

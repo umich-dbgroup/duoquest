@@ -2,12 +2,12 @@ import argparse
 import configparser
 import json
 
-from modules.database import Database
-from modules.files import results_path
-from modules.duoquest import Duoquest
-from modules.nlq_client import NLQClient
-from modules.schema import Schema
-from modules.server import DuoquestServer
+from duoquest.database import Database
+from duoquest.files import results_path
+from duoquest.verifier import DuoquestVerifier
+from duoquest.nlq_client import NLQClient
+from duoquest.schema import Schema
+from duoquest.server import DuoquestServer
 
 def load_schemas(schemas_path):
     schemas = {}
@@ -37,10 +37,14 @@ def main():
     parser.add_argument('--cache', action='store_true', help='Enable cache')
     # parser.add_argument('--batch', action='store_true', help='Enable batching')
 
+    parser.add_argument('--compare', choices=['default', 'no_range',
+        'no_values', 'no_duoquest'], help='Compare results against this level')
+
+
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('../config.ini')
 
     # Load dataset
     data = None
@@ -70,7 +74,7 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
-        tid=args.tid)
+        tid=args.tid, compare=args.compare)
 
 if __name__ == '__main__':
     main()

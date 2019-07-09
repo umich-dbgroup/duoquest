@@ -27,10 +27,9 @@ import sqlite3
 import traceback
 import argparse
 
-from libs.process_sql import tokenize, get_schema, get_tables_with_alias, \
+from ..files import results_path
+from .process_sql import tokenize, get_schema, get_tables_with_alias, \
     Schema, get_sql, get_nestedSQL, wikisql_query_to_schema
-
-from modules.files import results_path
 
 # Flag to disable value evaluation
 DISABLE_VALUE = True
@@ -508,6 +507,36 @@ def print_scores(n, scores, etype):
             this_scores = [scores[level]['partial'][type_]['f1'] for level in levels]
             print("{:20} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f}".format(type_, *this_scores))
 
+def correct_rank(db, db_name, g_str, p_strs):
+    db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
+    schema = Schema(get_schema(db_path))
+
+    g_sql = get_sql(schema, g_str)
+    kmap = kmaps[db_name]
+    g_valid_col_units = build_valid_col_units(g_sql['from']['table_units'], schema)
+    g_sql = rebuild_sql_val(g_sql)
+    g_sql = rebuild_sql_col(g_valid_col_units, g_sql, kmap)
+
+    rank = None
+    for p_rank, p_str in enumerate(p_strs):
+        try:
+            p_str = p_str.replace("\"", "").replace("''", " ")
+            p_sql = get_sql(schema, p_str)
+
+            p_valid_col_units = build_valid_col_units(p_sql['from']['table_units'], schema)
+            p_sql = rebuild_sql_val(p_sql)
+            p_sql = rebuild_sql_col(p_valid_col_units, p_sql, kmap)
+
+            g_sql_copy = copy.deepcopy(g_sql)
+            exact_score = evaluator.eval_exact_match(p_sql, g_sql_copy)
+
+            if exact_score == 1:
+                rank = (p_rank + 1)
+                break
+        except Exception as e:
+            continue
+
+    return rank
 
 def evaluate(gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
     with open(gold) as f:
