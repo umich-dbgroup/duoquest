@@ -219,7 +219,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
             predicates.append(to_str_logical_op(pq.where.logical_op))
 
         where_val = None
-        if pred.has_subquery:
+        if pred.has_subquery == TRUE:
             where_val = u'({})'.format(
                 generate_sql_str(pred.subquery, schema,
                     alias_prefix='w{}'.format(i))
@@ -298,7 +298,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
         )
 
         having_val = None
-        if pred.has_subquery:
+        if pred.has_subquery == TRUE:
             having_val = '({})'.format(
                 generate_sql_str(pred.subquery, schema,
                     alias_prefix='h{}'.format(i))
