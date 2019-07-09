@@ -70,7 +70,9 @@ class DuoquestServer:
 
                 if cm_rank is not None:
                     if og_rank is None or og_rank > cm_rank:
-                        print('Warning: Task degraded vs. {compare}!')
+                        print('Warning: {} rank: {} vs. {} rank: {}'.format(
+                            tsq_level, og_rank, compare, cm_rank
+                        ))
 
             if cqs is None:         # invalid task
                 continue
