@@ -257,6 +257,8 @@ def where_clause_str(pq, schema, aliases, verify=None):
             assert(tsq_const is not None)
 
             aliased_col = schema.get_aliased_col(aliases, agg_col.col_id)
+            col_type = schema.get_col(agg_col.col_id).type
+
             if isinstance(tsq_const, list):         # range constraint
                 verify_preds.append(
                     u' '.join([aliased_col, '>=', str(tsq_const[0])])
@@ -265,9 +267,11 @@ def where_clause_str(pq, schema, aliases, verify=None):
                     u' '.join([aliased_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
-                verify_preds.append(
-                    u' '.join([aliased_col, '=', str(tsq_const)])
-                )
+                verify_preds.append(u' '.join([
+                    aliased_col,
+                    '=',
+                    format_literal(col_type, tsq_const)
+                ]))
         where_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
     return u'WHERE {}'.format(u' AND '.join(where_exprs))
@@ -323,6 +327,8 @@ def having_clause_str(pq, schema, aliases, verify=None):
             assert(agg_col.has_agg == TRUE)
             assert(tsq_const is not None)
 
+            col_type = schema.get_col(agg_col.col_id).type
+
             having_col = u'{}({})'.format(
                 to_str_agg(agg_col.agg),
                 schema.get_aliased_col(aliases, agg_col.col_id)
@@ -335,9 +341,11 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     u' '.join([having_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
-                verify_preds.append(
-                    u' '.join([having_col, '=', str(tsq_const)])
-                )
+                verify_preds.append(u' '.join([
+                    having_col,
+                    '=',
+                    format_literal(col_type, tsq_const)
+                ]))
         having_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
     return u'WHERE {}'.format(u' AND '.join(having_exprs))
@@ -362,6 +370,12 @@ def limit_clause_str(pq):
     if pq.limit == 0:       # if not set, default to 1
         pq.limit = 1
     return u'LIMIT {}'.format(pq.limit)
+
+def format_literal(type, literal):
+    if type == 'number':
+        return str(literal)
+
+    return f"'{literal}'"
 
 def verify_sql_str(pq, schema, tsq_row):
     verify_agg = []             # tuples: (agg_col, tsq constraint)
