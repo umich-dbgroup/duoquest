@@ -186,9 +186,9 @@ def from_clause_str(pq, schema, alias_prefix):
 
     return u' '.join(join_exprs), aliases
 
-def select_clause_str(pq, schema, aliases):
+def select_clause_str(pq, schema, aliases, select_aliases=None):
     projs = []
-    for agg_col in pq.select:
+    for i, agg_col in enumerate(pq.select):
         if agg_col.has_agg == TRUE:
             if agg_col.agg == COUNT and \
                 schema.get_col(agg_col.col_id).syn_name != '*':
@@ -201,6 +201,10 @@ def select_clause_str(pq, schema, aliases):
                     to_str_agg(agg_col.agg),
                     schema.get_aliased_col(aliases, agg_col.col_id)
                 )
+
+            if select_aliases:
+                proj_str = f'{proj_str} AS {select_aliases[i]}'
+
             projs.append(proj_str)
         else:
             projs.append(schema.get_aliased_col(aliases, agg_col.col_id))
@@ -409,22 +413,55 @@ def verify_sql_str(pq, schema, tsq_row):
     if from_clause is None:
         raise Exception('FROM clause not generated.')
 
-    clauses = []
-    clauses.append('SELECT 1')
-    clauses.append(from_clause)
-    if pq.has_where == TRUE or verify_non_agg:
-        clauses.append(where_clause_str(pq, schema, aliases,
-            verify=verify_non_agg))
-    if pq.has_group_by == TRUE:
-        clauses.append(group_by_clause_str(pq, schema, aliases))
-    if pq.has_having == TRUE or verify_agg:
-        clauses.append(having_clause_str(pq, schema, aliases,
-            verify=verify_agg))
-    clauses.append('LIMIT 1')
+    # Special Case: all aggregates and no group by, because SQLite does not
+    # permit HAVING clause without a GROUP BY
+    if verify_agg and not verify_non_agg and pq.has_group_by == FALSE:
+        select_aliases = []
+        where_preds = []
+        for i, item in enumerate(verify_agg):
+            select_alias = f's{i}'
+            select_aliases.append(select_alias)
 
-    return u' '.join(clauses)
+            agg_col, tsq_const = item
+            col_type = schema.get_col(agg_col.col_id).type
 
-def generate_sql_str(pq, schema, alias_prefix=None):
+            if isinstance(tsq_const, list):         # range constraint
+                where_preds.append(
+                    u' '.join([select_alias, '>=', str(tsq_const[0])])
+                )
+                where_preds.append(
+                    u' '.join([select_alias, '<=', str(tsq_const[1])])
+                )
+            else:                                   # exact constraint
+                where_preds.append(u' '.join([
+                    select_alias,
+                    '=',
+                    format_literal(col_type, tsq_const)
+                ]))
+
+        return 'SELECT 1 FROM ({}) WHERE {}'.format(
+            generate_sql_str(pq, schema, select_aliases=select_aliases),
+            u' AND '.join(where_preds)
+        )
+
+
+    else:
+        clauses = []
+        clauses.append('SELECT 1')
+        clauses.append(from_clause)
+        if pq.has_where == TRUE or verify_non_agg:
+            clauses.append(where_clause_str(pq, schema, aliases,
+                verify=verify_non_agg))
+        if pq.has_group_by == TRUE:
+            clauses.append(group_by_clause_str(pq, schema, aliases))
+        if pq.has_having == TRUE or verify_agg:
+            clauses.append(having_clause_str(pq, schema, aliases,
+                verify=verify_agg))
+        clauses.append('LIMIT 1')
+
+        return u' '.join(clauses)
+
+def generate_sql_str(pq, schema, alias_prefix=None, select_aliases=None):
     if pq.set_op != NO_SET_OP:
         set_op_str = None
         if pq.set_op == INTERSECT:
@@ -445,7 +482,8 @@ def generate_sql_str(pq, schema, alias_prefix=None):
         raise Exception('FROM clause not generated.')
 
     clauses = []
-    clauses.append(select_clause_str(pq, schema, aliases))
+    clauses.append(select_clause_str(pq, schema, aliases,
+        select_aliases=select_aliases))
     clauses.append(from_clause)
     if pq.has_where == TRUE:
         clauses.append(where_clause_str(pq, schema, aliases))
