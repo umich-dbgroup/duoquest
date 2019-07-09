@@ -1,4 +1,4 @@
-from query_pb2 import *
+from .proto.query_pb2 import *
 from .schema import JoinEdge
 
 def to_str_tribool(proto_tribool):
