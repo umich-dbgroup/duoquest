@@ -375,6 +375,9 @@ def format_literal(type, literal):
     if type == 'number':
         return str(literal)
 
+    # escape apostrophes
+    literal = literal.replace("'", "''")
+
     return f"'{literal}'"
 
 def verify_sql_str(pq, schema, tsq_row):
