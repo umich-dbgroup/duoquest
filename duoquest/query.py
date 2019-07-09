@@ -218,6 +218,8 @@ def where_clause_str(pq, schema, aliases, verify=None):
         if i != 0:
             predicates.append(to_str_logical_op(pq.where.logical_op))
 
+        col_type = schema.get_col(pred.col_id).type
+
         where_val = None
         if pred.has_subquery == TRUE:
             where_val = u'({})'.format(
@@ -230,11 +232,13 @@ def where_clause_str(pq, schema, aliases, verify=None):
 
             if pred.op in (IN, NOT_IN):
                 where_val = u"({})".format(
-                        u','.join(map(lambda x: format_literal(x), pred.value)))
+                    u','.join(
+                        map(lambda x: format_literal(col_type, x), pred.value)
+                    ))
             elif pred.op == BETWEEN:
                 where_val = u"{} AND {}".format(pred.value[0], pred.value[1])
             else:
-                where_val = format_literal(pred.value[0])
+                where_val = format_literal(col_type, pred.value[0])
 
         pred_str = u' '.join([
             schema.get_aliased_col(aliases, pred.col_id),
@@ -296,6 +300,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
             to_str_agg(pred.agg),
             schema.get_aliased_col(aliases, pred.col_id)
         )
+        col_type = schema.get_col(pred.col_id).type
 
         having_val = None
         if pred.has_subquery == TRUE:
@@ -305,11 +310,13 @@ def having_clause_str(pq, schema, aliases, verify=None):
             )
         elif pred.op in (IN, NOT_IN):
             having_val = u"({})".format(
-                    u','.join(map(lambda x: format_literal(x), pred.value)))
+                u','.join(
+                    map(lambda x: format_literal(col_type, x), pred.value)
+                ))
         elif pred.op == BETWEEN:
             having_val = u"{} AND {}".format(pred.value[0], pred.value[1])
         else:
-            having_val = format_literal(pred.value[0])
+            having_val = format_literal(col_type, pred.value[0])
 
         pred_str = u' '.join([having_col, to_str_op(pred.op), having_val])
         predicates.append(pred_str)
