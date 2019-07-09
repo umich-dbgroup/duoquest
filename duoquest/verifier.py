@@ -1,6 +1,6 @@
 from tribool import Tribool
 
-from .query import Query
+from .query import Query, verify_sql_str
 from .proto.query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
     NO_SET_OP, INTERSECT, EXCEPT, UNION
 
@@ -84,10 +84,19 @@ class DuoquestVerifier:
         return True
 
     def prune_by_row(self, db, schema, query, tsq):
-        # TODO: generate SQL query, but also add verification for TSQ values
-        pass
+        conn = db.get_conn(db_name=schema.db_id)
 
-        # TODO: if did not work, return Tribool(False)
+        for row in tsq.values:
+            cur = conn.get_cursor()
+            verify_q = verify_sql_str(query, schema, row)
+            print(f'VERIFY: {verify_q}')         # TODO: remove, for debugging
+            cur.execute(verify_q)
+
+            if not cur.fetchone():
+                return Tribool(False)
+
+            cur.close()
+        conn.close()
 
         return None
 
@@ -157,10 +166,9 @@ class DuoquestVerifier:
                 if check_values is not None:
                     return check_values
 
-        # TODO
-        # if can_check_values and self.ready_for_row_check(query, tsq):
-        #     check_row = self.prune_by_row(db, schema, query, tsq)
-        #     if check_row is not None:
-        #         return check_row
+        if can_check_values and self.ready_for_row_check(query, tsq):
+            check_row = self.prune_by_row(db, schema, query, tsq)
+            if check_row is not None:
+                return check_row
 
         return Tribool(None)        # return indeterminate
