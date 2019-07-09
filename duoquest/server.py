@@ -74,6 +74,11 @@ class DuoquestServer:
 
                 if cm_rank is not None:
                     if og_rank is None or og_rank > cm_rank:
+                        print('---- ORIGINAL ----')
+                        print(u'\n'.join(cqs))
+                        print('\n---- COMPARE ----')
+                        print(u'\n'.join(cm_cqs))
+                        print()
                         raise Exception('Rank is lower than compare!')
 
             if cqs is None:         # invalid task
