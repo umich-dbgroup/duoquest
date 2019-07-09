@@ -510,6 +510,7 @@ def print_scores(n, scores, etype):
 def correct_rank(db, db_name, kmaps, g_str, p_strs):
     db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
     schema = Schema(get_schema(db_path))
+    evaluator = Evaluator()
 
     g_sql = get_sql(schema, g_str)
     kmap = kmaps[db_name]
@@ -534,6 +535,7 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs):
                 rank = (p_rank + 1)
                 break
         except Exception as e:
+            print(traceback.format_exc())
             continue
 
     return rank
