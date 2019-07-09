@@ -90,8 +90,8 @@ message Predicate {
 
 // ENUMERATIONS
 enum Tribool {
-  FALSE = 0;
-  UNKNOWN = 1;
+  UNKNOWN = 0;                // UNKNOWN is default initial state
+  FALSE = 1;
   TRUE = 2;
 }
 
