@@ -420,11 +420,12 @@ def verify_sql_str(pq, schema, tsq_row):
         where_preds = []
         for i, agg_col in enumerate(pq.select):
             tsq_const = tsq_row[i]
-            if tsq_const is None:
-                continue
 
             select_alias = f's{i}'
             select_aliases.append(select_alias)
+
+            if tsq_const is None:
+                continue
 
             col_type = schema.get_col(agg_col.col_id).type
 
