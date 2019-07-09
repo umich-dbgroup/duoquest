@@ -51,6 +51,12 @@ class DuoquestServer:
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
+
+        top_1 = 0
+        top_5 = 0
+        top_10 = 0
+        total_tasks = 0
+
         for i, task in enumerate(tasks):
             task_id = i+1
             if tid and task_id != tid:
@@ -63,11 +69,18 @@ class DuoquestServer:
             if cqs is None:         # invalid task
                 continue
 
+            og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs)
+            total_tasks += 1
+            if og_rank == 1:
+                top_1 += 1
+            if og_rank <= 5:
+                top_5 += 1
+            if og_rank <= 10:
+                top_10 += 1
+
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
-                og_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
-                    cqs)
                 cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
                     cm_cqs)
 
@@ -93,6 +106,11 @@ class DuoquestServer:
             gold_f.write(task['query'])
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
+
+        print(f'Top 1: {top_1}/{total_Tasks}')
+        print(f'Top 5: {top_5}/{total_Tasks}')
+        print(f'Top 10: {top_10}/{total_Tasks}')
+        
         f.close()
         gold_f.close()
         nlqc.close()
