@@ -374,7 +374,7 @@ def verify_sql_str(pq, schema, tsq_row):
     if not verify_agg and not verify_non_agg:
         return None         # nothing to verify!
 
-    from_clause, aliases = from_clause_str(pq, schema, alias_prefix)
+    from_clause, aliases = from_clause_str(pq, schema, None)
     if from_clause is None:
         raise Exception('FROM clause not generated.')
 
