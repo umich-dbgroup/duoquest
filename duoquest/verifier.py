@@ -1,8 +1,7 @@
 from tribool import Tribool
 
 from .query import Query, verify_sql_str
-from .proto.query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
-    NO_SET_OP, INTERSECT, EXCEPT, UNION
+from .proto.query_pb2 import *
 
 def to_tribool_proto(proto_tribool):
     if proto_tribool == UNKNOWN:
@@ -117,7 +116,7 @@ class DuoquestVerifier:
         else:
             return None              # nothing to prune
 
-    def prune_by_semantics(self, query):
+    def prune_by_semantics(self, schema, query):
         if query.set_op != NO_SET_OP:
             left = self.prune_by_semantics(query.left)
             right = self.prune_by_semantics(query.right)
@@ -126,20 +125,32 @@ class DuoquestVerifier:
                 return Tribool(False)
 
         for pred in query.where.predicates:
+            if pred.col_id == 0:        # cannot have * in where
+                return Tribool(False)
+
+            # type-check ops for predicates
+            col_type = schema.get_col(pred.col_id).type
+            if col_type == 'text' and pred.op not in (EQUALS, LIKE, IN, NOT_IN):
+                return Tribool(False)
+            if col_type == 'number' and pred.op == LIKE:
+                return Tribool(False)
+
             if pred.has_subquery == TRUE:
                 subq = self.prune_by_semantics(pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
         for pred in query.having.predicates:
+            # type check ops; for having, it is always numbers
+            if pred.op == LIKE:
+                return Tribool(False)
+
             if pred.has_subquery == TRUE:
                 subq = self.prune_by_semantics(pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
-        # ensure there are no * in where, group by, order by
-        if any(map(lambda x: x.col_id == 0, query.where.predicates)):
-            return Tribool(False)
+        # ensure there are no * in group by, order by
         if any(map(lambda x: x == 0, query.group_by)):
             return Tribool(False)
         if any(map(lambda x: x.agg_col.col_id == 0, query.order_by)):
@@ -196,7 +207,7 @@ class DuoquestVerifier:
         if not query.select:        # hasn't even started with select
             return Tribool(None)
 
-        check_semantics = self.prune_by_semantics(query)
+        check_semantics = self.prune_by_semantics(schema, query)
         if check_semantics is not None:
             return check_semantics
 
