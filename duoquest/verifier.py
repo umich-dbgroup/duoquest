@@ -145,6 +145,9 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
+                # cannot have BETWEEN op with subqueries
+                if pred.op == BETWEEN:
+                    return Tribool(False)
                 subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
@@ -155,6 +158,9 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
+                # cannot have BETWEEN op with subqueries
+                if pred.op == BETWEEN:
+                    return Tribool(False)
                 subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
