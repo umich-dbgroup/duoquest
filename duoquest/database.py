@@ -139,7 +139,7 @@ class Database(object):
             return None
 
         for pred in sql['where']:
-            if isinstance(pred, tuple):
+            if isinstance(pred, list):
                 op_id = pred[1]
                 col_id = pred[2][1][1]
 
@@ -155,7 +155,7 @@ class Database(object):
                     return None
 
         for pred in sql['having']:
-            if isinstance(pred, tuple):
+            if isinstance(pred, list):
                 op_id = pred[1]
 
                 # 9 == LIKE
