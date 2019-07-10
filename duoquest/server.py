@@ -69,8 +69,7 @@ class DuoquestServer:
             if cqs is None:         # invalid task
                 continue
 
-            og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs,
-                enforce_select_order=(tsq_level != 'no_duoquest'))
+            og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs)
             all_tasks += 1
             if og_rank:
                 if og_rank == 1:
@@ -84,7 +83,7 @@ class DuoquestServer:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
                 cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
-                    cm_cqs, enforce_select_order=(compare != 'no_duoquest'))
+                    cm_cqs)
 
                 print('\n{} RANK: {}\n{} RANK: {}\n'.format(
                     tsq_level, og_rank, compare, cm_rank
