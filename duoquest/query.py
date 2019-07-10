@@ -364,7 +364,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
 def order_by_clause_str(pq, schema, aliases):
     order_by_exprs = ['ORDER BY']
     for ordered_col in pq.order_by:
-        if ordered_col.agg_col.has_agg:
+        if ordered_col.agg_col.has_agg == TRUE:
             order_by_exprs.append('{}({}) {}'.format(
                 to_str_agg(ordered_col.agg_col.agg),
                 schema.get_aliased_col(aliases, ordered_col.agg_col.col_id),
