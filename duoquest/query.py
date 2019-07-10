@@ -446,7 +446,8 @@ def verify_sql_str(pq, schema, tsq_row):
                 ]))
 
         return 'SELECT 1 FROM ({}) WHERE {}'.format(
-            generate_sql_str(pq, schema, select_aliases=select_aliases),
+            generate_sql_str(pq, schema, select_aliases=select_aliases,
+                no_order_by=True),
             u' AND '.join(where_preds)
         )
 
@@ -467,7 +468,8 @@ def verify_sql_str(pq, schema, tsq_row):
 
         return u' '.join(clauses)
 
-def generate_sql_str(pq, schema, alias_prefix=None, select_aliases=None):
+def generate_sql_str(pq, schema, alias_prefix=None, select_aliases=None,
+    no_order_by=False):
     if pq.set_op != NO_SET_OP:
         set_op_str = None
         if pq.set_op == INTERSECT:
@@ -497,9 +499,9 @@ def generate_sql_str(pq, schema, alias_prefix=None, select_aliases=None):
         clauses.append(group_by_clause_str(pq, schema, aliases))
     if pq.has_having == TRUE:
         clauses.append(having_clause_str(pq, schema, aliases))
-    if pq.has_order_by == TRUE:
+    if pq.has_order_by == TRUE and not no_order_by:
         clauses.append(order_by_clause_str(pq, schema, aliases))
-    if pq.has_limit == TRUE:
+    if pq.has_limit == TRUE and not no_order_by:
         clauses.append(limit_clause_str(pq))
 
     return u' '.join(clauses)
