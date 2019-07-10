@@ -1,3 +1,5 @@
+from numbers import Number
+
 from .proto.query_pb2 import *
 from .schema import JoinEdge
 
@@ -391,7 +393,7 @@ def limit_clause_str(pq):
     return u'LIMIT {}'.format(pq.limit)
 
 def format_literal(type, literal):
-    if type == 'number' or isinstance(literal, int):
+    if type == 'number' or isinstance(literal, Number):
         return str(literal)
 
     # escape apostrophes
