@@ -55,7 +55,7 @@ class DuoquestServer:
         top_1 = 0
         top_5 = 0
         top_10 = 0
-        total_tasks = 0
+        all_tasks = 0
 
         for i, task in enumerate(tasks):
             task_id = i+1
@@ -70,7 +70,7 @@ class DuoquestServer:
                 continue
 
             og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs)
-            total_tasks += 1
+            all_tasks += 1
             if og_rank:
                 if og_rank == 1:
                     top_1 += 1
@@ -110,9 +110,9 @@ class DuoquestServer:
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
 
-        print(f'Top 1: {top_1}/{total_tasks} ({(top_1/total_tasks):.2f}%)')
-        print(f'Top 5: {top_5}/{total_tasks} ({(top_5/total_tasks):.2f}%)')
-        print(f'Top 10: {top_10}/{total_tasks} ({(top_10/total_tasks):.2f}%)')
+        print(f'Top 1: {top_1}/{all_tasks} ({(top_1/all_tasks*100):.2f}%)')
+        print(f'Top 5: {top_5}/{all_tasks} ({(top_5/all_tasks*100):.2f}%)')
+        print(f'Top 10: {top_10}/{all_tasks} ({(top_10/all_tasks*100):.2f}%)')
 
         f.close()
         gold_f.close()
