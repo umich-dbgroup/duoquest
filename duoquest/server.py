@@ -47,7 +47,7 @@ class DuoquestServer:
         return cqs
 
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        tid=None, compare=None, kmaps=None):
+        tid=None, compare=None, kmaps=None, start_tid=None):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
@@ -60,6 +60,8 @@ class DuoquestServer:
         for i, task in enumerate(tasks):
             task_id = i+1
             if tid and task_id != tid:
+                continue
+            if start_tid and task_id < start_tid:
                 continue
 
             schema = schemas[task['db_id']]
