@@ -2,7 +2,7 @@ from tribool import Tribool
 
 from .query import Query, verify_sql_str
 from .proto.query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
-    NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, LIKE, IN, NOT_IN, BETWEEN
+    NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, NEQ, LIKE, IN, NOT_IN, BETWEEN
 
 def to_tribool_proto(proto_tribool):
     if proto_tribool == UNKNOWN:
