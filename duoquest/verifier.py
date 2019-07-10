@@ -184,29 +184,33 @@ class DuoquestVerifier:
             x.agg_col.agg != COUNT and x.agg_col.col_id == 0, query.order_by)):
             return Tribool(False)
 
-        agg_present = False
-        non_agg_present = False
-        for agg_col in query.select:
-            agg_present = agg_present or agg_col.has_agg == TRUE
-            non_agg_present = non_agg_present or agg_col.has_agg == FALSE
+        if query.done_select:
+            agg_present = False
+            non_agg_present = False
+            for agg_col in query.select:
+                agg_present = agg_present or agg_col.has_agg == TRUE
+                non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-        # see I2 in database.py:generate_tsq
-        if agg_present and non_agg_present and query.has_group_by == FALSE:
-            return Tribool(False)
+            # see I2 in database.py:generate_tsq
+            if agg_present and non_agg_present \
+                and query.has_group_by == FALSE:
+                return Tribool(False)
 
-        # see I4 in database.py:generate_tsq
-        if not agg_present and non_agg_present and query.has_group_by == TRUE:
-            if query.has_having == FALSE:
-                if query.has_order_by == FALSE:
-                    return Tribool(False)
-                elif query.has_order_by == TRUE and query.done_order_by and \
-                    not any(map(lambda x: x.agg_col.has_agg == TRUE,
-                        query.order_by)):
-                    return Tribool(False)
+            # see I4 in database.py:generate_tsq
+            if not agg_present and non_agg_present \
+                and query.has_group_by == TRUE:
+                if query.has_having == FALSE:
+                    if query.has_order_by == FALSE:
+                        return Tribool(False)
+                    elif query.has_order_by == TRUE and query.done_order_by \
+                        and not any(map(lambda x: x.agg_col.has_agg == TRUE,
+                            query.order_by)):
+                        return Tribool(False)
 
-        # see I5 in database.py:generate_tsq
-        if agg_present and not non_agg_present and query.has_group_by == TRUE:
-            return Tribool(False)
+            # see I5 in database.py:generate_tsq
+            if agg_present and not non_agg_present \
+                and query.has_group_by == TRUE:
+                return Tribool(False)
 
         return None
 
