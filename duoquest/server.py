@@ -90,8 +90,8 @@ class DuoquestServer:
                 ))
 
                 if cm_rank is not None:
-                    if og_rank is None or
-                        (cm_rank == 1 and og_rank > 1) or
+                    if og_rank is None or \
+                        (cm_rank == 1 and og_rank > 1) or \
                         (cm_rank <= 5 and og_rank > 5):
                         print('---- ORIGINAL ----')
                         print(u'\n'.join(cqs))
