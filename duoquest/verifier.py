@@ -121,6 +121,7 @@ class DuoquestVerifier:
                 return Tribool(False)
 
         for agg_col in query.select:
+            col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
                 # for * and text columns, only allow COUNT agg
                 if agg_col.agg != COUNT and \
