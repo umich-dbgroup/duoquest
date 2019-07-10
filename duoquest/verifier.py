@@ -66,6 +66,14 @@ class DuoquestVerifier:
 
         return None
 
+    def predicate_complete(self, pred):
+        if pred.has_subquery == UNKNOWN:
+            return False
+        elif pred.has_subquery == TRUE:
+            return pred.subquery.done_limit
+        else:
+            return len(pred.value) > 0
+
     def ready_for_row_check(self, query, tsq):
         # query must have same # of columns as TSQ
         if tsq.num_cols != len(query.select):
@@ -84,12 +92,12 @@ class DuoquestVerifier:
                 (query.has_group_by == TRUE and not query.done_group_by):
                 return False
 
-        # if subquery present and it's not completely finished
-        if any(map(lambda x: x.has_subquery == TRUE and \
-                not x.subquery.done_limit, query.where.predicates)):
+        # all predicates must be complete if present
+        if any(map(lambda x: not self.predicate_complete(x),
+            query.where.predicates)):
             return False
-        if any(map(lambda x: x.has_subquery == TRUE and \
-                not x.subquery.done_limit, query.having.predicates)):
+        if any(map(lambda x: not self.predicate_complete(x),
+            query.having.predicates)):
             return False
 
         return True
