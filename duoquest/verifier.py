@@ -119,8 +119,8 @@ class DuoquestVerifier:
 
     def prune_by_semantics(self, schema, query):
         if query.set_op != NO_SET_OP:
-            left = self.prune_by_semantics(query.left)
-            right = self.prune_by_semantics(query.right)
+            left = self.prune_by_semantics(schema, query.left)
+            right = self.prune_by_semantics(schema, query.right)
 
             if left is not None or right is not None:
                 return Tribool(False)
@@ -137,7 +137,7 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                subq = self.prune_by_semantics(pred.subquery)
+                subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
@@ -147,7 +147,7 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                subq = self.prune_by_semantics(pred.subquery)
+                subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
