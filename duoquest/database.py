@@ -63,9 +63,10 @@ class Database(object):
     # I2. Do not permit tasks where there is (a) a non-aggregated projection;
     #     (b) an aggregated projection; and (c) no GROUP BY.
     # I3. Do not permit tasks with * projection without COUNT.
-    # I4. Do not permit tasks with a GROUP BY when there are either:
-    #     (a) only non-agg projections; (b) only agg projections, and there
-    #     are no aggregates in ORDER BY.
+    # I4. Do not permit tasks with a GROUP BY when there are only
+    #     non-agg projections and no aggregates in ORDER BY or HAVING.
+    # I5. Do not permit tasks with a GROUP BY when there are only agg
+    #     projections.
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
@@ -121,11 +122,17 @@ class Database(object):
             return None
 
         # check I4
-        if agg_present != non_agg_present \
+        if agg_present == False and non_agg_present == True \
             and not ('orderBy' in sql and sql['orderBy'] \
                 and any(map(lambda x: x[1][0] > 0, sql['orderBy'][1]))) \
-            and 'groupBy' in sql and sql['groupBy']:
+            and not ('having' in sql and sql['having']):
             print('Failed I4.')
+            return None
+
+        # check I5
+        if agg_present == True and non_agg_present == False and \
+            'groupBy' in sql and sql['groupBy']:
+            print('Failed I5.')
             return None
 
         tsq = TableSketchQuery(len(types),
