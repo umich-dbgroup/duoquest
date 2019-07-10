@@ -464,12 +464,12 @@ def verify_sql_str(pq, schema, tsq_row):
         clauses = []
         clauses.append('SELECT 1')
         clauses.append(from_clause)
-        if pq.has_where == TRUE or verify_non_agg:
+        if (pq.has_where == TRUE and pq.where.predicates) or verify_non_agg:
             clauses.append(where_clause_str(pq, schema, aliases,
                 verify=verify_non_agg))
         if pq.has_group_by == TRUE:
             clauses.append(group_by_clause_str(pq, schema, aliases))
-        if pq.has_having == TRUE or verify_agg:
+        if (pq.has_having == TRUE and pq.having.predicates) or verify_agg:
             clauses.append(having_clause_str(pq, schema, aliases,
                 verify=verify_agg))
         clauses.append('LIMIT 1')
@@ -501,11 +501,11 @@ def generate_sql_str(pq, schema, alias_prefix=None, select_aliases=None,
     clauses.append(select_clause_str(pq, schema, aliases,
         select_aliases=select_aliases))
     clauses.append(from_clause)
-    if pq.has_where == TRUE:
+    if pq.has_where == TRUE and pq.where.predicates:
         clauses.append(where_clause_str(pq, schema, aliases))
     if pq.has_group_by == TRUE:
         clauses.append(group_by_clause_str(pq, schema, aliases))
-    if pq.has_having == TRUE:
+    if pq.has_having == TRUE and pq.having.predicates:
         clauses.append(having_clause_str(pq, schema, aliases))
     if pq.has_order_by == TRUE and not no_order_by:
         clauses.append(order_by_clause_str(pq, schema, aliases))
