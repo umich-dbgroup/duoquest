@@ -150,7 +150,8 @@ class DuoquestVerifier:
 
             # type-check ops for predicates
             col_type = schema.get_col(pred.col_id).type
-            if col_type == 'text' and pred.op not in (EQUALS, LIKE, IN, NOT_IN):
+            if col_type == 'text' and \
+                pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
                 return Tribool(False)
             if col_type == 'number' and pred.op == LIKE:
                 return Tribool(False)
