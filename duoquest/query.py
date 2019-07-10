@@ -362,20 +362,20 @@ def having_clause_str(pq, schema, aliases, verify=None):
     return u'HAVING {}'.format(u' AND '.join(having_exprs))
 
 def order_by_clause_str(pq, schema, aliases):
-    order_by_exprs = ['ORDER BY']
+    order_by_cols = []
     for ordered_col in pq.order_by:
         if ordered_col.agg_col.has_agg == TRUE:
-            order_by_exprs.append('{}({}) {}'.format(
+            order_by_cols.append('{}({}) {}'.format(
                 to_str_agg(ordered_col.agg_col.agg),
                 schema.get_aliased_col(aliases, ordered_col.agg_col.col_id),
                 to_str_dir(ordered_col.dir)
             ))
         else:
-            order_by_exprs.append('{} {}'.format(
+            order_by_cols.append('{} {}'.format(
                 schema.get_aliased_col(aliases, ordered_col.agg_col.col_id),
                 to_str_dir(ordered_col.dir)
             ))
-    return u' '.join(order_by_exprs)
+    return u'ORDER BY {}'.format(u', '.join(order_by_cols))
 
 def limit_clause_str(pq):
     if pq.limit == 0:       # if not set, default to 1
