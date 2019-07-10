@@ -385,7 +385,7 @@ def limit_clause_str(pq):
     return u'LIMIT {}'.format(pq.limit)
 
 def format_literal(has_agg, type, literal):
-    if has_agg == TRUE or type == 'number':
+    if has_agg == TRUE or type == 'number' or isinstance(literal, int):
         return str(literal)
 
     # escape apostrophes
