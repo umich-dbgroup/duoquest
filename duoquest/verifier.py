@@ -117,18 +117,27 @@ class DuoquestVerifier:
         else:
             return None              # nothing to prune
 
-    def prune_by_structure(self, query, tsq):
-        # check order by
-        if query.has_order_by == TRUE and not tsq.order:
-            return Tribool(False)
-        if query.has_order_by == FALSE and tsq.order:
-            return Tribool(False)
+    def prune_by_semantics(self, query):
+        if query.set_op != NO_SET_OP:
+            left = self.prune_by_semantics(query.left)
+            right = self.prune_by_semantics(query.right)
 
-        # check limit
-        if query.has_limit == TRUE and not tsq.limit:
-            return Tribool(False)
-        if query.has_limit == FALSE and tsq.limit:
-            return Tribool(False)
+            if left.value == False or right.value == False:
+                return Tribool(False)
+            else:
+                return None
+
+        for pred in query.where.predicates:
+            if pred.has_subquery == TRUE:
+                subq = self.prune_by_semantics(pred.subquery)
+                if subq.value == False:
+                    return Tribool(False)
+
+        for pred in query.having.predicates:
+            if pred.has_subquery == TRUE:
+                subq = self.prune_by_semantics(pred.subquery)
+                if subq.value == False:
+                    return Tribool(False)
 
         # ensure there are no * in where, group by, order by
         if any(map(lambda x: x.col_id == 0, query.where.predicates)):
@@ -154,6 +163,21 @@ class DuoquestVerifier:
 
         return None
 
+    def prune_by_clauses(self, query, tsq):
+        # check order by
+        if query.has_order_by == TRUE and not tsq.order:
+            return Tribool(False)
+        if query.has_order_by == FALSE and tsq.order:
+            return Tribool(False)
+
+        # check limit
+        if query.has_limit == TRUE and not tsq.limit:
+            return Tribool(False)
+        if query.has_limit == FALSE and tsq.limit:
+            return Tribool(False)
+
+        return None
+
     def verify(self, db, schema, query, tsq, set_op=NO_SET_OP, lr=None):
         if query.set_op != NO_SET_OP:
             left = self.verify(db, schema, query.left, tsq, set_op=query.set_op,
@@ -165,14 +189,18 @@ class DuoquestVerifier:
             else:
                 return Tribool(None)
 
-        # only check structure if not child of a set op
+        # only check clauses if not child of a set op
         if lr is None:
-            check_structure = self.prune_by_structure(query, tsq)
-            if check_structure is not None:
-                return check_structure
+            check_clauses = self.prune_by_clauses(query, tsq)
+            if check_clauses is not None:
+                return check_clauses
 
         if not query.select:        # hasn't even started with select
             return Tribool(None)
+
+        check_semantics = self.prune_by_semantics(query)
+        if check_semantics is not None:
+            return check_semantics
 
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
