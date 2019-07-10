@@ -122,21 +122,19 @@ class DuoquestVerifier:
             left = self.prune_by_semantics(query.left)
             right = self.prune_by_semantics(query.right)
 
-            if left.value == False or right.value == False:
+            if left is not None or right is not None:
                 return Tribool(False)
-            else:
-                return None
 
         for pred in query.where.predicates:
             if pred.has_subquery == TRUE:
                 subq = self.prune_by_semantics(pred.subquery)
-                if subq.value == False:
+                if subq is not None:
                     return Tribool(False)
 
         for pred in query.having.predicates:
             if pred.has_subquery == TRUE:
                 subq = self.prune_by_semantics(pred.subquery)
-                if subq.value == False:
+                if subq is not None:
                     return Tribool(False)
 
         # ensure there are no * in where, group by, order by
