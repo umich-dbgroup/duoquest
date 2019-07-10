@@ -67,6 +67,8 @@ class Database(object):
     #     non-agg projections and no aggregates in ORDER BY or HAVING.
     # I5. Do not permit tasks with a GROUP BY when there are only agg
     #     projections.
+    # I6. Do not permit tasks where operators are incorrectly applied to a
+    #     column with the wrong type.
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
@@ -135,6 +137,31 @@ class Database(object):
             'groupBy' in sql and sql['groupBy']:
             print('Failed I5.')
             return None
+
+        for pred in sql['where']:
+            if isinstance(pred, tuple):
+                op_id = pred[1]
+                col_id = pred[2][1][1]
+
+                col_type = schema.get_col(col_id).type
+                # 1, 3, 4, 5, 6 = BETWEEN, >, <, >=, <=
+                if col_type == 'text' and op_id in (1, 3, 4, 5, 6):
+                    print('Failed I6.')
+                    return None
+
+                # 9 == LIKE
+                if col_type == 'number' and op_id == 9:
+                    print('Failed I6.')
+                    return None
+
+        for pred in sql['having']:
+            if isinstance(pred, tuple):
+                op_id = pred[1]
+
+                # 9 == LIKE
+                if op_id == 9:
+                    print('Failed I6.')
+                    return None.
 
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)

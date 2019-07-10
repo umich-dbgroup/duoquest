@@ -148,7 +148,7 @@ class DuoquestVerifier:
             if pred.col_id == 0:        # cannot have * in where
                 return Tribool(False)
 
-            # type-check ops for predicates
+            # see I6 in database.py:generate_tsq
             col_type = schema.get_col(pred.col_id).type
             if col_type == 'text' and \
                 pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
@@ -165,7 +165,7 @@ class DuoquestVerifier:
                     return Tribool(False)
 
         for pred in query.having.predicates:
-            # type check ops; for having, it is always numbers
+            # see I6 in database.py:generate_tsq
             if pred.op == LIKE:
                 return Tribool(False)
 
