@@ -161,7 +161,7 @@ class Database(object):
                 # 9 == LIKE
                 if op_id == 9:
                     print('Failed I6.')
-                    return None.
+                    return None
 
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)
