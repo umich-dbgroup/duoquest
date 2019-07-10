@@ -181,7 +181,17 @@ class DuoquestVerifier:
             return Tribool(False)
 
         # see I4 in database.py:generate_tsq
-        if agg_present != non_agg_present and query.has_group_by == TRUE:
+        if not agg_present and non_agg_present and query.has_group_by == TRUE:
+            if query.has_having == FALSE:
+                if query.has_order_by == FALSE:
+                    return Tribool(False)
+                elif query.has_order_by == TRUE and query.done_order_by and \
+                    not any(map(lambda x: x.agg_col.has_agg == TRUE,
+                        query.order_by)):
+                    return Tribool(False)
+
+        # see I5 in database.py:generate_tsq
+        if agg_present and not non_agg_present and query.has_group_by == TRUE:
             return Tribool(False)
 
         return None

@@ -122,7 +122,7 @@ class Database(object):
             return None
 
         # check I4
-        if agg_present == False and non_agg_present == True \
+        if not agg_present and non_agg_present \
             and 'groupBy' in sql and sql['groupBy'] \
             and not ('orderBy' in sql and sql['orderBy'] \
                 and any(map(lambda x: x[1][0] > 0, sql['orderBy'][1]))) \
@@ -131,7 +131,7 @@ class Database(object):
             return None
 
         # check I5
-        if agg_present == True and non_agg_present == False and \
+        if agg_present and not non_agg_present and \
             'groupBy' in sql and sql['groupBy']:
             print('Failed I5.')
             return None
