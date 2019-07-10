@@ -174,10 +174,12 @@ class DuoquestVerifier:
                 if subq is not None:
                     return Tribool(False)
 
-        # ensure there are no * in group by, order by
+        # ensure there are no * in group by
         if any(map(lambda x: x == 0, query.group_by)):
             return Tribool(False)
-        if any(map(lambda x: x.agg_col.col_id == 0, query.order_by)):
+        # ensure there are no * without COUNT()
+        if any(map(lambda x: x.agg_col.has_agg != UNKNOWN and \
+            x.agg_col.agg != COUNT and x.agg_col.col_id == 0, query.order_by)):
             return Tribool(False)
 
         agg_present = False
