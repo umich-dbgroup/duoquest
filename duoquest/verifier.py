@@ -70,22 +70,23 @@ class DuoquestVerifier:
         if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
             return False
 
-        # if query contains any aggregate, then both WHERE and GROUP BY
-        # must be done, if present.
-        if any(map(lambda x: x.has_agg == TRUE, query.select)):
-            if query.has_where == UNKNOWN or \
-                (query.has_where == TRUE and not query.done_where) or \
-                query.has_group_by == UNKNOWN or \
-                (query.has_group_by == TRUE and not query.done_group_by):
-                return False
-
-        # all predicates must be complete if present
+        # all WHERE/HAVING predicates must be complete if present
         if any(map(lambda x: not self.predicate_complete(x),
             query.where.predicates)):
             return False
         if any(map(lambda x: not self.predicate_complete(x),
             query.having.predicates)):
             return False
+
+        # if GROUP BY is present, must be done
+        if query.has_group_by == TRUE and not query.done_group_by:
+            return False
+
+        # if query contains any aggregate, then WHERE must be done if present
+        if any(map(lambda x: x.has_agg == TRUE, query.select)):
+            if query.has_where == UNKNOWN or \
+                (query.has_where == TRUE and not query.done_where)
+                return False
 
         return True
 
