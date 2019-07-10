@@ -111,7 +111,7 @@ def get_scores(count, pred_total, label_total):
     return 0,0,0
 
 
-def eval_sel(pred, label):
+def eval_sel(pred, label, enforce_select_order=None):
     pred_sel = pred['select'][1]
     label_sel = label['select'][1]
     label_wo_agg = [unit[1] for unit in label_sel]
@@ -120,13 +120,19 @@ def eval_sel(pred, label):
     cnt = 0
     cnt_wo_agg = 0
 
-    for unit in pred_sel:
-        if unit in label_sel:
-            cnt += 1
-            label_sel.remove(unit)
-        if unit[1] in label_wo_agg:
-            cnt_wo_agg += 1
-            label_wo_agg.remove(unit[1])
+    for i, unit in enumerate(pred_sel):
+        if enforce_select_order:
+            if unit == label_sel[i]:
+                cnt += 1
+            if unit[1] == label_wo_agg[i]:
+                cnt_wo_agg += 1
+        else:
+            if unit in label_sel:
+                cnt += 1
+                label_sel.remove(unit)
+            if unit[1] in label_wo_agg:
+                cnt_wo_agg += 1
+                label_wo_agg.remove(unit[1])
 
     return label_total, pred_total, cnt, cnt_wo_agg
 
@@ -342,8 +348,9 @@ def count_others(sql):
 
 class Evaluator:
     """A simple evaluator"""
-    def __init__(self):
+    def __init__(self, enforce_select_order=None):
         self.partial_scores = None
+        self.enforce_select_order = enforce_select_order
 
     def eval_hardness(self, sql):
         # cjbaik: 2019/02/15. change hardness mechanism
@@ -423,7 +430,8 @@ class Evaluator:
     def eval_partial_match(self, pred, label):
         res = {}
 
-        label_total, pred_total, cnt, cnt_wo_agg = eval_sel(pred, label)
+        label_total, pred_total, cnt, cnt_wo_agg = eval_sel(pred, label,
+            enforce_select_order=self.enforce_select_order)
         acc, rec, f1 = get_scores(cnt, pred_total, label_total)
         res['select'] = {'acc': acc, 'rec': rec, 'f1': f1,'label_total':label_total,'pred_total':pred_total}
         acc, rec, f1 = get_scores(cnt_wo_agg, pred_total, label_total)
@@ -507,10 +515,10 @@ def print_scores(n, scores, etype):
             this_scores = [scores[level]['partial'][type_]['f1'] for level in levels]
             print("{:20} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f}".format(type_, *this_scores))
 
-def correct_rank(db, db_name, kmaps, g_str, p_strs):
+def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
     db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
     schema = Schema(get_schema(db_path))
-    evaluator = Evaluator()
+    evaluator = Evaluator(enforce_select_order=enforce_select_order)
 
     g_sql = get_sql(schema, g_str)
     kmap = kmaps[db_name]
