@@ -92,6 +92,7 @@ class Database(object):
 
             # check I3
             if col_id == 0 and agg != 3:
+                print('Failed I3.')
                 return None
 
             aggs.append(agg)   # store for later when getting `values'
@@ -100,6 +101,7 @@ class Database(object):
 
             # check I1
             if agg in (1, 2, 4, 5) and col_type != 'number':
+                print('Failed I1.')
                 return None
 
             agg_present = agg_present or agg > 0
@@ -114,11 +116,13 @@ class Database(object):
         # check I2
         if agg_present and non_agg_present and \
             not ('groupBy' in sql and sql['groupBy']):
+            print('Failed I2.')
             return None
 
         # check I4
         if agg_present != non_agg_present and \
             'groupBy' in sql and sql['groupBy']:
+            print('Failed I4.')
             return None
 
         tsq = TableSketchQuery(len(types),
