@@ -87,6 +87,15 @@ class DuoquestVerifier:
             if query.has_where == UNKNOWN or \
                 (query.has_where == TRUE and not query.done_where):
                 return False
+        else:
+            # when query has no aggregate in select, make sure that HAVING and
+            # ORDER BY are both complete if present
+            if query.has_group_by == TRUE:
+                if query.has_having == UNKNOWN or \
+                    query.has_order_by == UNKNOWN or \
+                    (query.has_having == TRUE and not query.done_having) or \
+                    (query.has_order_by == TRUE and not query.done_order_by):
+                    return False
 
         return True
 
