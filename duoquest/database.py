@@ -123,6 +123,7 @@ class Database(object):
 
         # check I4
         if agg_present == False and non_agg_present == True \
+            and 'groupBy' in sql and sql['groupBy'] \
             and not ('orderBy' in sql and sql['orderBy'] \
                 and any(map(lambda x: x[1][0] > 0, sql['orderBy'][1]))) \
             and not ('having' in sql and sql['having']):
