@@ -117,6 +117,8 @@ class DuoquestVerifier:
         return None
 
     def prune_by_num_cols(self, query, tsq):
+        if query.done_select and tsq.num_cols != len(query.select):
+            return Tribool(False)    # done with select and incorrect
         if tsq.num_cols < len(query.select):
             return Tribool(False)    # exceeded max columns already
         else:
