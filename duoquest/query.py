@@ -237,12 +237,13 @@ def where_clause_str(pq, schema, aliases, verify=None):
             if pred.op in (IN, NOT_IN):
                 where_val = u"({})".format(
                     u','.join(
-                        map(lambda x: format_literal(col_type, x), pred.value)
+                        map(lambda x: format_literal(FALSE, col_type, x),
+                            pred.value)
                     ))
             elif pred.op == BETWEEN:
                 where_val = u"{} AND {}".format(pred.value[0], pred.value[1])
             else:
-                where_val = format_literal(col_type, pred.value[0])
+                where_val = format_literal(FALSE, col_type, pred.value[0])
 
         pred_str = u' '.join([
             schema.get_aliased_col(aliases, pred.col_id),
@@ -278,7 +279,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
                 verify_preds.append(u' '.join([
                     aliased_col,
                     '=',
-                    format_literal(col_type, tsq_const)
+                    format_literal(FALSE, col_type, tsq_const)
                 ]))
         where_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
@@ -315,12 +316,13 @@ def having_clause_str(pq, schema, aliases, verify=None):
         elif pred.op in (IN, NOT_IN):
             having_val = u"({})".format(
                 u','.join(
-                    map(lambda x: format_literal(col_type, x), pred.value)
+                    map(lambda x: format_literal(TRUE, col_type, x),
+                        pred.value)
                 ))
         elif pred.op == BETWEEN:
             having_val = u"{} AND {}".format(pred.value[0], pred.value[1])
         else:
-            having_val = format_literal(col_type, pred.value[0])
+            having_val = format_literal(TRUE, col_type, pred.value[0])
 
         pred_str = u' '.join([having_col, to_str_op(pred.op), having_val])
         predicates.append(pred_str)
@@ -355,7 +357,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
                 verify_preds.append(u' '.join([
                     having_col,
                     '=',
-                    format_literal(col_type, tsq_const)
+                    format_literal(TRUE, col_type, tsq_const)
                 ]))
         having_exprs.append(u'({})'.format(u' '.join(verify_preds)))
 
@@ -382,8 +384,8 @@ def limit_clause_str(pq):
         pq.limit = 1
     return u'LIMIT {}'.format(pq.limit)
 
-def format_literal(type, literal):
-    if type == 'number':
+def format_literal(has_agg, type, literal):
+    if has_agg == TRUE or type == 'number':
         return str(literal)
 
     # escape apostrophes
@@ -440,7 +442,7 @@ def verify_sql_str(pq, schema, tsq_row):
                 where_preds.append(u' '.join([
                     select_alias,
                     '=',
-                    format_literal(col_type, tsq_const)
+                    format_literal(TRUE, col_type, tsq_const)
                 ]))
 
         return 'SELECT 1 FROM ({}) WHERE {}'.format(
