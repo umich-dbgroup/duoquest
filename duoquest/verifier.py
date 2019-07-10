@@ -85,7 +85,7 @@ class DuoquestVerifier:
         # if query contains any aggregate, then WHERE must be done if present
         if any(map(lambda x: x.has_agg == TRUE, query.select)):
             if query.has_where == UNKNOWN or \
-                (query.has_where == TRUE and not query.done_where)
+                (query.has_where == TRUE and not query.done_where):
                 return False
 
         return True
