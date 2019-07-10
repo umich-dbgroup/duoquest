@@ -19,25 +19,12 @@ class DuoquestVerifier:
             pass
 
     def prune_select_col_types(self, db, schema, agg_col, tsq, pos):
-        if agg_col.col_id == 0:
-            # see I3 in database.py:generate_tsq
-            if agg_col.has_agg == FALSE:
-                return Tribool(False)
-
-            # only permit COUNT aggregate on * column
-            if agg_col.has_agg == TRUE and agg_col.agg != COUNT:
-                return Tribool(False)
-
         if tsq.types:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
                 # all aggs must produce a number
                 if tsq_type != 'number':
-                    return Tribool(False)
-
-                # only COUNT is permitted for text
-                if col_type == 'text' and agg_col.agg != COUNT:
                     return Tribool(False)
             elif agg_col.has_agg == UNKNOWN:
                 # no agg func can convert num -> str
@@ -132,6 +119,17 @@ class DuoquestVerifier:
 
             if left is not None or right is not None:
                 return Tribool(False)
+
+        for agg_col in query.select:
+            if agg_col.has_agg == TRUE:
+                # for * and text columns, only allow COUNT agg
+                if agg_col.agg != COUNT and \
+                    (agg_col.col_id == 0 or col_type == 'text'):
+                    return Tribool(False)
+            elif agg_col.has_agg == FALSE:
+                # see I3 in database.py:generate_tsq
+                if agg_col.col_id == 0:
+                    return Tribool(False)
 
         for pred in query.where.predicates:
             if pred.col_id == 0:        # cannot have * in where
