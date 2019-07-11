@@ -204,6 +204,12 @@ class DuoquestVerifier:
                 print('Prune: cannot have * in GROUP BY.')
             return Tribool(False)
 
+        if any(map(lambda x: x.agg_col.has_agg != UNKNOWN and \
+            x.agg_col.agg != COUNT and x.agg_col.col_id == 0, query.order_by)):
+                if self.debug:
+                    print('Prune: cannot have * without COUNT() in ORDER BY.')
+                return Tribool(False)
+
         if query.done_select:
             agg_present = False
             non_agg_present = False
