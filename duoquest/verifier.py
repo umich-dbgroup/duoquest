@@ -112,7 +112,8 @@ class DuoquestVerifier:
         for row in tsq.values:
             cur = conn.cursor()
             verify_q = verify_sql_str(query, schema, row)
-            print(f'VERIFY: {verify_q}')         # TODO: remove, for debugging
+            if self.debug:
+                print(f'VERIFY: {verify_q}')
             cur.execute(verify_q)
 
             if not cur.fetchone():
