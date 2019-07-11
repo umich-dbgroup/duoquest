@@ -62,13 +62,12 @@ class DuoquestVerifier:
             return len(pred.value) > 0
 
     def ready_for_row_check(self, query, tsq):
-        # query must have same # of columns as TSQ
-        if tsq.num_cols != len(query.select):
+        if not query.done_select:
             return False
 
-        # if any select are not yet complete (i.e. UNKNOWN), not ready
-        if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
-            return False
+        # if any select aggs are not yet complete (i.e. UNKNOWN), not ready
+        # if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
+        #     return False
 
         # all WHERE/HAVING predicates must be complete if present
         if any(map(lambda x: not self.predicate_complete(x),
