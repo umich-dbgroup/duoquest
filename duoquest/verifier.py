@@ -13,26 +13,31 @@ def to_tribool_proto(proto_tribool):
         return Tribool(False)
 
 class DuoquestVerifier:
-    def __init__(self, use_cache=False):
+    def __init__(self, use_cache=False, debug=False):
         if use_cache:
             # TODO: initialize cache
             pass
+
+        self.debug = debug
 
     def prune_select_col_types(self, db, schema, agg_col, tsq, pos):
         if tsq.types:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
-                # all aggs must produce a number
                 if tsq_type != 'number':
+                    if self.debug:
+                        print('Prune: all aggs must produce numeric output.')
                     return Tribool(False)
             elif agg_col.has_agg == UNKNOWN:
-                # no agg func can convert num -> str
                 if col_type == 'number' and tsq_type == 'text':
+                    if self.debug:
+                        print('Prune: cannot output text from numeric column.')
                     return Tribool(False)
             else:
-                # col type must match tsq type
                 if col_type != tsq_type:
+                    if self.debug:
+                        print('Prune: column type does not match TSQ type.')
                     return Tribool(False)
 
     def prune_select_col_values(self, db, schema, agg_col, tsq, pos):
@@ -47,6 +52,9 @@ class DuoquestVerifier:
                 elif agg_col.has_agg == FALSE or \
                     (tsq.types and tsq.types[pos] == 'text'):
                     if not db.has_exact(schema, agg_col.col_id, row[pos]):
+                        if self.debug:
+                            col_name = schema.get_col(agg_col.col_id).sem_name
+                            print(f'Prune: {row[pos]} not in {col_name}.')
                         return Tribool(False)
                 else:        # if aggregate is UNKNOWN
                     pass
@@ -117,11 +125,15 @@ class DuoquestVerifier:
 
     def prune_by_num_cols(self, query, tsq):
         if query.done_select and tsq.num_cols != len(query.select):
-            return Tribool(False)    # done with select and incorrect
+            if self.debug:
+                print('Prune: number of columns does not match TSQ.')
+            return Tribool(False)
         if tsq.num_cols < len(query.select):
-            return Tribool(False)    # exceeded max columns already
+            if self.debug:
+                print('Prune: number of columns exceeds TSQ.')
+            return Tribool(False)
         else:
-            return None              # nothing to prune
+            return None
 
     def prune_by_semantics(self, schema, query):
         if query.set_op != NO_SET_OP:
@@ -134,54 +146,61 @@ class DuoquestVerifier:
         for agg_col in query.select:
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
-                # for * and text columns, only allow COUNT agg
                 if agg_col.agg != COUNT and \
                     (agg_col.col_id == 0 or col_type == 'text'):
+                    if self.debug:
+                        print('Prune: only COUNT() permitted for * and text.')
                     return Tribool(False)
             elif agg_col.has_agg == FALSE:
-                # see I3 in database.py:generate_tsq
                 if agg_col.col_id == 0:
+                    if self.debug:
+                        print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
 
         for pred in query.where.predicates:
-            if pred.col_id == 0:        # cannot have * in where
+            if pred.col_id == 0:
+                if self.debug:
+                    print('Prune: cannot have * in WHERE clause.')
                 return Tribool(False)
 
-            # see I6 in database.py:generate_tsq
             col_type = schema.get_col(pred.col_id).type
             if col_type == 'text' and \
                 pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
+                if self.debug:
+                    print('Prune: invalid op for text column.')
                 return Tribool(False)
             if col_type == 'number' and pred.op == LIKE:
+                if self.debug:
+                    print('Prune: cannot have LIKE with numeric column.')
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                # cannot have BETWEEN op with subqueries
                 if pred.op == BETWEEN:
+                    if self.debug:
+                        print('Prune: cannot have BETWEEN with subquery.')
                     return Tribool(False)
                 subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
         for pred in query.having.predicates:
-            # see I6 in database.py:generate_tsq
             if pred.op == LIKE:
+                if self.debug:
+                    print('Prune: cannot have LIKE in HAVING clause.')
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                # cannot have BETWEEN op with subqueries
                 if pred.op == BETWEEN:
+                    if self.debug:
+                        print('Prune: cannot have BETWEEN with subquery.')
                     return Tribool(False)
                 subq = self.prune_by_semantics(schema, pred.subquery)
                 if subq is not None:
                     return Tribool(False)
 
-        # ensure there are no * in group by
         if any(map(lambda x: x == 0, query.group_by)):
-            return Tribool(False)
-        # ensure there are no * without COUNT()
-        if any(map(lambda x: x.agg_col.has_agg != UNKNOWN and \
-            x.agg_col.agg != COUNT and x.agg_col.col_id == 0, query.order_by)):
+            if self.debug:
+                print('Prune: cannot have * in GROUP BY.')
             return Tribool(False)
 
         if query.done_select:
@@ -191,45 +210,59 @@ class DuoquestVerifier:
                 agg_present = agg_present or agg_col.has_agg == TRUE
                 non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-            # see I2 in database.py:generate_tsq
             if agg_present and non_agg_present \
                 and query.has_group_by == FALSE:
+                if self.debug:
+                    print('Prune: failed condition I2.')
                 return Tribool(False)
 
-            # see I4 in database.py:generate_tsq
             if not agg_present and non_agg_present \
                 and query.has_group_by == TRUE:
                 if query.has_having == FALSE:
                     if query.has_order_by == FALSE:
+                        if self.debug:
+                            print('Prune: failed condition I4.')
                         return Tribool(False)
                     elif query.has_order_by == TRUE and query.done_order_by \
                         and not any(map(lambda x: x.agg_col.has_agg == TRUE,
                             query.order_by)):
+                        if self.debug:
+                            print('Prune: failed condition I4.')
                         return Tribool(False)
 
-            # see I5 in database.py:generate_tsq
             if agg_present and not non_agg_present \
                 and query.has_group_by == TRUE:
+                if self.debug:
+                    print('Prune: failed condition I5.')
                 return Tribool(False)
 
         return None
 
     def prune_by_clauses(self, query, tsq):
-        # check order by
         if query.has_order_by == TRUE and not tsq.order:
+            if self.debug:
+                print('Prune: query has ORDER BY when TSQ has none.')
             return Tribool(False)
         if query.has_order_by == FALSE and tsq.order:
+            if self.debug:
+                print('Prune: query has no ORDER BY when TSQ does.')
             return Tribool(False)
 
-        # check limit
         if query.has_limit == TRUE and not tsq.limit:
+            if self.debug:
+                print('Prune: query has LIMIT when TSQ has none.')
             return Tribool(False)
         if query.has_limit == FALSE and tsq.limit:
+            if self.debug:
+                print('Prune: query has no LIMIT when TSQ does.')
             return Tribool(False)
 
         return None
 
     def verify(self, db, schema, query, tsq, set_op=NO_SET_OP, lr=None):
+        if self.debug:
+            print(query)
+
         if query.set_op != NO_SET_OP:
             left = self.verify(db, schema, query.left, tsq, set_op=query.set_op,
                 lr='left')

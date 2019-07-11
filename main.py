@@ -43,8 +43,11 @@ def main():
     parser.add_argument('--cache', action='store_true', help='Enable cache')
     # parser.add_argument('--batch', action='store_true', help='Enable batching')
 
+    # Debugging options
     parser.add_argument('--compare', choices=['default', 'no_range',
         'no_values', 'no_duoquest'], help='Compare results against this level')
+    parser.add_argument('--debug', action='store_true',
+        help='Debugging output')
 
 
     args = parser.parse_args()
@@ -69,7 +72,7 @@ def main():
     print(f'Output sent to file <{out_path}>...')
     print(f'Gold results sent to file <{gold_path}>...')
 
-    verifier = DuoquestVerifier(use_cache=args.cache)
+    verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_path,
         gold_path, args.n, args.b)
