@@ -168,7 +168,10 @@ class DuoquestVerifier:
         # TODO: to speed up instead of generate_sql_str, we could do a variation
         # of verify_sql_str where we put (col = val1 or col = val2) as part of
         # the sql_str for each value
-        cur.execute(generate_sql_str(query, schema))
+        order_sql = generate_sql_str(query, schema)
+        cur.execute(order_sql)
+        if self.debug:
+            print(f'ORDER SQL: {order_sql}')
 
         values_copy = list(tsq.values)
 
