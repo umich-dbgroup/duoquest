@@ -55,7 +55,7 @@ class DuoquestVerifier:
                     if not db.has_exact(schema, agg_col.col_id, row[pos]):
                         if self.debug:
                             col_name = schema.get_col(agg_col.col_id).sem_name
-                            print(f'Prune: {row[pos]} not in {col_name}.')
+                            print(f'Prune: <{row[pos]}> not in <{col_name}>.')
                         return Tribool(False)
                 else:        # if aggregate is UNKNOWN
                     pass
