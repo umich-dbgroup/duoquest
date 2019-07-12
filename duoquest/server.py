@@ -22,15 +22,13 @@ class DuoquestServer:
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
-        duoquest_enabled = (tsq_level != 'no_duoquest')
-
         tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
             tsq_rows)
         if tsq is None:
             print('Skipping task because it is out of scope.')
             return None
 
-        if duoquest_enabled:
+        if tsq_level != 'no_duoquest':
             print(tsq)
             ready = Event()
             t = threading.Thread(target=self.task_thread,
@@ -39,9 +37,9 @@ class DuoquestServer:
             ready.wait()
 
         cqs = nlqc.run(task_id, self.n, self.b, task['db_id'],
-            task['question_toks'], duoquest_enabled)
+            task['question_toks'], tsq_level)
 
-        if duoquest_enabled:
+        if tsq_level != 'no_duoquest':
             t.join()
 
         return cqs

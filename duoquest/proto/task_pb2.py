@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\ntask.proto\"\x8a\x01\n\tProtoTask\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0f\n\x07\x64\x61taset\x18\x02 \x01(\t\x12\x0c\n\x04mode\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x62_name\x18\x04 \x01(\t\x12\x12\n\nnlq_tokens\x18\x05 \x03(\t\x12\t\n\x01n\x18\x06 \x01(\x05\x12\t\n\x01\x62\x18\x07 \x01(\x05\x12\x17\n\x0f\x65nable_duoquest\x18\x08 \x01(\x08\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
+  serialized_pb=_b('\n\ntask.proto\"\x84\x01\n\tProtoTask\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0f\n\x07\x64\x61taset\x18\x02 \x01(\t\x12\x0c\n\x04mode\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x62_name\x18\x04 \x01(\t\x12\x12\n\nnlq_tokens\x18\x05 \x03(\t\x12\t\n\x01n\x18\x06 \x01(\x05\x12\t\n\x01\x62\x18\x07 \x01(\x05\x12\x11\n\ttsq_level\x18\x08 \x01(\t\"\x1d\n\x0fProtoCandidates\x12\n\n\x02\x63q\x18\x01 \x03(\tb\x06proto3')
 )
 
 
@@ -83,9 +83,9 @@ _PROTOTASK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='enable_duoquest', full_name='ProtoTask.enable_duoquest', index=7,
-      number=8, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='tsq_level', full_name='ProtoTask.tsq_level', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -102,7 +102,7 @@ _PROTOTASK = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=15,
-  serialized_end=153,
+  serialized_end=147,
 )
 
 
@@ -132,8 +132,8 @@ _PROTOCANDIDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=155,
-  serialized_end=184,
+  serialized_start=149,
+  serialized_end=178,
 )
 
 DESCRIPTOR.message_types_by_name['ProtoTask'] = _PROTOTASK

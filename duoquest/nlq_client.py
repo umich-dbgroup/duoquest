@@ -13,14 +13,14 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, tid, n, b, db_name, nlq, enable_duoquest):
+    def run(self, tid, n, b, db_name, nlq, tsq_level):
         task = ProtoTask()
         task.id = tid
         task.dataset = self.dataset
         task.mode = self.mode
         task.n = n
         task.b = b
-        task.enable_duoquest = enable_duoquest
+        task.tsq_level = tsq_level
         task.db_name = db_name
         if isinstance(nlq, list):
             for token in nlq:
