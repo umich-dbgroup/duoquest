@@ -1,3 +1,4 @@
+from numbers import Number
 from tribool import Tribool
 
 from .query import Query, verify_sql_str, generate_sql_str
@@ -156,8 +157,12 @@ class DuoquestVerifier:
                 if float(db_row[pos]) < val[0] or float(db_row[pos]) > val[1]:
                     return False
             else:                           # exact constraint
-                if db_row[pos].decode('utf-8') != val:
-                    return False
+                if isinstance(db_row[pos], Number):
+                    if db_row[pos] != val:
+                        return False
+                else:
+                    if db_row[pos].decode('utf-8') != val:
+                        return False
         return True
 
     def prune_by_order(self, db, schema, query, tsq):
