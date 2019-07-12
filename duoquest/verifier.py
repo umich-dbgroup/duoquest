@@ -156,7 +156,7 @@ class DuoquestVerifier:
                 if float(db_row[pos]) < val[0] or float(db_row[pos]) > val[1]:
                     return False
             else:                           # exact constraint
-                if str(db_row[pos]) != val:
+                if db_row[pos].decode('utf-8') != val:
                     return False
         return True
 
@@ -186,7 +186,6 @@ class DuoquestVerifier:
             else:
                 prune = True
                 break
-
 
         if prune:
             if self.debug:
