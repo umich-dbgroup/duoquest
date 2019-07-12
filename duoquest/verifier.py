@@ -208,14 +208,7 @@ class DuoquestVerifier:
         else:
             return None
 
-    def prune_by_semantics(self, schema, query):
-        if query.set_op != NO_SET_OP:
-            left = self.prune_by_semantics(schema, query.left)
-            right = self.prune_by_semantics(schema, query.right)
-
-            if left is not None or right is not None:
-                return Tribool(False)
-
+    def prune_by_semantics(self, schema, query, set_op=None):
         for agg_col in query.select:
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
@@ -317,24 +310,34 @@ class DuoquestVerifier:
 
         return None
 
-    def prune_by_clauses(self, query, tsq):
-        if query.has_order_by == TRUE and not tsq.order:
-            if self.debug:
-                print('Prune: query has ORDER BY when TSQ has none.')
-            return Tribool(False)
-        if query.has_order_by == FALSE and tsq.order:
-            if self.debug:
-                print('Prune: query has no ORDER BY when TSQ does.')
-            return Tribool(False)
+    def prune_by_clauses(self, query, tsq, set_op):
+        if set_op != NO_SET_OP:
+            if query.has_order_by == TRUE:
+                if self.debug:
+                    print('Prune: child of set operation cannot have ORDER BY.')
+                return Tribool(False)
+            if query.has_limit == TRUE:
+                if self.debug:
+                    print('Prune: child of set operation cannot have LIMIT.')
+                return Tribool(False)
+        else:
+            if query.has_order_by == TRUE and not tsq.order:
+                if self.debug:
+                    print('Prune: query has ORDER BY when TSQ has none.')
+                return Tribool(False)
+            if query.has_order_by == FALSE and tsq.order:
+                if self.debug:
+                    print('Prune: query has no ORDER BY when TSQ does.')
+                return Tribool(False)
 
-        if query.has_limit == TRUE and not tsq.limit:
-            if self.debug:
-                print('Prune: query has LIMIT when TSQ has none.')
-            return Tribool(False)
-        if query.has_limit == FALSE and tsq.limit:
-            if self.debug:
-                print('Prune: query has no LIMIT when TSQ does.')
-            return Tribool(False)
+            if query.has_limit == TRUE and not tsq.limit:
+                if self.debug:
+                    print('Prune: query has LIMIT when TSQ has none.')
+                return Tribool(False)
+            if query.has_limit == FALSE and tsq.limit:
+                if self.debug:
+                    print('Prune: query has no LIMIT when TSQ does.')
+                return Tribool(False)
 
         return None
 
@@ -353,10 +356,9 @@ class DuoquestVerifier:
                 return Tribool(None)
 
         # only check clauses if not child of a set op
-        if lr is None:
-            check_clauses = self.prune_by_clauses(query, tsq)
-            if check_clauses is not None:
-                return check_clauses
+        check_clauses = self.prune_by_clauses(query, tsq, set_op)
+        if check_clauses is not None:
+            return check_clauses
 
         if not query.select:        # hasn't even started with select
             return Tribool(None)
