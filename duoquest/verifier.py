@@ -160,6 +160,9 @@ class DuoquestVerifier:
         conn = db.get_conn(db_name=schema.db_id)
 
         cur = conn.cursor()
+        # TODO: to speed up instead of generate_sql_str, we could do a variation
+        # of verify_sql_str where we put (col = val1 or col = val2) as part of
+        # the sql_str for each value
         cur.execute(generate_sql_str(query, schema))
 
         values_copy = list(tsq.values)
@@ -178,6 +181,9 @@ class DuoquestVerifier:
             else:
                 prune = True
                 break
+
+        if values_copy:
+            raise Exception('Did not find matching row for all TSQ rows.')
 
         if prune:
             if self.debug:
