@@ -187,13 +187,13 @@ class DuoquestVerifier:
                 prune = True
                 break
 
-        if values_copy:
-            raise Exception('Did not find matching row for all TSQ rows.')
 
         if prune:
             if self.debug:
                 print('Prune: ordering is incorrect.')
             return Tribool(False)
+        elif values_copy:
+            raise Exception('Did not find matching row for all TSQ rows.')
         else:
             return None
 
