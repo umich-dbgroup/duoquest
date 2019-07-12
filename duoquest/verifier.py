@@ -142,22 +142,27 @@ class DuoquestVerifier:
 
     def first_matching_row(self, db_row, tsq_rows):
         for i, tsq_row in enumerate(tsq_rows):
-            if self.row_result_matches(db_row, tsq_row):
-                return i
+            try:
+                if self.row_result_matches(db_row, tsq_row):
+                    return i
+            except Exception as e:
+                # exception for non-utf-8 strings breaking when typecasting
+                continue
         return None
 
     def row_result_matches(self, db_row, tsq_row):
         for pos, val in enumerate(tsq_row):
             if isinstance(val, list):     # range constraint
-                if db_row[pos] < val[0] or db_row[pos] > val[1]:
+                if float(db_row[pos]) < val[0] or float(db_row[pos]) > val[1]:
                     return False
             else:                           # exact constraint
-                if db_row[pos] != val:
+                if str(db_row[pos]) != val:
                     return False
         return True
 
     def prune_by_order(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
+        conn.text_factory = bytes
 
         cur = conn.cursor()
         # TODO: to speed up instead of generate_sql_str, we could do a variation
