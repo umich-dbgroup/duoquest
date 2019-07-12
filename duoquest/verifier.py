@@ -1,8 +1,9 @@
 from tribool import Tribool
 
-from .query import Query, verify_sql_str
+from .query import Query, verify_sql_str, generate_sql_str
 from .proto.query_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
-    NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, NEQ, LIKE, IN, NOT_IN, BETWEEN
+    NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, NEQ, LIKE, IN, NOT_IN, \
+    BETWEEN, OR
 
 def to_tribool_proto(proto_tribool):
     if proto_tribool == UNKNOWN:
@@ -73,16 +74,18 @@ class DuoquestVerifier:
         if not query.done_select:
             return False
 
-        # if any select aggs are not yet complete (i.e. UNKNOWN), not ready
-        # if any(map(lambda x: x.has_agg == UNKNOWN, query.select)):
-        #     return False
-
         # all WHERE/HAVING predicates must be complete if present
         if any(map(lambda x: not self.predicate_complete(x),
             query.where.predicates)):
             return False
         if any(map(lambda x: not self.predicate_complete(x),
             query.having.predicates)):
+            return False
+
+        # if logical op is an OR for WHERE/HAVING, the clause must be complete
+        if query.where.logical_op == OR and not query.done_where:
+            return False
+        if query.having.logical_op == OR and not query.done_having:
             return False
 
         # if GROUP BY is present, must be done
@@ -106,6 +109,19 @@ class DuoquestVerifier:
 
         return True
 
+    def ready_for_order_check(self, query, tsq):
+        if not tsq.order:
+            return False
+
+        if not query.order_by:
+            return False
+
+        # if aggregate is not set for any order_by, not ready
+        if any(map(lambda x: x.agg_col.has_agg == UNKNOWN, query.order_by)):
+            return False
+
+        return True
+
     def prune_by_row(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
 
@@ -123,6 +139,52 @@ class DuoquestVerifier:
         conn.close()
 
         return None
+
+    def first_matching_row(self, db_row, tsq_rows):
+        for i, tsq_row in enumerate(tsq_rows):
+            if self.row_result_matches(db_row, tsq_row):
+                return i
+        return None
+
+    def row_result_matches(self, db_row, tsq_row):
+        for pos, val in enumerate(tsq_row):
+            if isinstance(val, list):     # range constraint
+                if db_row[pos] < val[0] or db_row[pos] > val[1]:
+                    return False
+            else:                           # exact constraint
+                if db_row[pos] != val:
+                    return False
+        return True
+
+    def prune_by_order(self, db, schema, query, tsq):
+        conn = db.get_conn(db_name=schema.db_id)
+
+        cur = conn.cursor()
+        cur.execute(generate_sql_str(query, schema))
+
+        values_copy = list(tsq.values)
+
+        prune = False
+        while values_copy:
+            db_row = cur.fetchone()
+            if db_row is None:
+                break
+
+            index = self.first_matching_row(db_row, values_copy)
+            if index is None:
+                continue
+            elif index == 0:
+                values_copy = values_copy[1:]
+            else:
+                prune = True
+                break
+
+        if prune:
+            if self.debug:
+                print('Prune: ordering is incorrect.')
+            return Tribool(False)
+        else:
+            return None
 
     def prune_by_num_cols(self, query, tsq):
         if query.done_select and tsq.num_cols != len(query.select):
@@ -318,5 +380,10 @@ class DuoquestVerifier:
             check_row = self.prune_by_row(db, schema, query, tsq)
             if check_row is not None:
                 return check_row
+
+        if self.ready_for_order_check(query, tsq):
+            check_order = self.prune_by_order(db, schema, query, tsq)
+            if check_order is not None:
+                return check_order
 
         return Tribool(None)        # return indeterminate

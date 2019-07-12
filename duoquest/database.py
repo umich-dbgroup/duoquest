@@ -75,14 +75,16 @@ class Database(object):
     # C2. Superlatives (ORDER BY + LIMIT) will have empty `values'.
     # C3. If any queries contain nested subqueries in WHERE or HAVING clauses,
     #     `values' will be empty.
+    # C4. If ORDER BY present without LIMIT, at least 2 rows will be generated
+    #     to allow for ordering enforcement.
     #
     # TSQ levels
     # ----------
-    #             non-aggs |  agg  | types | semantics
-    # 'default':    exact  | range |   Y   |     Y
-    # 'no_range':   exact  |   N   |   Y   |     Y
-    # 'no_values':    N    |   N   |   Y   |     Y
-    # 'no_duoquest':  N    |   N   |   N   |     N
+    #             non-aggs |  agg  | types | semantics | clauses | order
+    # 'default':    exact  | range |   Y   |     Y     |    Y    |   Y
+    # 'no_range':   exact  |   N   |   Y   |     Y     |    Y    |   Y
+    # 'no_values':    N    |   N   |   Y   |     Y     |    Y    |   N
+    # 'no_duoquest':  N    |   N   |   N   |     N     |    N    |   N
 
     def generate_tsq(self, schema, sql_str, sql, tsq_level, tsq_rows):
         aggs = []
@@ -199,7 +201,14 @@ class Database(object):
         cur = conn.cursor()
         try:
             cur.execute(sql_str)
-            rows = cur.fetchmany(size=tsq_rows)
+
+            # perform C4
+            if has_order:
+                fetch_rows = max(tsq_rows, 2)
+            else:
+                fetch_rows = tsq_rows
+
+            rows = cur.fetchmany(size=fetch_rows)
             for row in rows:
                 value_row = []
                 for i, val in enumerate(row):
