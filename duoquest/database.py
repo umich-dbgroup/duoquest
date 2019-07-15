@@ -41,7 +41,7 @@ class Database(object):
         if col.syn_name == '*':
             return False
 
-        q = 'SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? LIMIT 1').format(
+        q = 'SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? LIMIT 1'.format(
             col.table.syn_name, col.syn_name
         )
 
