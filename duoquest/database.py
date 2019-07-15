@@ -103,6 +103,7 @@ class Database(object):
     #     `values' will be empty.
     # C4. If ORDER BY present without LIMIT, at least 2 rows will be generated
     #     to allow for ordering enforcement.
+    # C5. If result resulting from an aggregate is 0, don't produce range value.
     #
     # TSQ levels
     # ----------
@@ -240,7 +241,8 @@ class Database(object):
                 for i, val in enumerate(row):
                     if aggs[i] == 0:              # non-agg case, get exact
                         value_row.append(val)
-                    elif tsq_level == 'default':  # agg case, only for default
+                    elif tsq_level == 'default' and val != 0:
+                        # agg case, only for default
                         value_row.append([val*0.5, val*1.5])
                     else:                         # otherwise keep empty
                         value_row.append(None)
