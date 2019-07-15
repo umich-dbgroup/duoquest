@@ -31,6 +31,30 @@ class Database(object):
             conn = self.conn
         return conn
 
+    def intersects_range(self, schema, col_id, range_val):
+        conn = self.get_conn(db_name=schema.db_id)
+        cur = conn.cursor()
+
+        col = schema.get_col(col_id)
+
+        # star cannot have value
+        if col.syn_name == '*':
+            return False
+
+        cur.execute('SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? ' + \
+            'LIMIT 1'.format(
+                col.table.syn_name, col.syn_name
+            ), (range_val[0], range_val[1]))
+
+        valid = False
+        if cur.fetchone():
+            valid = True
+
+        cur.close()
+        conn.close()
+
+        return valid
+
     def has_exact(self, schema, col_id, value):
         conn = self.get_conn(db_name=schema.db_id)
         cur = conn.cursor()

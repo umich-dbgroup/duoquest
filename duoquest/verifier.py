@@ -43,35 +43,33 @@ class DuoquestVerifier:
                     return Tribool(False)
 
     def prune_select_col_values(self, db, schema, agg_col, tsq, pos):
-        col_name = schema.get_col(agg_col.col_id).sem_name
+        if agg_col.has_agg == UNKNOWN:
+            return None
+
+        col_id = agg_col.col_id
+        col_name = schema.get_col(col_id).sem_name
 
         for row in tsq.values:
             if row[pos] is None:                # empty cell
                 continue
             elif isinstance(row[pos], list):    # range constraint
-                pass                            # TODO
-            else:                               # exact constraint
-                if agg_col.has_agg == TRUE:
-                    if agg_col.agg in (MIN, MAX):
-                        if not db.has_exact(schema, agg_col.col_id, row[pos]):
-                            if self.debug:
-                                print(
-                                    f'Prune: <{row[pos]}> not in <{col_name}>.'
-                                )
-                            return Tribool(False)
-                    elif agg_col.agg == AVG:
-                        pass        # TODO: if current Q value is outside range
-                                    # of column, ineligible
-                    else:           # SUM/COUNT
-                        pass
-                elif agg_col.has_agg == FALSE or \
-                    (tsq.types and tsq.types[pos] == 'text'):
-                    if not db.has_exact(schema, agg_col.col_id, row[pos]):
+                if agg_col.has_agg == FALSE or \
+                    (agg_col.has_agg == TRUE and \
+                        agg_col.agg in (MIN, MAX, AVG)):
+                    if not db.intersects_range(schema, col_id, row[pos]):
                         if self.debug:
-                            print(f'Prune: <{row[pos]}> not in <{col_name}>.')
+                            print(f'Prune: <{row[pos]}> doesn\'t ' + \
+                                'intersect <{col_name}>.')
                         return Tribool(False)
-                else:        # if aggregate is UNKNOWN
-                    pass
+            else:                               # exact constraint
+                if (tsq.types and tsq.types[pos] == 'text') or \
+                    agg_col.has_agg == FALSE or \
+                    (agg_col.has_agg == TRUE and agg_col.agg in (MIN, MAX)):
+                        if not db.has_exact(schema, col_id, row[pos]):
+                            if self.debug:
+                                print(f'Prune: <{row[pos]}> not ' +
+                                    'in <{col_name}>.')
+                            return Tribool(False)
 
         return None
 
