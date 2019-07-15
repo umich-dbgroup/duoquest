@@ -339,8 +339,6 @@ def having_clause_str(pq, schema, aliases, verify=None):
     if verify:
         verify_preds = []
         for i, item in enumerate(verify):
-            if i != 0:
-                verify_preds.append(u'AND')
             agg_col, tsq_const = item
 
             assert(agg_col.has_agg == TRUE)
@@ -360,7 +358,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     u' '.join([having_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
-                verify_preds.append(u' '.join([
+                verify_preds.append(u' AND '.join([
                     having_col,
                     '=',
                     format_literal(col_type, tsq_const)
