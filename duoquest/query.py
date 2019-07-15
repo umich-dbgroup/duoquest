@@ -271,7 +271,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
             col_type = schema.get_col(agg_col.col_id).type
 
             if col_type == 'number':
-                where_col = 'CAST("{}" AS FLOAT)'.format(
+                where_col = 'CAST({} AS FLOAT)'.format(
                     schema.get_aliased_col(aliases, agg_col.col_id)
                 )
             else:
@@ -352,7 +352,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
 
             col_type = schema.get_col(agg_col.col_id).type
 
-            having_col = u'{}(CAST ({} AS FLOAT))'.format(
+            having_col = u'{}(CAST({} AS FLOAT))'.format(
                 to_str_agg(agg_col.agg),
                 schema.get_aliased_col(aliases, agg_col.col_id)
             )
