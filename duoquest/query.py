@@ -268,19 +268,25 @@ def where_clause_str(pq, schema, aliases, verify=None):
             assert(agg_col.has_agg == FALSE)
             assert(tsq_const is not None)
 
-            aliased_col = schema.get_aliased_col(aliases, agg_col.col_id)
             col_type = schema.get_col(agg_col.col_id).type
+
+            if col_type == 'number':
+                where_col = 'CAST("{}" AS FLOAT)'.format(
+                    schema.get_aliased_col(aliases, agg_col.col_id)
+                )
+            else:
+                where_col = schema.get_aliased_col(aliases, agg_col.col_id)
 
             if isinstance(tsq_const, list):         # range constraint
                 verify_preds.append(
-                    u' '.join([aliased_col, '>=', str(tsq_const[0])])
+                    u' '.join([where_col, '>=', str(tsq_const[0])])
                 )
                 verify_preds.append(
-                    u' '.join([aliased_col, '<=', str(tsq_const[1])])
+                    u' '.join([where_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
                 verify_preds.append(u' '.join([
-                    aliased_col,
+                    where_col,
                     '=',
                     format_literal(col_type, tsq_const)
                 ]))
@@ -346,7 +352,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
 
             col_type = schema.get_col(agg_col.col_id).type
 
-            having_col = u'{}({})'.format(
+            having_col = u'{}(CAST ({} AS FLOAT))'.format(
                 to_str_agg(agg_col.agg),
                 schema.get_aliased_col(aliases, agg_col.col_id)
             )
