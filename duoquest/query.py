@@ -358,12 +358,12 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     u' '.join([having_col, '<=', str(tsq_const[1])])
                 )
             else:                                   # exact constraint
-                verify_preds.append(u' AND '.join([
+                verify_preds.append(u' '.join([
                     having_col,
                     '=',
                     format_literal(col_type, tsq_const)
                 ]))
-        having_exprs.append(u'({})'.format(u' '.join(verify_preds)))
+        having_exprs.append(u'({})'.format(u' AND '.join(verify_preds)))
 
     return u'HAVING {}'.format(u' AND '.join(having_exprs))
 
