@@ -352,10 +352,16 @@ def having_clause_str(pq, schema, aliases, verify=None):
 
             col_type = schema.get_col(agg_col.col_id).type
 
-            having_col = u'{}(CAST({} AS FLOAT))'.format(
-                to_str_agg(agg_col.agg),
-                schema.get_aliased_col(aliases, agg_col.col_id)
-            )
+            if agg_col.col_id == 0:
+                having_col = u'{}({})'.format(
+                    to_str_agg(agg_col.agg),
+                    schema.get_aliased_col(aliases, agg_col.col_id)
+                )
+            else:
+                having_col = u'{}(CAST({} AS FLOAT))'.format(
+                    to_str_agg(agg_col.agg),
+                    schema.get_aliased_col(aliases, agg_col.col_id)
+                )
             if isinstance(tsq_const, list):         # range constraint
                 verify_preds.append(
                     u' '.join([having_col, '>=', str(tsq_const[0])])
