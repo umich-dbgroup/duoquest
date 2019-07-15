@@ -42,7 +42,7 @@ class Database(object):
             return False
 
         q = 'SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? LIMIT 1'.format(
-            col.table.syn_name, col.syn_name
+            col.table.syn_name, col.syn_name, col.syn_name
         )
 
         cur.execute(q, (range_val[0], range_val[1]))
