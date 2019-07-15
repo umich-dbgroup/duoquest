@@ -41,10 +41,11 @@ class Database(object):
         if col.syn_name == '*':
             return False
 
-        cur.execute('SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? ' + \
-            'LIMIT 1'.format(
-                col.table.syn_name, col.syn_name
-            ), (range_val[0], range_val[1]))
+        q = 'SELECT 1 FROM "{}" WHERE "{}" >= ? AND "{}" <= ? LIMIT 1').format(
+            col.table.syn_name, col.syn_name
+        )
+
+        cur.execute(q, (range_val[0], range_val[1]))
 
         valid = False
         if cur.fetchone():
