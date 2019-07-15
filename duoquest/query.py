@@ -263,8 +263,6 @@ def where_clause_str(pq, schema, aliases, verify=None):
     if verify:
         verify_preds = []
         for i, item in enumerate(verify):
-            if i != 0:
-                verify_preds.append(u'AND')
             agg_col, tsq_const = item
 
             assert(agg_col.has_agg == FALSE)
@@ -286,7 +284,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
                     '=',
                     format_literal(col_type, tsq_const)
                 ]))
-        where_exprs.append(u'({})'.format(u' '.join(verify_preds)))
+        where_exprs.append(u'({})'.format(u' AND '.join(verify_preds)))
 
     return u'WHERE {}'.format(u' AND '.join(where_exprs))
 
