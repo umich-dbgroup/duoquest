@@ -59,7 +59,7 @@ class DuoquestVerifier:
                     if not db.intersects_range(schema, col_id, row[pos]):
                         if self.debug:
                             print(f'Prune: <{row[pos]}> doesn\'t ' + \
-                                'intersect <{col_name}>.')
+                                f'intersect <{col_name}>.')
                         return Tribool(False)
             else:                               # exact constraint
                 if (tsq.types and tsq.types[pos] == 'text') or \
@@ -68,7 +68,7 @@ class DuoquestVerifier:
                         if not db.has_exact(schema, col_id, row[pos]):
                             if self.debug:
                                 print(f'Prune: <{row[pos]}> not ' +
-                                    'in <{col_name}>.')
+                                    f'in <{col_name}>.')
                             return Tribool(False)
 
         return None
