@@ -18,7 +18,7 @@ class DuoquestServer:
         self.b = b
 
     def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
-        tsq_rows):
+        tsq_rows, timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
@@ -37,7 +37,7 @@ class DuoquestServer:
             ready.wait()
 
         cqs = nlqc.run(task_id, self.n, self.b, task['db_id'],
-            task['question_toks'], tsq_level)
+            task['question_toks'], tsq_level, timeout=timeout)
 
         if tsq_level != 'no_duoquest':
             t.join()
@@ -45,7 +45,7 @@ class DuoquestServer:
         return cqs
 
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        tid=None, compare=None, kmaps=None, start_tid=None):
+        tid=None, compare=None, kmaps=None, start_tid=None, timeout=None):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
@@ -64,7 +64,7 @@ class DuoquestServer:
 
             schema = schemas[task['db_id']]
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
-                tsq_level, tsq_rows)
+                tsq_level, tsq_rows, timeout=timeout)
 
             if cqs is None:         # invalid task
                 continue

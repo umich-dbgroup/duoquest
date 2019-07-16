@@ -11,6 +11,7 @@ message ProtoTask {
   int32 b = 7;
 
   string tsq_level = 8;
+  int32 timeout = 9;
 }
 
 message ProtoCandidates {

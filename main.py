@@ -34,6 +34,8 @@ def main():
         help='Max number of final queries to output')
     parser.add_argument('--b', default=0, type=int,
         help='Beam search parameter')
+    parser.add_argument('--timeout', default=5, type=int,
+        help='Timeout if search does not terminate')
 
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
     parser.add_argument('--start_tid', default=None, type=int,
@@ -84,7 +86,7 @@ def main():
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
         tid=args.tid, compare=args.compare, kmaps=kmaps,
-        start_tid=args.start_tid)
+        start_tid=args.start_tid, timeout=args.timeout)
 
 if __name__ == '__main__':
     main()

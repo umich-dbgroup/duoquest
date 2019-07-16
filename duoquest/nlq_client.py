@@ -13,7 +13,7 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, tid, n, b, db_name, nlq, tsq_level):
+    def run(self, tid, n, b, db_name, nlq, tsq_level, timeout=None):
         task = ProtoTask()
         task.id = tid
         task.dataset = self.dataset
@@ -22,6 +22,7 @@ class NLQClient:
         task.b = b
         task.tsq_level = tsq_level
         task.db_name = db_name
+        task.timeout = timeout
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)
