@@ -219,7 +219,7 @@ class DuoquestVerifier:
             if self.debug:
                 print('Prune: number of columns does not match TSQ.')
             return Tribool(False)
-        if tsq.num_cols < len(query.select):
+        if tsq.num_cols < max(len(query.select), query.min_select_cols):
             if self.debug:
                 print('Prune: number of columns exceeds TSQ.')
             return Tribool(False)

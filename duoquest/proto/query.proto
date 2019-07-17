@@ -44,6 +44,9 @@ message ProtoQuery {
   bool done_having = 20;
   bool done_order_by = 21;
   bool done_limit = 22;
+
+  // The minimum amount of select cols that this partial query contains
+  int32 min_select_cols = 23;
 }
 
 message ProtoJoinPath {
