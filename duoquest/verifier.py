@@ -121,7 +121,7 @@ class DuoquestVerifier:
         return True
 
     def ready_for_order_check(self, query, tsq):
-        if not tsq.order:
+        if not tsq.order or not tsq.values:
             return False
 
         if not query.order_by:
