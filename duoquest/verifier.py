@@ -233,6 +233,28 @@ class DuoquestVerifier:
         else:
             return None
 
+    def prune_by_subquery(self, schema, pred):
+        if pred.op == BETWEEN:
+            if self.debug:
+                print('Prune: cannot have BETWEEN with subquery.')
+            return Tribool(False)
+        if pred.subquery.select:
+            subq_col_id = pred.subquery.select[0].col_id
+            if subq_col_id != pred.col_id and \
+                schema.get_col(subq_col_id).fk_ref != pred.col_id:
+                print('Prune: failed condition I8.')
+                return Tribool(False)
+        if pred.subquery.where.predicates and \
+            len(pred.subquery.where.predicates) > 1:
+            print('Prune: failed condition I9.')
+            return Tribool(False)
+
+        subq = self.prune_by_semantics(schema, pred.subquery)
+        if subq is not None:
+            return subq
+
+        return None
+
     def prune_by_semantics(self, schema, query, set_op=None):
         for agg_col in query.select:
             col_type = schema.get_col(agg_col.col_id).type
@@ -247,6 +269,8 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
+
+        subquery_count = 0
 
         for pred in query.where.predicates:
             if pred.col_id == 0:
@@ -266,13 +290,8 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                if pred.op == BETWEEN:
-                    if self.debug:
-                        print('Prune: cannot have BETWEEN with subquery.')
-                    return Tribool(False)
-                subq = self.prune_by_semantics(schema, pred.subquery)
-                if subq is not None:
-                    return Tribool(False)
+                subquery_count += 1
+                subq = self.prune_by_subquery(schema, pred)
 
         for pred in query.having.predicates:
             if pred.op == LIKE:
@@ -281,13 +300,12 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
-                if pred.op == BETWEEN:
-                    if self.debug:
-                        print('Prune: cannot have BETWEEN with subquery.')
-                    return Tribool(False)
-                subq = self.prune_by_semantics(schema, pred.subquery)
-                if subq is not None:
-                    return Tribool(False)
+                subquery_count += 1
+                subq = self.prune_by_subquery(schema, pred)
+
+        if subquery_count > 1:
+            print('Prune: failed condition I7.')
+            return Tribool(False)
 
         if any(map(lambda x: x == 0, query.group_by)):
             if self.debug:
