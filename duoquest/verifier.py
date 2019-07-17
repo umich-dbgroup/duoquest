@@ -292,6 +292,8 @@ class DuoquestVerifier:
             if pred.has_subquery == TRUE:
                 subquery_count += 1
                 subq = self.prune_by_subquery(schema, pred)
+                if subq is not None:
+                    return subq
 
         for pred in query.having.predicates:
             if pred.op == LIKE:
@@ -302,6 +304,8 @@ class DuoquestVerifier:
             if pred.has_subquery == TRUE:
                 subquery_count += 1
                 subq = self.prune_by_subquery(schema, pred)
+                if subq is not None:
+                    return subq
 
         if subquery_count > 1:
             print('Prune: failed condition I7.')
