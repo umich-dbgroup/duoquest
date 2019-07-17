@@ -238,15 +238,28 @@ class DuoquestVerifier:
             if self.debug:
                 print('Prune: cannot have BETWEEN with subquery.')
             return Tribool(False)
+        if max(pred.subquery.min_select_cols, pred.subquery.select) > 1:
+            print('Prune: subquery cannot have more than 1 SELECT column.')
+            return Tribool(False)
         if pred.subquery.select:
             subq_col_id = pred.subquery.select[0].col_id
             if subq_col_id != pred.col_id and \
                 schema.get_col(subq_col_id).fk_ref != pred.col_id:
                 print('Prune: failed condition I8.')
                 return Tribool(False)
-        if pred.subquery.where.predicates and \
-            len(pred.subquery.where.predicates) > 1:
+        if max(pred.subquery.min_where_preds,
+            pred.subquery.where.predicates) > 1:
             print('Prune: failed condition I9.')
+            return Tribool(False)
+        if max(pred.subquery.min_group_by_cols, pred.subquery.group_by) > 1:
+            print('Prune: subquery cannot have more than 1 GROUP BY column.')
+            return Tribool(False)
+        if max(pred.subquery.min_having_preds,
+            pred.subquery.having.predicates) > 1:
+            print('Prune: subquery cannot have more than 1 HAVING predicate.')
+            return Tribool(False)
+        if max(pred.subquery.min_order_by_cols, pred.subquery.order_by) > 1:
+            print('Prune: subquery cannot have more than 1 ORDER BY column.')
             return Tribool(False)
 
         subq = self.prune_by_semantics(schema, pred.subquery)

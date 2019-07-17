@@ -45,8 +45,13 @@ message ProtoQuery {
   bool done_order_by = 21;
   bool done_limit = 22;
 
-  // The minimum amount of select cols that this partial query contains
+  // Helps with SyntaxSQLNet state. The minimum amount of each element that
+  // this partial query will complete to.
   int32 min_select_cols = 23;
+  int32 min_where_preds = 24;   // TODO
+  int32 min_group_by_cols = 25; // TODO
+  int32 min_having_preds = 26;  // TODO
+  int32 min_order_by_cols = 27; // TODO
 }
 
 message ProtoJoinPath {
