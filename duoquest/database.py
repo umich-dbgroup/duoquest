@@ -3,6 +3,19 @@ import sqlite3
 
 from .tsq import TableSketchQuery
 
+def get_subq_preds(sql):
+    preds = []      # (col_id, op, subquery)
+    for cond_unit in sql['where'][::2] + sql['having'][::2]:
+        if isinstance(cond_unit[3], dict):
+            preds.append(
+                (cond_unit[2][1][1], WHERE_OPS[cond_unit[1]], cond_unit[3])
+            )
+        if isinstance(cond_unit[4], dict):
+            preds.append(
+                (cond_unit[2][1][1], WHERE_OPS[cond_unit[1]], cond_unit[3])
+            )
+    return preds
+
 class Database(object):
     def __init__(self, db_path, dataset):
         self.db_path = db_path
@@ -95,6 +108,12 @@ class Database(object):
     #     projections.
     # I6. Do not permit tasks where operators are incorrectly applied to a
     #     column with the wrong type.
+    # Invalid tasks with subqueries:
+    # I7. Do not permit tasks with more than one subquery per set operation
+    #     child query.
+    # I8. Do not permit tasks where subquery projection is neither (a) the same
+    #     as the preceding predicate column nor (b) a FK for it.
+    # I9. Do not permit tasks where a subquery has more than 1 WHERE predicate.
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
@@ -191,6 +210,43 @@ class Database(object):
                 if op_id == 9:
                     print('Failed I6.')
                     return None
+
+        subq_preds = get_subq_preds(sql)
+        if len(subq_preds) > 1:
+            print('Failed I7.')
+            return None
+
+        if sql['intersect'] is not None:
+            set_op_subq_preds = get_subq_preds(sql['intersect'])
+            if len(set_op_subq_preds) > 1:
+                print('Failed I7.')
+                return None
+        elif sql['except'] is not None:
+            set_op_subq_preds = get_subq_preds(sql['except'])
+            if len(set_op_subq_preds) > 1:
+                print('Failed I7.')
+                return None
+        elif sql['union'] is not None:
+            set_op_subq_preds = get_subq_preds(sql['union'])
+            if len(set_op_subq_preds) > 1:
+                print('Failed I7.')
+                return None
+
+        for pred in subq_preds + set_op_subq_preds:
+            pred_col, op, subq = preds[0]
+
+            assert(len(subq['select'][1]) == 1)
+
+            subq_col = subq['select'][1][0][1][1][1]
+
+            if (pred_col != subq_col and \
+                pred_col != schema.get_col(subq_col).fk_ref):
+                print('Failed I8.')
+                return None
+
+            if 'where' in subq and subq['where'] and len(subq['where']) > 1:
+                print('Failed I9.')
+                return None
 
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)
