@@ -329,7 +329,8 @@ class DuoquestVerifier:
                     return subq
 
         if subquery_count > 1:
-            print('Prune: failed condition I7.')
+            if self.debug:
+                print('Prune: failed condition I7.')
             return Tribool(False)
 
         if any(map(lambda x: x == 0, query.group_by)):
