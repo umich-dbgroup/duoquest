@@ -300,8 +300,8 @@ class DuoquestVerifier:
                 agg_present = agg_present or agg_col.has_agg == TRUE
                 non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-        for ordered_col in query.order_by:
-            agg_present = agg_present or agg_col.has_agg == TRUE
+        for oc in query.order_by:
+            agg_present = agg_present or oc.agg_col.has_agg == TRUE
 
         if agg_present and non_agg_present and query.has_group_by == FALSE:
             if self.debug:
