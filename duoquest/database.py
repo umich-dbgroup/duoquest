@@ -216,6 +216,7 @@ class Database(object):
             print('Failed I7.')
             return None
 
+        set_op_subq_preds = []
         if sql['intersect'] is not None:
             set_op_subq_preds = get_subq_preds(sql['intersect'])
             if len(set_op_subq_preds) > 1:
