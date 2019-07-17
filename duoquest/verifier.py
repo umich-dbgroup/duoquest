@@ -238,7 +238,7 @@ class DuoquestVerifier:
             if self.debug:
                 print('Prune: cannot have BETWEEN with subquery.')
             return Tribool(False)
-        if max(pred.subquery.min_select_cols, pred.subquery.select) > 1:
+        if max(pred.subquery.min_select_cols, len(pred.subquery.select)) > 1:
             print('Prune: subquery cannot have more than 1 SELECT column.')
             return Tribool(False)
         if pred.subquery.select:
@@ -248,17 +248,19 @@ class DuoquestVerifier:
                 print('Prune: failed condition I8.')
                 return Tribool(False)
         if max(pred.subquery.min_where_preds,
-            pred.subquery.where.predicates) > 1:
+            len(pred.subquery.where.predicates)) > 1:
             print('Prune: failed condition I9.')
             return Tribool(False)
-        if max(pred.subquery.min_group_by_cols, pred.subquery.group_by) > 1:
+        if max(pred.subquery.min_group_by_cols,
+            len(pred.subquery.group_by)) > 1:
             print('Prune: subquery cannot have more than 1 GROUP BY column.')
             return Tribool(False)
         if max(pred.subquery.min_having_preds,
-            pred.subquery.having.predicates) > 1:
+            len(pred.subquery.having.predicates)) > 1:
             print('Prune: subquery cannot have more than 1 HAVING predicate.')
             return Tribool(False)
-        if max(pred.subquery.min_order_by_cols, pred.subquery.order_by) > 1:
+        if max(pred.subquery.min_order_by_cols,
+            len(pred.subquery.order_by)) > 1:
             print('Prune: subquery cannot have more than 1 ORDER BY column.')
             return Tribool(False)
 
