@@ -234,7 +234,7 @@ class Database(object):
                 return None
 
         for pred in subq_preds + set_op_subq_preds:
-            pred_col, subq = preds[0]
+            pred_col, subq = pred
 
             assert(len(subq['select'][1]) == 1)
 
