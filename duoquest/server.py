@@ -1,4 +1,5 @@
 import threading
+import time
 from tribool import Tribool
 
 from multiprocessing.connection import Listener
@@ -53,6 +54,7 @@ class DuoquestServer:
         top_1 = 0
         top_5 = 0
         top_10 = 0
+        cum_time = 0
         all_tasks = 0
 
         for i, task in enumerate(tasks):
@@ -63,8 +65,15 @@ class DuoquestServer:
                 continue
 
             schema = schemas[task['db_id']]
+            start = time.time()
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
                 tsq_level, tsq_rows, timeout=timeout)
+            task_time = time.time() - start
+            if task_time > timeout:
+                task_time = timeout
+
+            print(f'TIME: {task_time:.2f}s')
+            cum_time += task_time
 
             if cqs is None:         # invalid task
                 continue
@@ -115,6 +124,7 @@ class DuoquestServer:
         print(f'Top 1: {top_1}/{all_tasks} ({(top_1/all_tasks*100):.2f}%)')
         print(f'Top 5: {top_5}/{all_tasks} ({(top_5/all_tasks*100):.2f}%)')
         print(f'Top 10: {top_10}/{all_tasks} ({(top_10/all_tasks*100):.2f}%)')
+        print(f'Avg Time: {cum_time/all_tasks:.2f}s')
 
         f.close()
         gold_f.close()
