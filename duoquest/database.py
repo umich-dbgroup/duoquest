@@ -86,11 +86,11 @@ class Database(object):
     # Invalid task conditions:
     # I1. Do not permit tasks where MIN/MAX/AVG/SUM is applied to a non-numeric
     #     column.
-    # I2. Do not permit tasks where there is (a) a non-aggregated projection;
-    #     (b) an aggregated projection; and (c) no GROUP BY.
+    # I2. Do not permit tasks where there is (a) a non-aggregated column;
+    #     (b) an aggregated column; and (c) no GROUP BY.
     # I3. Do not permit tasks with * projection without COUNT.
     # I4. Do not permit tasks with a GROUP BY when there are only
-    #     non-agg projections and no aggregates in ORDER BY or HAVING.
+    #     non-aggregate columns..
     # I5. Do not permit tasks with a GROUP BY when there are only agg
     #     projections.
     # I6. Do not permit tasks where operators are incorrectly applied to a
