@@ -4,15 +4,15 @@ import sqlite3
 from .tsq import TableSketchQuery
 
 def get_subq_preds(sql):
-    preds = []      # (col_id, op, subquery)
+    preds = []      # (col_id, subquery)
     for cond_unit in sql['where'][::2] + sql['having'][::2]:
         if isinstance(cond_unit[3], dict):
             preds.append(
-                (cond_unit[2][1][1], WHERE_OPS[cond_unit[1]], cond_unit[3])
+                (cond_unit[2][1][1], cond_unit[3])
             )
         if isinstance(cond_unit[4], dict):
             preds.append(
-                (cond_unit[2][1][1], WHERE_OPS[cond_unit[1]], cond_unit[3])
+                (cond_unit[2][1][1], cond_unit[3])
             )
     return preds
 
@@ -234,7 +234,7 @@ class Database(object):
                 return None
 
         for pred in subq_preds + set_op_subq_preds:
-            pred_col, op, subq = preds[0]
+            pred_col, subq = preds[0]
 
             assert(len(subq['select'][1]) == 1)
 
