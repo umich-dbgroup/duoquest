@@ -378,16 +378,13 @@ class DuoquestVerifier:
         if check_clauses is not None:
             return check_clauses
 
-        if not query.select:        # hasn't even started with select
-            return Tribool(None)
+        check_num_cols = self.prune_by_num_cols(query, tsq)
+        if check_num_cols is not None:
+            return check_num_cols
 
         check_semantics = self.prune_by_semantics(schema, query)
         if check_semantics is not None:
             return check_semantics
-
-        check_num_cols = self.prune_by_num_cols(query, tsq)
-        if check_num_cols is not None:
-            return check_num_cols
 
         # if not child of UNION or right child of EXCEPT, can check values
         can_check_values = tsq.values and \
