@@ -258,7 +258,7 @@ def where_clause_str(pq, schema, aliases, verify=None):
         predicates.append(pred_str)
 
     if predicates:
-        where_exprs.append(u'({})'.format(u' '.join(predicates)))
+        where_exprs.append(u'{}'.format(u' '.join(predicates)))
 
     if verify:
         verify_preds = []

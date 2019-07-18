@@ -97,24 +97,25 @@ class Database(object):
     # TSQ generation process
     # ----------------------
     # Invalid task conditions:
-    # I0. Do not permit tasks that have empty results.
+    # I0. Do not permit tasks that have empty results. [Task Scope]
     # I1. Do not permit tasks where MIN/MAX/AVG/SUM is applied to a non-numeric
-    #     column.
+    #     column. [Semantic]
     # I2. Do not permit tasks where there is (a) a non-aggregated column;
-    #     (b) an aggregated column; and (c) no GROUP BY.
-    # I3. Do not permit tasks with * projection without COUNT.
+    #     (b) an aggregated column; and (c) no GROUP BY. [Semantic]
+    # I3. Do not permit tasks with * projection without COUNT. [Task Scope]
     # I4. Do not permit tasks with a GROUP BY when there are only
-    #     non-aggregate columns..
+    #     non-aggregate columns. [Semantic]
     # I5. Do not permit tasks with a GROUP BY when there are only agg
-    #     projections.
+    #     projections. [Semantic]
     # I6. Do not permit tasks where operators are incorrectly applied to a
-    #     column with the wrong type.
+    #     column with the wrong type. [Semantic]
     # Invalid tasks with subqueries:
     # I7. Do not permit tasks with more than one subquery per set operation
-    #     child query.
+    #     child query. [Task Scope]
     # I8. Do not permit tasks where subquery projection is neither (a) the same
-    #     as the preceding predicate column nor (b) a FK for it.
+    #     as the preceding predicate column nor (b) a FK for it. [Semantic]
     # I9. Do not permit tasks where a subquery has more than 1 WHERE predicate.
+    #     [Task Scope]
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
