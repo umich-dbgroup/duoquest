@@ -47,8 +47,9 @@ def subq_info(sql, schema):
     #  8. Subquery has exactly 1 HAVING predicate.
     #  9. Subquery has ORDER BY.
     # 10. Subquery has exactly 1 ORDER BY column.
+    # 11. Subquery projection has COUNT.
 
-    info = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    info = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     preds = get_subq_preds(sql)
 
@@ -75,6 +76,7 @@ def subq_info(sql, schema):
     info[9] = int('orderBy' in subq and bool(subq['orderBy']))
     info[10] = int('orderBy' in subq and bool(subq['orderBy']) \
         and len(subq['orderBy'][1]) == 1)
+    info[11] = (subq['select'][1][0][0] == 3)
 
     return info
 
@@ -83,7 +85,7 @@ def main():
     config.read('config.ini')
 
     subq_count = 0
-    cum_subq_infos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    cum_subq_infos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     from_subq_count = 0
     for mode in ('dev', 'test'):
         data = json.load(open(config['spider'][f'{mode}_path']))

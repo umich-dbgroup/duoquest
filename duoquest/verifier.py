@@ -249,6 +249,11 @@ class DuoquestVerifier:
                 if self.debug:
                     print('Prune: failed condition I8.')
                 return Tribool(False)
+            if pred.subquery.select[0].has_agg == TRUE and \
+                pred.subquery.select[0].agg == COUNT:
+                if self.debug:
+                    print('Prune: Subquery cannot project COUNT().')
+                return Tribool(False)
         if max(pred.subquery.min_where_preds,
             len(pred.subquery.where.predicates)) > 1:
             if self.debug:
