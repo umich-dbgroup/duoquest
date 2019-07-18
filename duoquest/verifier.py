@@ -270,7 +270,8 @@ class DuoquestVerifier:
                 print('Prune: subquery cannot have more than 1 ORDER BY column.')
             return Tribool(False)
 
-        if pred.subquery.has_order_by and not pred.subquery.has_limit:
+        if pred.subquery.done_order_by and pred.subquery.has_order_by and \
+            not pred.subquery.has_limit:
             if self.debug:
                 print('Prune: subquery cannot have ORDER BY without LIMIT.')
             return Tribool(False)
