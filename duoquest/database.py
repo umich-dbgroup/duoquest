@@ -117,8 +117,8 @@ class Database(object):
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
-    # C2. Any tasks with superlatives (ORDER BY + LIMIT) in subquery or main
-    #     query will have empty `values'.
+    # C2. Any tasks with superlatives (ORDER BY + LIMIT) in main query or
+    #     (ORDER BY + LIMIT or min/max) in subquery will have empty `values'.
     # C3. *DEPRECATED*: If any queries contain nested subqueries in WHERE or
     #      HAVING clauses, `values' will be empty.
     # C4. If ORDER BY present without LIMIT, at least 2 rows will be generated
@@ -267,8 +267,9 @@ class Database(object):
 
         # perform C2
         if has_order and has_limit or \
-            any(map(lambda s: 'orderBy' in s[1] and \
-                s[1]['orderBy'] and 'limit' in s[1] and s[1]['limit'],
+            any(map(lambda s: ('orderBy' in s[1] and \
+                s[1]['orderBy'] and 'limit' in s[1] and s[1]['limit']) or \
+                s[1]['select'][1][0][0] in (1, 2),
                 subq_preds + set_op_subq_preds)):
             return tsq
 
