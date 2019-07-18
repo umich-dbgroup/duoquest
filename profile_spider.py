@@ -92,7 +92,7 @@ def main():
 
         schemas, _ = load_schemas(schemas_path)
 
-        for task in data:
+        for i, task in enumerate(data):
             subq, in_from = contains_subquery(task['sql'])
 
             if subq:
@@ -129,6 +129,7 @@ def main():
                                     schemas[task['db_id']]))
                         )
 
+                    print(f'Spider || Mode: {mode} || Task ID: {i+1}')
                     print(f"QUESTION: {task['question']}")
                     print(f"QUERY: {task['query']}\n")
                 print(f"-- SUBQUERIES: {subq_count}")
