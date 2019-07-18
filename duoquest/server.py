@@ -7,6 +7,7 @@ from threading import Event, Thread
 
 from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct
+from .query import generate_sql_str
 
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_path, gold_path, n, b):
