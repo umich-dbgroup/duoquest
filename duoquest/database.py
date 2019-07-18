@@ -97,6 +97,7 @@ class Database(object):
     # TSQ generation process
     # ----------------------
     # Invalid task conditions:
+    # I0. Do not permit tasks that have empty results.
     # I1. Do not permit tasks where MIN/MAX/AVG/SUM is applied to a non-numeric
     #     column.
     # I2. Do not permit tasks where there is (a) a non-aggregated column;
@@ -261,18 +262,6 @@ class Database(object):
         if has_limit:
             tsq.limit = sql['limit']
 
-        # don't retrieve values for no_values or no_type
-        if tsq_level in ('no_values', 'no_type'):
-            return tsq
-
-        # perform C2
-        if has_order and has_limit or \
-            any(map(lambda s: ('orderBy' in s[1] and \
-                s[1]['orderBy'] and 'limit' in s[1] and s[1]['limit']) or \
-                s[1]['select'][1][0][0] in (1, 2),
-                subq_preds + set_op_subq_preds)):
-            return tsq
-
         # perform C3
         # for item in sql['where']:
         #     if isinstance(item, list):
@@ -298,6 +287,10 @@ class Database(object):
                 fetch_rows = tsq_rows
 
             rows = cur.fetchmany(size=fetch_rows)
+
+            if not rows:
+                raise Exception('Failed I0: empty query result.')
+
             for row in rows:
                 value_row = []
                 for i, val in enumerate(row):
@@ -315,4 +308,18 @@ class Database(object):
         finally:
             cur.close()
             conn.close()
+
+            if tsq is not None:
+                # don't retrieve values for no_values or no_type
+                if tsq_level in ('no_values', 'no_type'):
+                    tsq.values = []
+
+                # perform C2
+                if (has_order and has_limit) or \
+                    any(map(lambda s: ('orderBy' in s[1] and \
+                        s[1]['orderBy'] and 'limit' in s[1] and s[1]['limit']) \
+                        or s[1]['select'][1][0][0] in (1, 2),
+                        subq_preds + set_op_subq_preds)):
+                    tsq.values = []
+
             return tsq
