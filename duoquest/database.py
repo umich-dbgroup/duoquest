@@ -267,8 +267,8 @@ class Database(object):
 
         # perform C2
         if has_order and has_limit or \
-            any(map(lambda p, s: 'orderBy' in s and \
-                s['orderBy'] and 'limit' in s and s['limit'],
+            any(map(lambda s: 'orderBy' in s[1] and \
+                s[1]['orderBy'] and 'limit' in s[1] and s[1]['limit'],
                 subq_preds + set_op_subq_preds)):
             return tsq
 
