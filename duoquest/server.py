@@ -55,6 +55,7 @@ class DuoquestServer:
         top_1 = 0
         top_5 = 0
         top_10 = 0
+        top_n = 0
         cum_time = 0
         all_tasks = 0
 
@@ -88,6 +89,8 @@ class DuoquestServer:
                     top_5 += 1
                 if og_rank <= 10:
                     top_10 += 1
+                if og_rank <= self.n:
+                    top_n += 1
 
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
@@ -125,6 +128,7 @@ class DuoquestServer:
         print(f'Top 1: {top_1}/{all_tasks} ({(top_1/all_tasks*100):.2f}%)')
         print(f'Top 5: {top_5}/{all_tasks} ({(top_5/all_tasks*100):.2f}%)')
         print(f'Top 10: {top_10}/{all_tasks} ({(top_10/all_tasks*100):.2f}%)')
+        print(f'Top {self.n}: {top_n}/{all_tasks} ({(top_n/all_tasks*100):.2f}%)')
         print(f'Avg Time: {cum_time/all_tasks:.2f}s')
 
         f.close()
