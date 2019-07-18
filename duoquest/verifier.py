@@ -463,4 +463,8 @@ class DuoquestVerifier:
             if check_order is not None:
                 return check_order
 
+        if query.done_query:
+            # TODO: possibly still need to execute full query if there's set ops
+            return Tribool(True)
+
         return Tribool(None)        # return indeterminate
