@@ -85,8 +85,8 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
-        tid=args.tid, compare=args.compare, kmaps=kmaps,
-        start_tid=args.start_tid, timeout=args.timeout)
+        kmaps, tid=args.tid, compare=args.compare, start_tid=args.start_tid,
+        timeout=args.timeout)
 
 if __name__ == '__main__':
     main()

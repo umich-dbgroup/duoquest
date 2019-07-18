@@ -19,7 +19,7 @@ class DuoquestServer:
         self.b = b
 
     def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
-        tsq_rows, timeout=None):
+        tsq_rows, eval_kmaps, timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
@@ -33,7 +33,7 @@ class DuoquestServer:
             print(tsq)
             ready = Event()
             t = threading.Thread(target=self.task_thread,
-                args=(db, schema, nlqc, tsq, ready))
+                args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query']))
             t.start()
             ready.wait()
 
@@ -46,7 +46,7 @@ class DuoquestServer:
         return cqs
 
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        tid=None, compare=None, kmaps=None, start_tid=None, timeout=None):
+        eval_kmaps, tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
         f = open(self.out_path, 'w+')
         gold_f = open(self.gold_path, 'w+')
@@ -67,7 +67,7 @@ class DuoquestServer:
             schema = schemas[task['db_id']]
             start = time.time()
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
-                tsq_level, tsq_rows, timeout=timeout)
+                tsq_level, tsq_rows, eval_kmaps, timeout=timeout)
             task_time = time.time() - start
             if task_time > timeout:
                 task_time = timeout
@@ -78,7 +78,7 @@ class DuoquestServer:
             if cqs is None:         # invalid task
                 continue
 
-            og_rank = correct_rank(db, task['db_id'], kmaps, task['query'], cqs)
+            og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'], cqs)
             all_tasks += 1
             if og_rank:
                 if og_rank == 1:
@@ -91,8 +91,8 @@ class DuoquestServer:
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
-                cm_rank = correct_rank(db, task['db_id'], kmaps, task['query'],
-                    cm_cqs)
+                cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
+                    task['query'], cm_cqs)
 
                 print('\n{} RANK: {}\n{} RANK: {}\n'.format(
                     tsq_level, og_rank, compare, cm_rank
