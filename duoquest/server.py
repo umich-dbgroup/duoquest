@@ -128,7 +128,9 @@ class DuoquestServer:
         print(f'Top 1: {top_1}/{all_tasks} ({(top_1/all_tasks*100):.2f}%)')
         print(f'Top 5: {top_5}/{all_tasks} ({(top_5/all_tasks*100):.2f}%)')
         print(f'Top 10: {top_10}/{all_tasks} ({(top_10/all_tasks*100):.2f}%)')
-        print(f'Top {self.n}: {top_n}/{all_tasks} ({(top_n/all_tasks*100):.2f}%)')
+        if self.n > 10:
+            print(f'Top {self.n}: {top_n}/{all_tasks} ' + \
+                f'({(top_n/all_tasks*100):.2f}%)')
         print(f'Avg Time: {cum_time/all_tasks:.2f}s')
 
         f.close()
