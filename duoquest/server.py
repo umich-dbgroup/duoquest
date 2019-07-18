@@ -74,11 +74,11 @@ class DuoquestServer:
             if task_time > timeout:
                 task_time = timeout
 
-            print(f'TIME: {task_time:.2f}s')
-            cum_time += task_time
-
             if cqs is None:         # invalid task
                 continue
+
+            print(f'TIME: {task_time:.2f}s')
+            cum_time += task_time
 
             og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'], cqs)
             all_tasks += 1
