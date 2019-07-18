@@ -6,7 +6,7 @@ from multiprocessing.connection import Listener
 from threading import Event, Thread
 
 from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
-from .external.eval import correct_rank
+from .external.eval import correct_rank, is_correct
 
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_path, gold_path, n, b):
@@ -130,7 +130,7 @@ class DuoquestServer:
         gold_f.close()
         nlqc.close()
 
-    def task_thread(self, db, schema, nlqc, tsq, ready):
+    def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -161,6 +161,9 @@ class DuoquestServer:
                     response.results.append(UNKNOWN)
                 elif result.value:
                     response.results.append(TRUE)
+                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
+                        generate_sql_str(query, schema)):
+                        response.answer_found = True
                 else:
                     response.results.append(FALSE)
 

@@ -515,6 +515,34 @@ def print_scores(n, scores, etype):
             this_scores = [scores[level]['partial'][type_]['f1'] for level in levels]
             print("{:20} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f} {:<20.3f}".format(type_, *this_scores))
 
+def is_correct(db, db_name, kmaps, g_str, p_str, enforce_select_order=False):
+    db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
+    schema = Schema(get_schema(db_path))
+    evaluator = Evaluator(enforce_select_order=enforce_select_order)
+
+    g_sql = get_sql(schema, g_str)
+    kmap = kmaps[db_name]
+    g_valid_col_units = build_valid_col_units(g_sql['from']['table_units'], schema)
+    g_sql = rebuild_sql_val(g_sql)
+    g_sql = rebuild_sql_col(g_valid_col_units, g_sql, kmap)
+
+    try:
+        p_str = p_str.replace("\"", "").replace("''", " ")
+        p_sql = get_sql(schema, p_str)
+
+        p_valid_col_units = build_valid_col_units(p_sql['from']['table_units'], schema)
+        p_sql = rebuild_sql_val(p_sql)
+        p_sql = rebuild_sql_col(p_valid_col_units, p_sql, kmap)
+
+        g_sql_copy = copy.deepcopy(g_sql)
+        exact_score = evaluator.eval_exact_match(p_sql, g_sql_copy)
+
+        return exact_score == 1
+    except Exception as e:
+        print(traceback.format_exc())
+
+    return False
+
 def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
     db_path = os.path.join(db.db_path, db_name, '{}.sqlite'.format(db_name))
     schema = Schema(get_schema(db_path))
