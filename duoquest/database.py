@@ -117,9 +117,10 @@ class Database(object):
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
-    # C2. Superlatives (ORDER BY + LIMIT) will have empty `values'.
-    # C3. If any queries contain nested subqueries in WHERE or HAVING clauses,
-    #     `values' will be empty.
+    # C2. Any tasks with superlatives (ORDER BY + LIMIT) in subquery or main
+    #     query will have empty `values'.
+    # C3. *DEPRECATED*: If any queries contain nested subqueries in WHERE or
+    #      HAVING clauses, `values' will be empty.
     # C4. If ORDER BY present without LIMIT, at least 2 rows will be generated
     #     to allow for ordering enforcement.
     # C5. If result resulting from an aggregate is 0, don't produce range value.
@@ -265,20 +266,23 @@ class Database(object):
             return tsq
 
         # perform C2
-        if has_order and has_limit:
+        if has_order and has_limit or \
+            any(map(lambda (_, s): 'orderBy' in s and \
+                s['orderBy'] and 'limit' in s and s['limit'],
+                subq_preds + set_op_subq_preds)):
             return tsq
 
         # perform C3
-        for item in sql['where']:
-            if isinstance(item, list):
-                val1 = item[3]
-                if isinstance(val1, dict):
-                    return tsq
-        for item in sql['having']:
-            if isinstance(item, list):
-                val1 = item[3]
-                if isinstance(val1, dict):
-                    return tsq
+        # for item in sql['where']:
+        #     if isinstance(item, list):
+        #         val1 = item[3]
+        #         if isinstance(val1, dict):
+        #             return tsq
+        # for item in sql['having']:
+        #     if isinstance(item, list):
+        #         val1 = item[3]
+        #         if isinstance(val1, dict):
+        #             return tsq
 
         # Finding values
         conn = self.get_conn(db_name=schema.db_id)
