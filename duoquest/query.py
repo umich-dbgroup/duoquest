@@ -257,11 +257,8 @@ def where_clause_str(pq, schema, aliases, verify=None):
         ])
         predicates.append(pred_str)
 
-    if predicates:
-        where_exprs.append(u'{}'.format(u' '.join(predicates)))
-
+    verify_preds = []
     if verify:
-        verify_preds = []
         for i, item in enumerate(verify):
             agg_col, tsq_const = item
 
@@ -290,7 +287,15 @@ def where_clause_str(pq, schema, aliases, verify=None):
                     '=',
                     format_literal(col_type, tsq_const)
                 ]))
+
+    if predicates and verify_preds:
+        where_exprs.append(u'({})'.format(u' '.join(predicates)))
         where_exprs.append(u'({})'.format(u' AND '.join(verify_preds)))
+    else:
+        if predicates:
+            where_exprs.append(u'{}'.format(u' '.join(predicates)))
+        if verify_preds:
+            where_exprs.append(u'{}'.format(u' AND '.join(verify_preds)))
 
     return u'WHERE {}'.format(u' AND '.join(where_exprs))
 
@@ -339,11 +344,8 @@ def having_clause_str(pq, schema, aliases, verify=None):
         pred_str = u' '.join([having_col, to_str_op(pred.op), having_val])
         predicates.append(pred_str)
 
-    if predicates:
-        having_exprs.append(u'({})'.format(u' '.join(predicates)))
-
+    verify_preds = []
     if verify:
-        verify_preds = []
         for i, item in enumerate(verify):
             agg_col, tsq_const = item
 
@@ -375,7 +377,15 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     '=',
                     format_literal(col_type, tsq_const)
                 ]))
+
+    if predicates and verify_preds:
+        having_exprs.append(u'({})'.format(u' '.join(predicates)))
         having_exprs.append(u'({})'.format(u' AND '.join(verify_preds)))
+    else:
+        if predicates:
+            having_exprs.append(u'{}'.format(u' '.join(predicates)))
+        if verify_preds:
+            having_exprs.append(u'{}'.format(u' AND '.join(verify_preds)))
 
     return u'HAVING {}'.format(u' AND '.join(having_exprs))
 
