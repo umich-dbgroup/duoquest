@@ -576,7 +576,7 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
 
     return rank
 
-def evaluate(gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
+def evaluate(n, gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
     with open(gold) as f:
         glist = [l.strip().split('\t') for l in f.readlines() if len(l.strip()) > 0]
 
@@ -587,7 +587,7 @@ def evaluate(gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=Fals
     evaluator = Evaluator()
 
     # cjbaik: 02/15/2019: add top_n_sizes for top-1, top-5, top-10 accuracy
-    top_n_sizes = [1, 5, 10]
+    top_n_sizes = [1, 5, n]
 
     levels = ['easy', 'medium', 'hard', 'extra', 'all']
     partial_types = ['select', 'select(no AGG)', 'where', 'where(no OP)', 'group(no Having)',

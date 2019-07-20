@@ -47,5 +47,5 @@ if __name__ == '__main__':
     for t in tables_data:
         tables[t['db_id']] = t
 
-    evaluate(gold, pred, db_dir, args.etype, kmaps, tables, args.dataset,
+    evaluate(n, gold, pred, db_dir, args.etype, kmaps, tables, args.dataset,
         no_print=args.no_print)
