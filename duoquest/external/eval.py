@@ -587,7 +587,9 @@ def evaluate(n, gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=F
     evaluator = Evaluator()
 
     # cjbaik: 02/15/2019: add top_n_sizes for top-1, top-5, top-10 accuracy
-    top_n_sizes = [1, 5, n]
+    top_n_sizes = [1, 5, 10]
+    if n > 10:
+        top_n_sizes.append(n)
 
     levels = ['easy', 'medium', 'hard', 'extra', 'all']
     partial_types = ['select', 'select(no AGG)', 'where', 'where(no OP)', 'group(no Having)',
