@@ -87,6 +87,8 @@ def main():
     subq_count = 0
     cum_subq_infos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     from_subq_count = 0
+    order_by_2 = 0
+    order_by_3 = 0
     for mode in ('dev', 'test'):
         data = json.load(open(config['spider'][f'{mode}_path']))
         db_path = config['spider'][f'{mode}_db_path']
@@ -96,6 +98,14 @@ def main():
 
         for i, task in enumerate(data):
             subq, in_from = contains_subquery(task['sql'])
+
+            # contains more than 1 ORDER BY column
+            if 'orderBy' in task['sql'] and task['sql']['orderBy'] \
+                and len(task['sql']['orderBy'][1]) > 1:
+                if len(task['sql']['orderBy'][1]) == 2:
+                    order_by_2 += 1
+                elif len(task['sql']['orderBy'][1]) == 3:
+                    order_by_3 += 1
 
             if subq:
                 if in_from:
@@ -137,6 +147,9 @@ def main():
                 print(f"-- SUBQUERIES: {subq_count}")
                 print(f"-- COVERAGE INFO: {cum_subq_infos}")
                 print(f"-- FROM SUBQUERIES: {from_subq_count}\n")
+
+            print(f'ORDER BY (2 Columns): {order_by_2}')
+            print(f'ORDER BY (3 Columns): {order_by_3}')
 
 
 if __name__ == '__main__':

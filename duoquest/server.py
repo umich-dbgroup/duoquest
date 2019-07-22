@@ -1,3 +1,4 @@
+import math
 import threading
 import time
 from tribool import Tribool
@@ -6,18 +7,16 @@ from multiprocessing.connection import Listener
 from threading import Event, Thread
 
 from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
-from .external.eval import correct_rank, is_correct
+from .external.eval import correct_rank, is_correct, mrr
 from .query import generate_sql_str
 
 class DuoquestServer:
-    def __init__(self, port, authkey, verifier, out_path, gold_path, n, b):
+    def __init__(self, port, authkey, verifier, out_base, n):
         self.port = port
         self.authkey = authkey
         self.verifier = verifier
-        self.out_path = out_path
-        self.gold_path = gold_path
+        self.out_base = out_base
         self.n = n
-        self.b = b
 
     def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
         tsq_rows, eval_kmaps, timeout=None):
@@ -38,8 +37,8 @@ class DuoquestServer:
             t.start()
             ready.wait()
 
-        cqs = nlqc.run(task_id, self.n, self.b, task['db_id'],
-            task['question_toks'], tsq_level, timeout=timeout)
+        cqs = nlqc.run(task_id, self.n, task['db_id'], task['question_toks'],
+            tsq_level, timeout=timeout)
 
         if tsq_level != 'no_duoquest':
             t.join()
@@ -49,15 +48,16 @@ class DuoquestServer:
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
         eval_kmaps, tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
-        f = open(self.out_path, 'w+')
-        gold_f = open(self.gold_path, 'w+')
+        out_path = f'{self.out_base}.sqls'
+        gold_path = f'{self.out_base}.gold'
+        time_path = f'{self.out_base}.times'
 
-        top_1 = 0
-        top_5 = 0
-        top_10 = 0
-        top_n = 0
-        cum_time = 0
-        all_tasks = 0
+        f = open(out_path, 'w+')
+        gold_f = open(gold_path, 'w+')
+        time_f = open(time_path, 'w+')
+
+        ranks = []
+        times = []
 
         for i, task in enumerate(tasks):
             task_id = i+1
@@ -71,27 +71,18 @@ class DuoquestServer:
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
                 tsq_level, tsq_rows, eval_kmaps, timeout=timeout)
             task_time = time.time() - start
-            if task_time > timeout:
-                task_time = timeout
 
             if cqs is None:         # invalid task
                 continue
 
-            print(f'TIME: {task_time:.2f}s')
-            cum_time += task_time
+            og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'],
+                cqs)
+            if task_time > timeout or og_rank is None:
+                task_time = math.inf
+            ranks.append(og_rank)
+            times.append(task_time)
 
-            og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'], cqs)
-            all_tasks += 1
-            if og_rank:
-                if og_rank == 1:
-                    top_1 += 1
-                if og_rank <= 5:
-                    top_5 += 1
-                if og_rank <= 10:
-                    top_10 += 1
-                if og_rank <= self.n:
-                    top_n += 1
-
+            # debug, for comparing with other mode
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows)
@@ -125,17 +116,32 @@ class DuoquestServer:
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
 
-        print(f'Top 1: {top_1}/{all_tasks} ({(top_1/all_tasks*100):.2f}%)')
-        print(f'Top 5: {top_5}/{all_tasks} ({(top_5/all_tasks*100):.2f}%)')
-        print(f'Top 10: {top_10}/{all_tasks} ({(top_10/all_tasks*100):.2f}%)')
-        if self.n > 10:
-            print(f'Top {self.n}: {top_n}/{all_tasks} ' + \
-                f'({(top_n/all_tasks*100):.2f}%)')
-        print(f'Avg Time: {cum_time/all_tasks:.2f}s')
+            print(f'TIME: {task_time:.2f}s')
+            time_f.write(f'{task_time:.2f}')
+            time_f.write('\n')
 
         f.close()
         gold_f.close()
+        time_f.close()
         nlqc.close()
+
+        n_vals_to_check = [1, 5, 10]
+        if self.n > 10:
+            n_vals_to_check.append(self.n)
+
+        for n_val in n_vals_to_check:
+            result = sum(1 for r in ranks if r <= n_val)
+            print(f'Top {n_val} Accuracy: {result}/{len(ranks)}' +
+                f' ({(result/len(ranks)*100):.2f}%)')
+        print(f'MRR: {mrr(ranks)}')
+
+        avg_time = sum(t for t in times if t != math.inf) / len(times)
+        print(f'Avg Time: {avg_time:.2f}s')
+
+        cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / len(times) * 100):.2f})',
+                enumerate(sorted(filter(lambda t: t != math.inf, times))))
+        print(f"CDF Points:\n(0,0) {' '.join(cdf)}")
+
 
     def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold):
         address = ('localhost', self.port)

@@ -13,13 +13,12 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, tid, n, b, db_name, nlq, tsq_level, timeout=None):
+    def run(self, tid, n, db_name, nlq, tsq_level, timeout=None):
         task = ProtoTask()
         task.id = tid
         task.dataset = self.dataset
         task.mode = self.mode
         task.n = n
-        task.b = b
         task.tsq_level = tsq_level
         task.db_name = db_name
         task.timeout = timeout

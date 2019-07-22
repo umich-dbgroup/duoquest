@@ -38,8 +38,8 @@ if __name__ == '__main__':
         # TODO
         pass
 
-    pred, gold = results_path(config, args.system, args.dataset, args.mode,
-        args.n, args.b, args.tsq_level, args.tsq_rows, args.cache)
+    out_base = results_path(config, args.system, args.dataset, args.mode,
+        args.n, args.tsq_level, args.tsq_rows, args.cache)
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)
@@ -47,5 +47,8 @@ if __name__ == '__main__':
     for t in tables_data:
         tables[t['db_id']] = t
 
-    evaluate(args.n, gold, pred, db_dir, args.etype, kmaps, tables,
+    pred_path = f'{out_base}.sqls'
+    gold_path = f'{out_base}.gold'
+
+    evaluate(args.n, gold_path, pred_path, db_dir, args.etype, kmaps, tables,
         args.dataset, no_print=args.no_print)

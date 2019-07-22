@@ -32,8 +32,6 @@ def main():
     # NLQ parameters
     parser.add_argument('--n', default=10, type=int,
         help='Max number of final queries to output')
-    parser.add_argument('--b', default=0, type=int,
-        help='Beam search parameter')
     parser.add_argument('--timeout', default=5, type=int,
         help='Timeout if search does not terminate')
 
@@ -69,15 +67,13 @@ def main():
         # TODO
         pass
 
-    out_path, gold_path = results_path(config, args.system, args.dataset,
-        args.mode, args.n, args.b, args.tsq_level, args.tsq_rows, args.cache)
-    print(f'Output sent to file <{out_path}>...')
-    print(f'Gold results sent to file <{gold_path}>...')
+    out_base = results_path(config, args.system, args.dataset, args.mode,
+        args.n, args.tsq_level, args.tsq_rows, args.cache)
 
     verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),
-        config['duoquest']['authkey'].encode('utf-8'), verifier, out_path,
-        gold_path, args.n, args.b)
+        config['duoquest']['authkey'].encode('utf-8'), verifier, out_base,
+        args.n)
 
     schemas, kmaps = load_schemas(schemas_path)
     db = Database(db_path, args.dataset)

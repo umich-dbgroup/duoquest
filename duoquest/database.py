@@ -109,13 +109,13 @@ class Database(object):
     #     projections. [Semantic]
     # I6. Do not permit tasks where operators are incorrectly applied to a
     #     column with the wrong type. [Semantic]
-    # Invalid tasks with subqueries:
     # I7. Do not permit tasks with more than one subquery per set operation
     #     child query. [Task Scope]
     # I8. Do not permit tasks where subquery projection is neither (a) the same
     #     as the preceding predicate column nor (b) a FK for it. [Semantic]
     # I9. Do not permit tasks where a subquery has more than 1 WHERE predicate.
     #     [Task Scope]
+    # I10. Do not permit tasks with more than 1 ORDER BY column.
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
@@ -145,7 +145,6 @@ class Database(object):
         for agg, val_unit in sql['select'][1]:
             _, col_id, _ = val_unit[1]
 
-            # check I3
             if col_id == 0 and agg != 3:
                 print('Failed I3.')
                 return None
@@ -154,7 +153,6 @@ class Database(object):
 
             col_type = schema.get_col(col_id).type
 
-            # check I1
             if agg in (1, 2, 4, 5) and col_type != 'number':
                 print('Failed I1.')
                 return None
@@ -168,13 +166,11 @@ class Database(object):
             else:
                 types.append(col_type)
 
-        # check I2
         if agg_present and non_agg_present and \
             not ('groupBy' in sql and sql['groupBy']):
             print('Failed I2.')
             return None
 
-        # check I4
         if not agg_present and non_agg_present \
             and 'groupBy' in sql and sql['groupBy'] \
             and not ('orderBy' in sql and sql['orderBy'] \
@@ -183,10 +179,13 @@ class Database(object):
             print('Failed I4.')
             return None
 
-        # check I5
         if agg_present and not non_agg_present and \
             'groupBy' in sql and sql['groupBy']:
             print('Failed I5.')
+            return None
+
+        if 'orderBy' in sql and sql['orderBy'] and len(sql['orderBy'][1]) > 1:
+            print('Failed I10.')
             return None
 
         for pred in sql['where']:

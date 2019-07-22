@@ -957,6 +957,13 @@ def rebuild_sql_col(valid_col_units, sql, kmap):
 
     return sql
 
+def mrr(ranks):
+    cum = 0
+    for rank in ranks:
+        if rank is None:
+            continue
+        cum += (1 / rank)
+    return cum / len(ranks)
 
 def build_foreign_key_map(entry):
     cols_orig = entry["column_names_original"]
