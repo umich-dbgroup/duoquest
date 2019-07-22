@@ -151,6 +151,8 @@ class DuoquestVerifier:
             cur.execute(verify_q)
 
             if not cur.fetchone():
+                if self.debug:
+                    print('Prune: Verify failed.')
                 return Tribool(False)
 
             cur.close()
