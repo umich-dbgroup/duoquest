@@ -104,7 +104,7 @@ class DuoquestServer:
                         print()
                         raise Exception('Rank is lower than compare!')
             else:
-                print('RANK: {}\n'.format(og_rank))
+                print('RANK: {}'.format(og_rank))
 
             if cqs:
                 f.write(u'\t'.join(cqs))
@@ -116,7 +116,7 @@ class DuoquestServer:
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
 
-            print(f'TIME: {task_time:.2f}s')
+            print(f'TIME: {task_time:.2f}s\n')
             time_f.write(f'{task_time:.2f}')
             time_f.write('\n')
 
