@@ -1,6 +1,24 @@
 syntax = "proto3";
 
 // MAIN INTERFACE MESSAGES
+message ProtoTask {
+  int32 id = 1;
+  string dataset = 2;
+  string mode = 3;
+
+  string db_name = 4;
+  repeated string nlq_tokens = 5;
+  int32 n = 6;
+  // int32 b = 7;
+
+  string tsq_level = 8;
+  int32 timeout = 9;
+}
+
+message ProtoCandidates {
+  repeated ProtoQuery cqs = 1;
+}
+
 message ProtoQueryList {
   repeated ProtoQuery queries = 1;
 }

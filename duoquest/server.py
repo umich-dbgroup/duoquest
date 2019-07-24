@@ -6,7 +6,7 @@ from tribool import Tribool
 from multiprocessing.connection import Listener
 from threading import Event, Thread
 
-from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
+from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct, print_mrr, print_cdf, \
     print_avg_time
 from .query import generate_sql_str

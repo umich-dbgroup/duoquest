@@ -1,6 +1,6 @@
 from multiprocessing.connection import Client
 
-from .proto.task_pb2 import ProtoTask, ProtoCandidates
+from .proto.duoquest_pb2 import ProtoTask, ProtoCandidates
 
 class NLQClient:
     def __init__(self, port, authkey, dataset, mode):
