@@ -64,7 +64,7 @@ if __name__ == '__main__':
             for l in f.readlines() if len(l.strip()) > 0]
 
     with open(times_path) as f:
-        times = [l.strip() for l in f.readlines()]
+        times = [float(l.strip()) for l in f.readlines()]
 
     eval_duoquest(args.n, db, kmaps, golds, preds, times)
 
