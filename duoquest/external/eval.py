@@ -557,6 +557,10 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
 
     rank = None
     for p_rank, p_str in enumerate(p_strs):
+        # no good queries found
+        if p_str.lower() == 'select a from b':
+            continue
+
         try:
             p_str = p_str.replace("\"", "").replace("''", " ")
             p_sql = get_sql(schema, p_str)
