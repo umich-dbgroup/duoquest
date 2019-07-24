@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     pred_path = f'{out_base}.sqls'
     gold_path = f'{out_base}.gold'
-    times_path = f'{out_base}.gold'
+    times_path = f'{out_base}.times'
 
     with open(pred_path) as f:
         preds = [l.strip().split('\t') \
