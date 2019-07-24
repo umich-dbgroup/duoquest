@@ -38,7 +38,7 @@ class DuoquestServer:
             t.start()
             ready.wait()
 
-        cqs = nlqc.run(task_id, self.n, task['db_id'], task['question_toks'],
+        cqs = nlqc.run(task_id, self.n, schema, task['question_toks'],
             tsq_level, timeout=timeout)
 
         if tsq_level != 'no_duoquest':

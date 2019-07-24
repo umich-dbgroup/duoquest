@@ -13,14 +13,14 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, tid, n, db_name, nlq, tsq_level, timeout=None):
+    def run(self, tid, n, schema, nlq, tsq_level, timeout=None):
         task = ProtoTask()
         task.id = tid
         task.dataset = self.dataset
         task.mode = self.mode
         task.n = n
         task.tsq_level = tsq_level
-        task.db_name = db_name
+        task.db_name = schema['db_id']
         task.timeout = timeout
         if isinstance(nlq, list):
             for token in nlq:
@@ -33,8 +33,7 @@ class NLQClient:
         proto_cands = ProtoCandidates()
         proto_cands.ParseFromString(msg)
         return list(
-            map(lambda x: str(x).encode('unicode_escape').decode('utf-8'),
-                proto_cands.cq)
+            map(lambda x: generate_sql_str(x, schema), proto_cands.cq)
         )
 
     def close(self):

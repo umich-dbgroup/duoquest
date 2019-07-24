@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "query.proto";
+
 message ProtoTask {
   int32 id = 1;
   string dataset = 2;
@@ -15,5 +17,5 @@ message ProtoTask {
 }
 
 message ProtoCandidates {
-  repeated string cq = 1;
+  repeated ProtoQuery cqs = 1;
 }
