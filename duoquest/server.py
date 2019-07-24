@@ -130,7 +130,7 @@ class DuoquestServer:
             n_vals_to_check.append(self.n)
 
         for n_val in n_vals_to_check:
-            result = sum(1 for r in ranks if r <= n_val)
+            result = sum(1 for r in ranks if r is not None and r <= n_val)
             print(f'Top {n_val} Accuracy: {result}/{len(ranks)}' +
                 f' ({(result/len(ranks)*100):.2f}%)')
         print(f'MRR: {mrr(ranks)}')
