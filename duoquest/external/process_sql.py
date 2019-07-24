@@ -322,6 +322,19 @@ def parse_condition(toks, start_idx, tables_with_alias, schema, default_tables=N
             assert toks[idx] == 'and'
             idx += 1
             idx, val2 = parse_value(toks, idx, tables_with_alias, schema, default_tables)
+        elif op_id == WHERE_OPS.index('in'):
+            assert toks[idx] == '('
+            idx += 1
+
+            vals = []
+            idx, val = parse_value(toks, idx, tables_with_alias, schema, default_tables)
+            vals.append(val)
+            while toks[idx] == ',':
+                idx, val = parse_value(toks, idx, tables_with_alias, schema, default_tables)
+                vals.append(val)
+            assert toks[idx] == ')'
+            val1 = vals
+            val2 = None
         else:  # normal case: single value
             idx, val1 = parse_value(toks, idx, tables_with_alias, schema, default_tables)
             val2 = None

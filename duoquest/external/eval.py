@@ -578,7 +578,7 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
         except Exception as e:
             print(traceback.format_exc())
             print(f'GOLD: {g_str}')
-            print(f'PRED: {p_str}')
+            print(f'PRED: {p_str}\n')
             continue
 
     return rank
