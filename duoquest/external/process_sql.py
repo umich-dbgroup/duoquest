@@ -328,9 +328,12 @@ def parse_condition(toks, start_idx, tables_with_alias, schema, default_tables=N
 
             vals = []
             idx, val = parse_value(toks, idx, tables_with_alias, schema, default_tables)
+            idx += 1
             vals.append(val)
             while toks[idx] == ',':
+                idx += 1
                 idx, val = parse_value(toks, idx, tables_with_alias, schema, default_tables)
+                idx += 1
                 vals.append(val)
             assert toks[idx] == ')'
             val1 = vals
