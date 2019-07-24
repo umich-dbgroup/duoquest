@@ -20,7 +20,7 @@ class NLQClient:
         task.mode = self.mode
         task.n = n
         task.tsq_level = tsq_level
-        task.db_name = schema['db_id']
+        task.db_name = schema.db_id
         task.timeout = timeout
         if isinstance(nlq, list):
             for token in nlq:
