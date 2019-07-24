@@ -7,7 +7,8 @@ from multiprocessing.connection import Listener
 from threading import Event, Thread
 
 from .proto.query_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
-from .external.eval import correct_rank, is_correct, mrr
+from .external.eval import correct_rank, is_correct, print_mrr, print_cdf, \
+    print_avg_time
 from .query import generate_sql_str
 
 class DuoquestServer:
@@ -125,23 +126,9 @@ class DuoquestServer:
         time_f.close()
         nlqc.close()
 
-        n_vals_to_check = [1, 5, 10]
-        if self.n > 10:
-            n_vals_to_check.append(self.n)
-
-        for n_val in n_vals_to_check:
-            result = sum(1 for r in ranks if r is not None and r <= n_val)
-            print(f'Top {n_val} Accuracy: {result}/{len(ranks)}' +
-                f' ({(result/len(ranks)*100):.2f}%)')
-        print(f'MRR: {mrr(ranks)}')
-
-        avg_time = sum(t for t in times if t != math.inf) / len(times)
-        print(f'Avg Time: {avg_time:.2f}s')
-
-        cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / len(times) * 100):.2f})',
-                enumerate(sorted(filter(lambda t: t != math.inf, times))))
-        print(f"CDF Points:\n(0,0) {' '.join(cdf)}")
-
+        print_mrr(self.n, ranks)
+        print_avg_time(times)
+        print_cdf(times)
 
     def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold):
         address = ('localhost', self.port)

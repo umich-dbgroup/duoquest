@@ -23,6 +23,7 @@ import os, sys
 import configparser
 import copy
 import json
+import math
 import sqlite3
 import traceback
 import argparse
@@ -575,6 +576,42 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
             continue
 
     return rank
+
+def print_mrr(n, ranks):
+    n_vals_to_check = [1, 5, 10]
+    if n > 10:
+        n_vals_to_check.append(n)
+
+    for n_val in n_vals_to_check:
+        result = sum(1 for r in ranks if r is not None and r <= n_val)
+        print(f'Top {n_val} Accuracy: {result}/{len(ranks)}' +
+            f' ({(result/len(ranks)*100):.2f}%)')
+    print(f'MRR: {mrr(ranks)}')
+
+def print_cdf(times):
+    cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / len(times) * 100):.2f})',
+            enumerate(sorted(filter(lambda t: t != math.inf, times))))
+    print(f"CDF Points:\n(0,0) {' '.join(cdf)}")
+
+def print_avg_time(times):
+    avg_time = sum(t for t in times if t != math.inf) / len(times)
+    print(f'Avg Time: {avg_time:.2f}s')
+
+def eval_duoquest(n, db, kmaps, golds, preds, times):
+    assert(len(golds) == len(preds))
+    assert(len(preds) == len(times))
+
+    ranks = []
+    for i, gold in golds:
+        g_str, db_name = gold
+        p_strs = preds[i]
+
+        rank = correct_rank(db, db_name, kmaps, g_str, p_strs)
+        ranks.append(rank)
+
+    print_mrr(n, ranks)
+    print_avg_time(times)
+    print_cdf(times)
 
 def evaluate(n, gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
     with open(gold) as f:

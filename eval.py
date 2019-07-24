@@ -2,8 +2,10 @@ import argparse
 import configparser
 import json
 
+from duoquest.database import Database
 from duoquest.files import results_path
-from duoquest.external.eval import build_foreign_key_map_from_json, evaluate
+from duoquest.external.eval import build_foreign_key_map_from_json, \
+    eval_duoquest
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -38,6 +40,8 @@ if __name__ == '__main__':
         # TODO
         pass
 
+    db = Database(db_dir, args.dataset)
+
     out_base = results_path(config, args.system, args.dataset, args.mode,
         args.n, args.tsq_level, args.tsq_rows, args.cache)
 
@@ -49,6 +53,20 @@ if __name__ == '__main__':
 
     pred_path = f'{out_base}.sqls'
     gold_path = f'{out_base}.gold'
+    times_path = f'{out_base}.gold'
 
-    evaluate(args.n, gold_path, pred_path, db_dir, args.etype, kmaps, tables,
-        args.dataset, no_print=args.no_print)
+    with open(pred_path) as f:
+        preds = [l.strip().split('\t') \
+            for l in f.readlines() if len(l.strip()) > 0]
+
+    with open(gold_path) as f:
+        golds = [l.strip().split('\t') \
+            for l in f.readlines() if len(l.strip()) > 0]
+
+    with open(times_path) as f:
+        times = [l.strip() for l in f.readlines()]
+
+    eval_duoquest(args.n, db, kmaps, golds, preds, times)
+
+    # evaluate(args.n, gold_path, pred_path, db_dir, args.etype, kmaps, tables,
+    #     args.dataset, no_print=args.no_print)
