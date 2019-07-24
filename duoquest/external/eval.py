@@ -602,7 +602,7 @@ def eval_duoquest(n, db, kmaps, golds, preds, times):
     assert(len(preds) == len(times))
 
     ranks = []
-    for i, gold in golds:
+    for i, gold in enumerate(golds):
         g_str, db_name = gold
         p_strs = preds[i]
 
