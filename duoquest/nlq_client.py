@@ -33,7 +33,7 @@ class NLQClient:
         proto_cands = ProtoCandidates()
         proto_cands.ParseFromString(msg)
         return list(
-            map(lambda x: generate_sql_str(x, schema), proto_cands.cq)
+            map(lambda x: generate_sql_str(x, schema), proto_cands.cqs)
         )
 
     def close(self):
