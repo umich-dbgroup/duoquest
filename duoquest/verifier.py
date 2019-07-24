@@ -219,7 +219,10 @@ class DuoquestVerifier:
                 print('Prune: ordering is incorrect.')
             return Tribool(False)
         elif values_copy:
-            raise Exception('Did not find matching row for all TSQ rows.')
+            if self.debug:
+                for val in values_copy:
+                    print(f'Prune: could not find match for: {val}.')
+            return Tribool(False)
         else:
             return None
 
