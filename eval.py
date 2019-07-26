@@ -17,10 +17,10 @@ if __name__ == '__main__':
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
-    parser.add_argument('--n', default=10, type=int,
-        help='Max number of final queries to output')
-    parser.add_argument('--b', default=0, type=int,
-        help='Beam search parameter')
+    # parser.add_argument('--n', default=10, type=int,
+    #     help='Max number of final queries to output')
+    # parser.add_argument('--b', default=0, type=int,
+    #     help='Beam search parameter')
 
     # TODO
     parser.add_argument('--cache', action='store_true', help='Enable cache')
@@ -42,8 +42,8 @@ if __name__ == '__main__':
 
     db = Database(db_dir, args.dataset)
 
-    out_base = results_path(config, args.dataset, args.mode, args.n,
-        args.tsq_level, args.tsq_rows, args.cache)
+    out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
+        args.tsq_rows, args.cache)
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)
@@ -66,7 +66,4 @@ if __name__ == '__main__':
     with open(times_path) as f:
         times = [float(l.strip()) for l in f.readlines()]
 
-    eval_duoquest(args.n, db, kmaps, golds, preds, times)
-
-    # evaluate(args.n, gold_path, pred_path, db_dir, args.etype, kmaps, tables,
-    #     args.dataset, no_print=args.no_print)
+    eval_duoquest(db, kmaps, golds, preds, times)

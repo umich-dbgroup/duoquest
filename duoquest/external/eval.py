@@ -583,10 +583,8 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
 
     return rank
 
-def print_mrr(n, ranks):
-    n_vals_to_check = [1, 5, 10]
-    if n > 10:
-        n_vals_to_check.append(n)
+def print_ranks(ranks):
+    n_vals_to_check = [1, 10, 100, 1000]
 
     for n_val in n_vals_to_check:
         result = sum(1 for r in ranks if r is not None and r <= n_val)
@@ -603,7 +601,7 @@ def print_avg_time(times):
     avg_time = sum(t for t in times if t != math.inf) / len(times)
     print(f'Avg Time: {avg_time:.2f}s')
 
-def eval_duoquest(n, db, kmaps, golds, preds, times):
+def eval_duoquest(db, kmaps, golds, preds, times):
     assert(len(golds) == len(preds))
     assert(len(preds) == len(times))
 
@@ -615,7 +613,7 @@ def eval_duoquest(n, db, kmaps, golds, preds, times):
         rank = correct_rank(db, db_name, kmaps, g_str, p_strs)
         ranks.append(rank)
 
-    print_mrr(n, ranks)
+    print_ranks(ranks)
     print_avg_time(times)
     print_cdf(times)
 

@@ -7,17 +7,16 @@ from multiprocessing.connection import Listener
 from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
-from .external.eval import correct_rank, is_correct, print_mrr, print_cdf, \
+from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
 from .query import generate_sql_str
 
 class DuoquestServer:
-    def __init__(self, port, authkey, verifier, out_base, n):
+    def __init__(self, port, authkey, verifier, out_base):
         self.port = port
         self.authkey = authkey
         self.verifier = verifier
         self.out_base = out_base
-        self.n = n
 
     def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
         tsq_rows, eval_kmaps, timeout=None):
@@ -38,8 +37,8 @@ class DuoquestServer:
             t.start()
             ready.wait()
 
-        cqs = nlqc.run(task_id, self.n, schema, task['question_toks'],
-            tsq_level, timeout=timeout)
+        cqs = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
+            timeout=timeout)
 
         if tsq_level != 'nlq_only':
             t.join()
@@ -126,7 +125,7 @@ class DuoquestServer:
         time_f.close()
         nlqc.close()
 
-        print_mrr(self.n, ranks)
+        print_ranks(ranks)
         print_avg_time(times)
         print_cdf(times)
 

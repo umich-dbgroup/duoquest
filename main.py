@@ -30,8 +30,8 @@ def main():
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
-    parser.add_argument('--n', default=10, type=int,
-        help='Max number of final queries to output')
+    # parser.add_argument('--n', default=10, type=int,
+    #     help='Max number of final queries to output')
     parser.add_argument('--timeout', default=5, type=int,
         help='Timeout if search does not terminate')
 
@@ -67,13 +67,12 @@ def main():
         # TODO
         pass
 
-    out_base = results_path(config, args.dataset, args.mode, args.n,
-        args.tsq_level, args.tsq_rows, args.cache)
+    out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
+        args.tsq_rows, args.cache)
 
     verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),
-        config['duoquest']['authkey'].encode('utf-8'), verifier, out_base,
-        args.n)
+        config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
     schemas, kmaps = load_schemas(schemas_path)
     db = Database(db_path, args.dataset)
