@@ -30,7 +30,7 @@ class DuoquestServer:
             print('Skipping task because it is out of scope.')
             return None
 
-        if tsq_level != 'no_duoquest':
+        if tsq_level != 'nlq_only':
             print(tsq)
             ready = Event()
             t = threading.Thread(target=self.task_thread,
@@ -41,7 +41,7 @@ class DuoquestServer:
         cqs = nlqc.run(task_id, self.n, schema, task['question_toks'],
             tsq_level, timeout=timeout)
 
-        if tsq_level != 'no_duoquest':
+        if tsq_level != 'nlq_only':
             t.join()
 
         return cqs

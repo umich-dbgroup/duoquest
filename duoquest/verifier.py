@@ -193,9 +193,9 @@ class DuoquestVerifier:
         # of verify_sql_str where we put (col = val1 or col = val2) as part of
         # the sql_str for each value
         order_sql = generate_sql_str(query, schema)
-        cur.execute(order_sql)
         if self.debug:
             print(f'ORDER SQL: {order_sql}')
+        cur.execute(order_sql)
 
         values_copy = list(tsq.values)
 

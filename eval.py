@@ -9,11 +9,10 @@ from duoquest.external.eval import build_foreign_key_map_from_json, \
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('system', choices=['syntaxsql'])
-    parser.add_argument('dataset', choices=['spider', 'wikisql'])
-    parser.add_argument('mode', choices=['dev', 'test'])
-    parser.add_argument('tsq_level', choices=['default', 'no_range',
-        'no_values', 'no_duoquest'])
+    # parser.add_argument('system', choices=['syntaxsql'])
+    parser.add_argument('dataset', choices=DATASETS)
+    parser.add_argument('mode', choices=MODES)
+    parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
@@ -42,8 +41,8 @@ if __name__ == '__main__':
 
     db = Database(db_dir, args.dataset)
 
-    out_base = results_path(config, args.system, args.dataset, args.mode,
-        args.n, args.tsq_level, args.tsq_rows, args.cache)
+    out_base = results_path(config, args.dataset, args.mode, args.n,
+        args.tsq_level, args.tsq_rows, args.cache)
 
     tables_data = json.load(open(table))
     kmaps = build_foreign_key_map_from_json(tables_data)

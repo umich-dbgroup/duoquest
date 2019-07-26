@@ -9,6 +9,7 @@ from duoquest.verifier import DuoquestVerifier
 from duoquest.nlq_client import NLQClient
 from duoquest.schema import Schema
 from duoquest.server import DuoquestServer
+from duoquest.vars import DATASETS, TSQ_LEVELS
 
 def load_schemas(schemas_path):
     schemas = {}
@@ -22,11 +23,10 @@ def load_schemas(schemas_path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('system', choices=['syntaxsql'])
-    parser.add_argument('dataset', choices=['spider', 'wikisql'])
-    parser.add_argument('mode', choices=['dev', 'test'])
-    parser.add_argument('tsq_level', choices=['default', 'no_range',
-        'no_values', 'no_duoquest'])
+    # parser.add_argument('system', choices=['syntaxsql'])
+    parser.add_argument('dataset', choices=DATASETS)
+    parser.add_argument('mode', choices=MODES)
+    parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
@@ -44,8 +44,8 @@ def main():
     # parser.add_argument('--batch', action='store_true', help='Enable batching')
 
     # Debugging options
-    parser.add_argument('--compare', choices=['default', 'no_range',
-        'no_values', 'no_duoquest'], help='Compare results against this level')
+    parser.add_argument('--compare', choices=TSQ_LEVELS,
+        help='Compare results against this level')
     parser.add_argument('--debug', action='store_true',
         help='Debugging output')
 
@@ -67,8 +67,8 @@ def main():
         # TODO
         pass
 
-    out_base = results_path(config, args.system, args.dataset, args.mode,
-        args.n, args.tsq_level, args.tsq_rows, args.cache)
+    out_base = results_path(config, args.dataset, args.mode, args.n,
+        args.tsq_level, args.tsq_rows, args.cache)
 
     verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),

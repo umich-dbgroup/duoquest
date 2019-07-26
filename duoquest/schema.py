@@ -398,8 +398,11 @@ class Schema(object):
             return '*'
 
         # change col if it is an fk and primary key is in table set already
-        if col.fk and self.get_col(col.fk_ref).table.syn_name in aliases:
-            col = self.get_col(col.fk_ref)
+        if col.fk:
+            fk_ref_table = self.get_col(col.fk_ref).table
+            if fk_ref_table.syn_name in aliases and \
+                aliases[fk_ref_table.syn_name]:
+                col = self.get_col(col.fk_ref)
 
         if col.table.syn_name in aliases and aliases[col.table.syn_name]:
             return '{}."{}"'.format(aliases[col.table.syn_name],
