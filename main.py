@@ -9,7 +9,7 @@ from duoquest.verifier import DuoquestVerifier
 from duoquest.nlq_client import NLQClient
 from duoquest.schema import Schema
 from duoquest.server import DuoquestServer
-from duoquest.vars import DATASETS, TSQ_LEVELS
+from duoquest.vars import *
 
 def load_schemas(schemas_path):
     schemas = {}

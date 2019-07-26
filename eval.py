@@ -6,6 +6,7 @@ from duoquest.database import Database
 from duoquest.files import results_path
 from duoquest.external.eval import build_foreign_key_map_from_json, \
     eval_duoquest
+from duoquest.vars import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
