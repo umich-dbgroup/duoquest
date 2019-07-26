@@ -49,7 +49,6 @@ def main():
     parser.add_argument('--debug', action='store_true',
         help='Debugging output')
 
-
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
