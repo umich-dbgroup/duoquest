@@ -32,7 +32,7 @@ def main():
     # NLQ parameters
     # parser.add_argument('--n', default=10, type=int,
     #     help='Max number of final queries to output')
-    parser.add_argument('--timeout', default=5, type=int,
+    parser.add_argument('--timeout', default=60, type=int,
         help='Timeout if search does not terminate')
 
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
