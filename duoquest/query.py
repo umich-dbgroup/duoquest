@@ -411,7 +411,7 @@ def limit_clause_str(pq):
     return u'LIMIT {}'.format(pq.limit)
 
 def format_literal(type, literal):
-    if type == 'number' or isinstance(literal, Number):
+    if isinstance(literal, Number):
         return str(literal)
 
     # escape apostrophes
