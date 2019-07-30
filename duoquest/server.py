@@ -23,25 +23,26 @@ class DuoquestServer:
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
-        tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
-            tsq_rows)
-        if tsq is None:
-            print('Skipping task because it is out of scope.')
-            return None
-
-        if tsq_level != 'nlq_only':
+        if tsq_level == 'nlq_only':
+            tsq = None
+        else:
+            tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
+                tsq_rows)
+            if tsq is None:
+                print('Skipping task because it is out of scope.')
+                return None
             print(tsq)
-            ready = Event()
-            t = threading.Thread(target=self.task_thread,
-                args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query']))
-            t.start()
-            ready.wait()
+
+        ready = Event()
+        t = threading.Thread(target=self.task_thread,
+            args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query']))
+        t.start()
+        ready.wait()
 
         cqs = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
             timeout=timeout)
 
-        if tsq_level != 'nlq_only':
-            t.join()
+        t.join()
 
         return cqs
 
@@ -136,7 +137,8 @@ class DuoquestServer:
         print(f'DuoquestServer listening on port {self.port}...')
 
         conn = listener.accept()
-        print('DuoquestServer connection accepted from:', listener.last_accepted)
+        print('DuoquestServer connection accepted from:',
+            listener.last_accepted)
         while True:
             msg = conn.recv_bytes()
 
@@ -152,19 +154,26 @@ class DuoquestServer:
 
             response = ProtoResult()
             for query in protolist.queries:
-                result = Tribool(None)
-                if tsq is not None:
+                if tsq is None:
+                    result = Tribool(None)
+                    if query.done_query:
+                        if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
+                            generate_sql_str(query, schema)):
+                            response.answer_found = True
+                            result = Tribool(True)
+                    response.results.append(result)
+                else:
                     result = self.verifier.verify(db, schema, query, tsq)
 
-                if result.value is None:
-                    response.results.append(UNKNOWN)
-                elif result.value:
-                    response.results.append(TRUE)
-                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
-                        generate_sql_str(query, schema)):
-                        response.answer_found = True
-                else:
-                    response.results.append(FALSE)
+                    if result.value is None:
+                        response.results.append(UNKNOWN)
+                    elif result.value:
+                        response.results.append(TRUE)
+                        if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
+                            generate_sql_str(query, schema)):
+                            response.answer_found = True
+                    else:
+                        response.results.append(FALSE)
 
             conn.send_bytes(response.SerializeToString())
         listener.close()
