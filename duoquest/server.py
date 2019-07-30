@@ -156,24 +156,22 @@ class DuoquestServer:
             for query in protolist.queries:
                 if tsq is None:
                     result = Tribool(None)
-                    if query.done_query:
-                        if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
-                            generate_sql_str(query, schema)):
-                            response.answer_found = True
-                            result = Tribool(True)
-                    response.results.append(result)
                 else:
                     result = self.verifier.verify(db, schema, query, tsq)
 
-                    if result.value is None:
-                        response.results.append(UNKNOWN)
-                    elif result.value:
-                        response.results.append(TRUE)
-                        if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
-                            generate_sql_str(query, schema)):
-                            response.answer_found = True
-                    else:
-                        response.results.append(FALSE)
+                if query.done_query:
+                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
+                        generate_sql_str(query, schema)):
+                        response.answer_found = True
+                        result = Tribool(True)
+
+                if result.value is None:
+                    response.results.append(UNKNOWN)
+                elif result.value:
+                    response.results.append(TRUE)
+                    response.answer_found = True
+                else:
+                    response.results.append(FALSE)
 
             conn.send_bytes(response.SerializeToString())
         listener.close()
