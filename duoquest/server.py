@@ -35,7 +35,8 @@ class DuoquestServer:
 
         ready = Event()
         t = threading.Thread(target=self.task_thread,
-            args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query']))
+            args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query'],
+                tsq_level))
         t.start()
         ready.wait()
 
@@ -130,7 +131,8 @@ class DuoquestServer:
         print_avg_time(times)
         print_cdf(times)
 
-    def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold):
+    def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold,
+        tsq_level):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -154,15 +156,20 @@ class DuoquestServer:
 
             response = ProtoResult()
             for query in protolist.queries:
-                if tsq is None:
-                    result = Tribool(True)
-                else:
-                    result = self.verifier.verify(db, schema, query, tsq)
-
                 if query.done_query:
+                    if tsq == 'nlq_only':
+                        result = Tribool(True)
+                    else:
+                        result = self.verifier.verify(db, schema, query, tsq)
+
                     if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
                         generate_sql_str(query, schema)):
                         response.answer_found = True
+                else:
+                    if tsq == 'nlq_only' or tsq == 'chain':
+                        result = Tribool(None)
+                    else:
+                        result = self.verifier.verify(db, schema, query, tsq)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)
