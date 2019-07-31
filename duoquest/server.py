@@ -155,7 +155,7 @@ class DuoquestServer:
             response = ProtoResult()
             for query in protolist.queries:
                 if tsq is None:
-                    result = Tribool(None)
+                    result = Tribool(True)
                 else:
                     result = self.verifier.verify(db, schema, query, tsq)
 
@@ -163,13 +163,11 @@ class DuoquestServer:
                     if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
                         generate_sql_str(query, schema)):
                         response.answer_found = True
-                        result = Tribool(True)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)
                 elif result.value:
                     response.results.append(TRUE)
-                    response.answer_found = True
                 else:
                     response.results.append(FALSE)
 
