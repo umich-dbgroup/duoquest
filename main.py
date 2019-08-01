@@ -28,11 +28,7 @@ def main():
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
-
-    # NLQ parameters
-    # parser.add_argument('--n', default=10, type=int,
-    #     help='Max number of final queries to output')
-    parser.add_argument('--timeout', default=60, type=int,
+    parser.add_argument('--timeout', default=15, type=int,
         help='Timeout if search does not terminate')
 
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
@@ -67,7 +63,7 @@ def main():
         pass
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.cache)
+        args.tsq_rows, args.timeout, args.cache)
 
     verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),
