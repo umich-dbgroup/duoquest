@@ -157,7 +157,7 @@ class DuoquestServer:
             response = ProtoResult()
             for query in protolist.queries:
                 if query.done_query:
-                    if tsq == 'nlq_only':
+                    if tsq_level == 'nlq_only':
                         result = Tribool(True)
                     else:
                         result = self.verifier.verify(db, schema, query, tsq)
@@ -166,7 +166,7 @@ class DuoquestServer:
                         generate_sql_str(query, schema)):
                         response.answer_found = True
                 else:
-                    if tsq == 'nlq_only' or tsq == 'chain':
+                    if tsq_level == 'nlq_only' or tsq_level == 'chain':
                         result = Tribool(None)
                     else:
                         result = self.verifier.verify(db, schema, query, tsq)
