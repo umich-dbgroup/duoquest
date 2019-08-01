@@ -116,7 +116,7 @@ class DuoquestServer:
                 f.write('SELECT A FROM B')  # failure
             f.write('\n')
 
-            gold_f.write(task['query'])
+            gold_f.write(task['query'].replace('\t', ' '))
             gold_f.write(f"\t{task['db_id']}")
             gold_f.write('\n')
 
