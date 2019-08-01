@@ -109,7 +109,9 @@ class DuoquestServer:
                 print('RANK: {}'.format(og_rank))
 
             if cqs:
-                f.write(u'\t'.join(cqs))
+                f.write(u'\t'.join(
+                    list(map(lambda q: q.replace('\n', ' '), cqs))
+                ))
             else:
                 f.write('SELECT A FROM B')  # failure
             f.write('\n')
