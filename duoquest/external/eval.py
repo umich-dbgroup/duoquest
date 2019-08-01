@@ -592,16 +592,22 @@ def print_ranks(ranks):
             f' ({(result/len(ranks)*100):.2f}%)')
     print(f'MRR: {mrr(ranks)}')
 
-def print_cdf(times):
-    cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / len(times) * 100):.2f})',
+def print_cdf(ranks, times, n=None):
+    length = len(times)
+
+    if n is not None:
+        times = map(lambda x: x[1],
+            filter(lambda x: x[0] <= n, zip(ranks, times)))
+
+    cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / length * 100):.2f})',
             enumerate(sorted(filter(lambda t: t != math.inf, times))))
-    print(f"CDF Points:\n(0,0) {' '.join(cdf)}")
+    print(f"CDF (n={n}):\n(0,0) {' '.join(cdf)}")
 
 def print_avg_time(times):
     avg_time = sum(t for t in times if t != math.inf) / len(times)
     print(f'Avg Time: {avg_time:.2f}s')
 
-def eval_duoquest(db, kmaps, golds, preds, times):
+def eval_duoquest(db, kmaps, golds, preds, times, n):
     assert(len(golds) == len(preds))
     assert(len(preds) == len(times))
 
@@ -615,7 +621,7 @@ def eval_duoquest(db, kmaps, golds, preds, times):
 
     print_ranks(ranks)
     print_avg_time(times)
-    print_cdf(times)
+    print_cdf(ranks, times, n)
 
 def evaluate(n, gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
     with open(gold) as f:

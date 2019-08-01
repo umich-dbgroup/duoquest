@@ -17,8 +17,8 @@ if __name__ == '__main__':
     parser.add_argument('--tsq_rows', type=int, default=1)
 
     # NLQ parameters
-    # parser.add_argument('--n', default=10, type=int,
-    #     help='Max number of final queries to output')
+    parser.add_argument('--n', default=10, type=int,
+        help='n to constrain CDF')
     # parser.add_argument('--b', default=0, type=int,
     #     help='Beam search parameter')
 
@@ -66,4 +66,4 @@ if __name__ == '__main__':
     with open(times_path) as f:
         times = [float(l.strip()) for l in f.readlines()]
 
-    eval_duoquest(db, kmaps, golds, preds, times)
+    eval_duoquest(db, kmaps, golds, preds, times, args.n)
