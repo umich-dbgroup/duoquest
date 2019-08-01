@@ -597,7 +597,7 @@ def print_cdf(ranks, times, n=None):
 
     if n is not None:
         times = map(lambda x: x[1],
-            filter(lambda x: x[0] <= n, zip(ranks, times)))
+            filter(lambda x: x[0] is not None and x[0] <= n, zip(ranks, times)))
 
     cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / length * 100):.2f})',
             enumerate(sorted(filter(lambda t: t != math.inf, times))))
