@@ -23,14 +23,15 @@ class DuoquestServer:
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
+        tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
+            tsq_rows)
+        if tsq is None:
+            print('Skipping task because it is out of scope.')
+            return None
+
         if tsq_level == 'nlq_only':
             tsq = None
         else:
-            tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
-                tsq_rows)
-            if tsq is None:
-                print('Skipping task because it is out of scope.')
-                return None
             print(tsq)
 
         ready = Event()
