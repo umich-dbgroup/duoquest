@@ -1063,8 +1063,8 @@ SELECT plane_name FROM pilotskills GROUP BY plane_name ORDER BY count(*) DESC LI
 SELECT plane_name FROM pilotskills GROUP BY plane_name ORDER BY count(*) DESC LIMIT 1	pilot_1
 SELECT plane_name FROM pilotskills GROUP BY plane_name ORDER BY count(*) LIMIT 1	pilot_1
 SELECT plane_name FROM pilotskills GROUP BY plane_name ORDER BY count(*) LIMIT 1	pilot_1
-SELECT 	count(DISTINCT T1.pilot_name) FROM pilotskills AS T1 JOIN hangar AS T2 ON T1.plane_name  =  T2.plane_name WHERE T2.location  =  'Chicago'	pilot_1
-SELECT 	count(DISTINCT T1.pilot_name) FROM pilotskills AS T1 JOIN hangar AS T2 ON T1.plane_name  =  T2.plane_name WHERE T2.location  =  'Chicago'	pilot_1
+SELECT count(DISTINCT T1.pilot_name) FROM pilotskills AS T1 JOIN hangar AS T2 ON T1.plane_name  =  T2.plane_name WHERE T2.location  =  'Chicago'	pilot_1
+SELECT count(DISTINCT T1.pilot_name) FROM pilotskills AS T1 JOIN hangar AS T2 ON T1.plane_name  =  T2.plane_name WHERE T2.location  =  'Chicago'	pilot_1
 SELECT plane_name FROM pilotskills WHERE pilot_name  =  'Smith' AND age  =  41	pilot_1
 SELECT plane_name FROM pilotskills WHERE pilot_name  =  'Smith' AND age  =  41	pilot_1
 SELECT count(DISTINCT plane_name) FROM pilotskills	pilot_1
