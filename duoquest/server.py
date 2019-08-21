@@ -88,7 +88,7 @@ class DuoquestServer:
             # debug, for comparing with other mode
             if compare:
                 cm_cqs = self.run_task(task_id, task, len(tasks), schema,
-                    db, nlqc, compare, tsq_rows)
+                    db, nlqc, compare, tsq_rows, eval_kmaps, timeout=timeout)
                 cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
                     task['query'], cm_cqs)
 
