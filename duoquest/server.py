@@ -164,10 +164,6 @@ class DuoquestServer:
                         result = Tribool(True)
                     else:
                         result = self.verifier.verify(db, schema, query, tsq)
-
-                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
-                        generate_sql_str(query, schema)):
-                        response.answer_found = True
                 else:
                     if tsq_level == 'nlq_only' or tsq_level == 'chain':
                         result = Tribool(None)
@@ -178,6 +174,10 @@ class DuoquestServer:
                     response.results.append(UNKNOWN)
                 elif result.value:
                     response.results.append(TRUE)
+
+                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
+                        generate_sql_str(query, schema)):
+                        response.answer_found = True
                 else:
                     response.results.append(FALSE)
 
