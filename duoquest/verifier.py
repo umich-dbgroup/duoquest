@@ -362,7 +362,7 @@ class DuoquestVerifier:
 
         # only continue further if select and order by are done
         if query.done_select and \
-            not (query.has_order_by and not query.done_order_by):
+            not (query.has_order_by == TRUE and not query.done_order_by):
 
             agg_present = False
             non_agg_present = False
