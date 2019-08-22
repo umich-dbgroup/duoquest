@@ -360,31 +360,36 @@ class DuoquestVerifier:
                     print('Prune: cannot have * without COUNT() in ORDER BY.')
                 return Tribool(False)
 
-        agg_present = False
-        non_agg_present = False
-        if query.done_select:
+        # only continue further if select and order by are done
+        if query.done_select and \
+            not (query.has_order_by and not query.done_order_by):
+
+            agg_present = False
+            non_agg_present = False
+
             for agg_col in query.select:
                 agg_present = agg_present or agg_col.has_agg == TRUE
                 non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-        for oc in query.order_by:
-            agg_present = agg_present or oc.agg_col.has_agg == TRUE
+            for oc in query.order_by:
+                agg_present = agg_present or oc.agg_col.has_agg == TRUE
 
-        if agg_present and non_agg_present and query.has_group_by == FALSE:
-            if self.debug:
-                print('Prune: failed condition I2.')
-            return Tribool(False)
+            if agg_present and non_agg_present and query.has_group_by == FALSE:
+                if self.debug:
+                    print('Prune: failed condition I2.')
+                return Tribool(False)
 
-        if not agg_present and non_agg_present and query.has_group_by == TRUE \
-            and query.has_having == FALSE:
-            if self.debug:
-                print('Prune: failed condition I4.')
-            return Tribool(False)
+            if not agg_present and non_agg_present \
+                and query.has_group_by == TRUE and query.has_having == FALSE:
+                if self.debug:
+                    print('Prune: failed condition I4.')
+                return Tribool(False)
 
-        if agg_present and not non_agg_present and query.has_group_by == TRUE:
-            if self.debug:
-                print('Prune: failed condition I5.')
-            return Tribool(False)
+            if agg_present and not non_agg_present \
+                and query.has_group_by == TRUE:
+                if self.debug:
+                    print('Prune: failed condition I5.')
+                return Tribool(False)
 
         return None
 

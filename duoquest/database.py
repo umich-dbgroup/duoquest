@@ -104,7 +104,7 @@ class Database(object):
     #     (b) an aggregated column; and (c) no GROUP BY. [Semantic]
     # I3. Do not permit tasks with * projection without COUNT. [Task Scope]
     # I4. Do not permit tasks with a GROUP BY when there are only
-    #     non-aggregate columns. [Semantic]
+    #     non-aggregate columns in SELECT and ORDER BY. [Semantic]
     # I5. Do not permit tasks with a GROUP BY when there are only agg
     #     projections. [Semantic]
     # I6. Do not permit tasks where operators are incorrectly applied to a
