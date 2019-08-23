@@ -296,7 +296,7 @@ class Database(object):
                 for i, val in enumerate(row):
                     if aggs[i] == 0:              # non-agg case, get exact
                         value_row.append(val)
-                    elif tsq_level == 'default' and val != 0:
+                    elif tsq_level in ('default', 'chain') and val != 0:
                         # agg case, only for default
                         value_row.append([val*0.5, val*1.5])
                     else:                         # otherwise keep empty

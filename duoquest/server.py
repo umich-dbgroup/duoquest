@@ -132,7 +132,7 @@ class DuoquestServer:
 
         print_ranks(ranks)
         print_avg_time(times)
-        print_cdf(ranks, times, 20)
+        print_cdf(ranks, times, 10)
 
     def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold,
         tsq_level):
