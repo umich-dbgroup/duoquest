@@ -50,4 +50,36 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 ### Procedure
 
 1. Run Synthesizer by going to `systems/syntaxSQL` and running `python --config_path=../../config.ini`.
-2. After the Synthesizer is up and listening, run `python3 main.py` with the appropriate arguments **in a new terminal window**.
+2. After the Synthesizer is up and listening, run `python3 experiments.py` with the appropriate arguments **in a new terminal window**.
+
+## Running Live System
+
+### Task Database
+
+#### Setup
+
+Run `init_task_db.py`.
+
+#### Schema
+
+**Tasks**
+
+| Column Name | Type | Description |
+| ----------- | ---- | ----------- |
+| tid | text | task id |
+| db | text | database name |
+| nlq | text | natural language query |
+| tsq_proto | blob | table sketch query protobuf |
+| status | text | `waiting`, `running`, `done`, or `error` |
+| output_proto | blob | candidate query output in protobuf |
+| output_json | text | candidate query output in json |
+| time | integer | timestamp for task submission time |
+| error_msg | text | error message, if any |
+
+**Databases**
+
+| Column Name | Type | Description |
+| ----------- | ---- | ----------- |
+| name | text | database name |
+| path | text | database path in file system |
+| schema_proto | blob | schema protobuf |
