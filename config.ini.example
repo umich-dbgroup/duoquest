@@ -1,3 +1,6 @@
+[db]
+path = duoquest.db
+
 [nlq]
 port = 6000
 authkey = duoquest

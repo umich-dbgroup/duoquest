@@ -1,3 +1,6 @@
+from .proto.duoquest_pb2 import ProtoTSQ
+from .schema import proto_col_type_to_text
+
 class TableSketchQuery:
     def __init__(self, num_cols, types=None, values=None, order=False,
         limit=None):
@@ -9,6 +12,29 @@ class TableSketchQuery:
         self.set_values(values)  # array of rows of exact or range values
         self.order = order       # boolean
         self.limit = limit       # int or None
+
+    @staticmethod
+    def from_proto(proto_tsq_str):
+        proto_tsq = ProtoTSQ()
+        proto_tsq.ParseFromString(proto_tsq_str)
+
+        types = []
+        for type in proto_tsq.types:
+            types.append(proto_col_type_to_text(type))
+
+        values = []
+        for row in proto_tsq.rows:
+            row = []
+            for i, cell in enumerate(row.cells):
+                if types[i] == 'number':
+                    row.append(float(cell))
+                else:
+                    row.append(cell)
+            values.append(row)
+
+        limit = proto_tsq.limit or None
+        return TableSketchQuery(proto_tsq.num_cols, types=types, values=values,
+            order=proto_tsq.order, limit=limit)
 
     def set_types(self, types):
         if types is None:

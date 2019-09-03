@@ -1,4 +1,5 @@
 import math
+import sqlite3
 import threading
 import time
 from tribool import Tribool
@@ -9,17 +10,73 @@ from threading import Event, Thread
 from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
+from .external.process_sql import tokenize
 from .query import generate_sql_str
 
 class DuoquestServer:
-    def __init__(self, port, authkey, verifier, out_base):
+    def __init__(self, port, authkey, verifier, out_base=None, task_db=None):
         self.port = port
         self.authkey = authkey
         self.verifier = verifier
         self.out_base = out_base
+        self.task_db = task_db
+
+    def run_next_in_queue(self, nlqc, tsq_level, timeout=None):
+        conn = sqlite3.connect(self.task_db)
+        cur = conn.cursor()
+        cur.execute('''SELECT t.tid, t.db, t.nlq, t.tsq_proto, d.schema_proto
+                       FROM tasks t JOIN databases d ON d.name = t.db
+                       WHERE status = ? ORDER BY time ASC LIMIT 1''',
+                    ('waiting',))
+        row = cur.fetchone()
+
+        if row is None:
+            time.sleep(2)
+            return
+
+        tid, db, nlq, tsq_proto, schema_proto = row
+
+        schema = Schema.from_proto(schema_proto)
+
+        print(f'Running task {tid}...')
+        print(f'Database: {db} || NLQ: {nlq}')
+
+        tsq = TableSketchQuery.from_proto(tsq_proto)
+        print(tsq)
+
+        status = 'done'
+        error_msg = None
+        try:
+            ready = Event()
+            t = threading.Thread(target=self.task_thread,
+                args=(db, schema, nlqc, tsq, ready, tsq_level))
+            t.start()
+            ready.wait()
+
+            question_toks = tokenize(nlq)
+
+            cqs = nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
+
+            t.join()
+        except Exception as e:
+            status = 'error'
+            error_msg = str(e)
+
+        output_proto = cqs
+        output_json = list(map(lambda x: generate_sql_str(x, schema), cqs))
+
+        print('Updating database with results...', end='')
+        cur = conn.cursor()
+        cur.execute('''UPDATE tasks SET status = ?, output_proto = ?,
+                        output_json = ?, error_msg = ? WHERE tid = ?''',
+                        (status, output_proto, output_json, error_msg, tid))
+        conn.commit()
+        print('Done')
+
+        conn.close()
 
     def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
-        tsq_rows, eval_kmaps, timeout=None):
+        tsq_rows, eval_kmaps=None, timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
@@ -36,13 +93,14 @@ class DuoquestServer:
 
         ready = Event()
         t = threading.Thread(target=self.task_thread,
-            args=(db, schema, nlqc, tsq, ready, eval_kmaps, task['query'],
-                tsq_level))
+            args=(db, schema, nlqc, tsq, ready, tsq_level,
+                eval_kmaps=eval_kmaps, eval_gold=task['query']))
         t.start()
         ready.wait()
 
         cqs = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
             timeout=timeout)
+        cqs = list(map(lambda x: generate_sql_str(x, schema), cqs))
 
         t.join()
 
@@ -51,13 +109,15 @@ class DuoquestServer:
     def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
         eval_kmaps, tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
-        out_path = f'{self.out_base}.sqls'
-        gold_path = f'{self.out_base}.gold'
-        time_path = f'{self.out_base}.times'
 
-        f = open(out_path, 'w+')
-        gold_f = open(gold_path, 'w+')
-        time_f = open(time_path, 'w+')
+        if self.out_base:
+            out_path = f'{self.out_base}.sqls'
+            gold_path = f'{self.out_base}.gold'
+            time_path = f'{self.out_base}.times'
+
+            f = open(out_path, 'w+')
+            gold_f = open(gold_path, 'w+')
+            time_f = open(time_path, 'w+')
 
         ranks = []
         times = []
@@ -72,7 +132,7 @@ class DuoquestServer:
             schema = schemas[task['db_id']]
             start = time.time()
             cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
-                tsq_level, tsq_rows, eval_kmaps, timeout=timeout)
+                tsq_level, tsq_rows, eval_kmaps=eval_kmaps, timeout=timeout)
             task_time = time.time() - start
 
             if cqs is None:         # invalid task
@@ -109,33 +169,35 @@ class DuoquestServer:
             else:
                 print('RANK: {}'.format(og_rank))
 
-            if cqs:
-                f.write(u'\t'.join(
-                    list(map(lambda q: q.replace('\n', ' '), cqs))
-                ))
-            else:
-                f.write('SELECT A FROM B')  # failure
-            f.write('\n')
+            if self.out_base:
+                if cqs:
+                    f.write(u'\t'.join(
+                        list(map(lambda q: q.replace('\n', ' '), cqs))
+                    ))
+                    f.write('\n')
+                else:
+                    f.write('SELECT A FROM B\n')  # failure
 
-            gold_f.write(task['query'].replace('\t', ' '))
-            gold_f.write(f"\t{task['db_id']}")
-            gold_f.write('\n')
+                gold_f.write(task['query'].replace('\t', ' '))
+                gold_f.write(f"\t{task['db_id']}")
+                gold_f.write('\n')
 
-            print(f'TIME: {task_time:.2f}s\n')
-            time_f.write(f'{task_time:.2f}')
-            time_f.write('\n')
+                print(f'TIME: {task_time:.2f}s\n')
+                time_f.write(f'{task_time:.2f}')
+                time_f.write('\n')
 
-        f.close()
-        gold_f.close()
-        time_f.close()
-        nlqc.close()
+        if self.out_base:
+            f.close()
+            gold_f.close()
+            time_f.close()
+            nlqc.close()
 
         print_ranks(ranks)
         print_avg_time(times)
         print_cdf(ranks, times, 10)
 
-    def task_thread(self, db, schema, nlqc, tsq, ready, eval_kmaps, eval_gold,
-        tsq_level):
+    def task_thread(self, db, schema, nlqc, tsq, ready, tsq_level,
+        eval_gold=None, eval_kmaps=None):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -175,8 +237,8 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    if is_correct(db, schema.db_id, eval_kmaps, eval_gold,
-                        generate_sql_str(query, schema)):
+                    if eval_gold and eval_kmaps and is_correct(db, schema.db_id,
+                        eval_kmaps, eval_gold, generate_sql_str(query, schema)):
                         response.answer_found = True
                 else:
                     response.results.append(FALSE)

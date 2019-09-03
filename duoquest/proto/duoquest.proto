@@ -1,8 +1,10 @@
 syntax = "proto3";
 
-// MAIN INTERFACE MESSAGES
+//------------------
+// MAIN INTERFACE
+//------------------
 message ProtoTask {
-  int32 id = 1;
+  string id = 1;
   string dataset = 2;
   string mode = 3;
 
@@ -28,7 +30,60 @@ message ProtoResult {
   bool answer_found = 2;
 }
 
-// HELPERS
+//------------------
+// SCHEMA
+//------------------
+message ProtoSchema {
+  string name = 1;
+  repeated ProtoTable tables = 2;
+  repeated ProtoFKPK fkpks = 3;
+}
+
+message ProtoTable {
+  int32 id = 1;
+  string syn_name = 2;
+  string sem_name = 3;
+  repeated ProtoColumn columns = 4;
+}
+
+message ProtoColumn {
+  int32 id = 1;
+  bool is_pk = 2;
+  string syn_name = 3;
+  string sem_name = 4;
+  ProtoColumnType type = 5;
+}
+
+message ProtoFKPK {
+  int32 fk_col_id = 1;
+  int32 pk_col_id = 2;
+}
+
+enum ProtoColumnType {
+  COL_TEXT = 0;
+  COL_NUMBER = 1;
+  COL_TIME = 2;
+  COL_BOOLEAN = 3;
+}
+
+//-------------------
+// TABLE SKETCH QUERY
+//-------------------
+message ProtoTSQ {
+  int32 num_cols = 1;
+  bool order = 2;
+  int32 limit = 3;
+  repeated ProtoColumnType types = 4;
+  repeated ProtoTSQRow rows = 5;
+}
+
+message ProtoTSQRow {
+  repeated string cells = 1;
+}
+
+//------------------
+// SQL (PARTIAL) QUERY
+//------------------
 message ProtoQuery {
   // Whether this query contains a set operation
   SetOp set_op = 1;

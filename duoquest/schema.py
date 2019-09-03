@@ -1,5 +1,34 @@
 from queue import Queue
 
+from .proto.duoquest_pb2 import ProtoColumn, ProtoFKPK, ProtoSchema, \
+    ProtoTable, COL_TEXT, COL_NUMBER, COL_TIME, COL_BOOLEAN
+
+def proto_col_type_to_text(proto_col_type):
+    if proto_col_type == COL_TEXT:
+        return 'text'
+    elif proto_col_type == COL_NUMBER:
+        return 'number'
+    elif proto_col_type == COL_TIME:
+        return 'time'
+    elif proto_col_type == COL_BOOLEAN:
+        return 'boolean'
+    else:
+        raise Exception(f'Unrecognized type: {proto_col_type}')
+
+def text_to_proto_col_type(type):
+    if type == 'text':
+        return COL_TEXT
+    elif type == 'number':
+        return COL_NUMBER
+    elif type == 'time':
+        return COL_TIME
+    elif type == 'others':
+        return COL_TEXT
+    elif type == 'boolean':
+        return COL_BOOLEAN
+    else:
+        raise Exception(f'Unrecognized type: {type}')
+
 class FromClause(object):
     def __init__(self, aliases, clause, distinct=False):
         self.aliases = aliases
@@ -187,7 +216,11 @@ class Column(object):
         return hash((self.id, self.table, self.sem_name))
 
 class Schema(object):
-    def __init__(self, schema_info):
+    def __init__(self, schema_info=None):
+        if schema_info:
+            self.from_schema_info(schema_info)
+
+    def from_schema_info(self, schema_info):
         self.db_id = schema_info['db_id']
         self.tables = []
         self.columns = []
@@ -224,6 +257,65 @@ class Schema(object):
             edge = JoinEdge(fk_col, pk_col)
             fk_col.table.add_fk_edge(edge)
             pk_col.table.add_pk_edge(edge)
+
+    def to_proto(self):
+        schema_proto = ProtoSchema()
+        schema_proto.name = self.db_id
+
+        for table_id, table in enumerate(self.tables):
+            table_proto = schema_proto.tables.add()
+            table_proto.id = table_id
+            table_proto.syn_name = table.syn_name
+            table_proto.sem_name = table.sem_name
+
+            for col in table.columns:
+                col_proto = table_proto.columns.add()
+                col_proto.id = col.id
+                col_proto.is_pk = col.pk
+                col_proto.syn_name = col.syn_name
+                col_proto.sem_name = col.sem_name
+                col_proto.type = text_to_proto_col_type(col.type)
+
+                if col.fk_ref:
+                    fkpk = schema_proto.fkpks.add()
+                    fkpk.fk_col_id = col.id
+                    fkpk.pk_col_id = col.fk_ref
+
+        return schema_proto
+
+    @staticmethod
+    def from_proto(schema_proto_str):
+        schema_proto = ProtoSchema()
+        schema_proto.ParseFromString(schema_proto_str)
+
+        schema = Schema()
+        schema.db_id = schema_proto.name
+        schema.tables = []
+        schema.columns = []
+
+        # '*' column
+        schema.columns.append(Column(col.id, None, 'all', 'all', '*', pk=False))
+
+        for tbl in schema_proto.tables:
+            table = Table(tbl.id, tbl.sem_name, tbl.syn_name)
+            schema.tables.append(table)
+
+            for col in tbl.columns:
+                column = Column(col.id, table, proto_col_type_to_text(col.type),
+                    col.sem_name, col.syn_name, pk=col.is_pk)
+                table.add_col(column)
+                schema.columns.append(col)
+
+        for fkpk in schema_proto.fkpks:
+            fk_col = schema.get_col(fkpk.fk_col_id)
+            pk_col = schema.get_col(fkpk.pk_col_id)
+            fk_col.set_fk_ref(fkpk.pk_col_id)
+
+            edge = JoinEdge(fk_col, pk_col)
+            fk_col.table.add_fk_edge(edge)
+            pk_col.table.add_pk_edge(edge)
+
+        return schema
 
     def pk_ids(self):
         ids = []

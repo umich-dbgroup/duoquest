@@ -4,7 +4,7 @@ from .proto.duoquest_pb2 import ProtoTask, ProtoCandidates
 from .query import generate_sql_str
 
 class NLQClient:
-    def __init__(self, port, authkey, dataset, mode):
+    def __init__(self, port, authkey, dataset=None, mode=None):
         self.port = port
         self.authkey = authkey
         self.dataset = dataset
@@ -16,7 +16,7 @@ class NLQClient:
 
     def run(self, tid, schema, nlq, tsq_level, timeout=None):
         task = ProtoTask()
-        task.id = tid
+        task.id = str(tid)
         task.dataset = self.dataset
         task.mode = self.mode
         task.tsq_level = tsq_level
@@ -32,9 +32,7 @@ class NLQClient:
         msg = self.conn.recv_bytes()
         proto_cands = ProtoCandidates()
         proto_cands.ParseFromString(msg)
-        return list(
-            map(lambda x: generate_sql_str(x, schema), proto_cands.cqs)
-        )
+        return proto_cands.cqs
 
     def close(self):
         self.conn.send_bytes(b'close')
