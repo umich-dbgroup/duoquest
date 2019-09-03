@@ -54,13 +54,11 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 
 ## Running Live System
 
-### Task Database
-
-#### Setup
+### Task Database Setup
 
 Run `init_task_db.py`.
 
-#### Schema
+### Task Database Schema
 
 **Tasks**
 
