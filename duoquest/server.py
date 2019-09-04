@@ -37,6 +37,7 @@ class DuoquestServer:
             time.sleep(2)
             return
 
+        nlqc.connect()
         tid, db, nlq, tsq_proto, schema_proto = row
 
         schema = Schema.from_proto(schema_proto)
@@ -61,6 +62,7 @@ class DuoquestServer:
             cqs = nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
 
             t.join()
+            nlqc.close()
         except Exception as e:
             traceback.print_exc()
             status = 'error'
@@ -194,7 +196,8 @@ class DuoquestServer:
             f.close()
             gold_f.close()
             time_f.close()
-            nlqc.close()
+
+        nlqc.close()
 
         print_ranks(ranks)
         print_avg_time(times)
