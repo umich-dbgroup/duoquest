@@ -1,5 +1,5 @@
 from .proto.duoquest_pb2 import ProtoTSQ
-from .schema import proto_col_type_to_text
+from .schema import proto_col_type_to_text, text_to_proto_col_type
 
 class TableSketchQuery:
     def __init__(self, num_cols, types=None, values=None, order=False,
@@ -12,6 +12,21 @@ class TableSketchQuery:
         self.set_values(values)  # array of rows of exact or range values
         self.order = order       # boolean
         self.limit = limit       # int or None
+
+    def to_proto(self):
+        proto_tsq = ProtoTSQ()
+        proto_tsq.num_cols = self.num_cols
+        proto_tsq.order = self.order
+        proto_tsq.limit = self.limit or 0
+
+        for t in self.types:
+            proto_tsq.types.append(text_to_proto_col_type(t))
+
+        for row in self.values:
+            proto_row = proto_tsq.rows.add()
+            for cell in row:
+                proto_row.cells.append(cell)
+        return proto_tsq
 
     @staticmethod
     def from_proto(proto_tsq_str):

@@ -49,7 +49,7 @@ class DuoquestServer:
         try:
             ready = Event()
             t = threading.Thread(target=self.task_thread,
-                args=(db, schema, nlqc, tsq, ready, tsq_level))
+                args=(db, schema, nlqc, tsq, ready, tsq_level, None, None))
             t.start()
             ready.wait()
 
@@ -93,8 +93,8 @@ class DuoquestServer:
 
         ready = Event()
         t = threading.Thread(target=self.task_thread,
-            args=(db, schema, nlqc, tsq, ready, tsq_level,
-                eval_kmaps=eval_kmaps, eval_gold=task['query']))
+            args=(db, schema, nlqc, tsq, ready, tsq_level, eval_kmaps,
+                task['query']))
         t.start()
         ready.wait()
 
@@ -196,8 +196,8 @@ class DuoquestServer:
         print_avg_time(times)
         print_cdf(ranks, times, 10)
 
-    def task_thread(self, db, schema, nlqc, tsq, ready, tsq_level,
-        eval_gold=None, eval_kmaps=None):
+    def task_thread(self, db, schema, nlqc, tsq, ready, tsq_level, eval_gold,
+        eval_kmaps):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
