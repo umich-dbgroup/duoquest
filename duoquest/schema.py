@@ -294,7 +294,7 @@ class Schema(object):
         schema.columns = []
 
         # '*' column
-        schema.columns.append(Column(col.id, None, 'all', 'all', '*', pk=False))
+        schema.columns.append(Column(0, None, 'all', 'all', '*', pk=False))
 
         for tbl in schema_proto.tables:
             table = Table(tbl.id, tbl.sem_name, tbl.syn_name)
