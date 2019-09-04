@@ -135,7 +135,8 @@ def main():
     cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto, status, time)
                    VALUES (?, ?, ?, ?, ?, ?)''',
                    (str(uuid.uuid4()), db_name, nlq,
-                    tsq.to_proto().SerializeToString(), 'waiting', time.time()))
+                    tsq.to_proto().SerializeToString(), 'waiting',
+                    int(time.time())))
     conn.commit()
     conn.close()
 
