@@ -17,8 +17,8 @@ class NLQClient:
     def run(self, tid, schema, nlq, tsq_level, timeout=None):
         task = ProtoTask()
         task.id = str(tid)
-        task.dataset = self.dataset
-        task.mode = self.mode
+        task.dataset = self.dataset or ''
+        task.mode = self.mode or ''
         task.tsq_level = tsq_level
         task.db_name = schema.db_id
         task.timeout = timeout
