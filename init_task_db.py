@@ -55,10 +55,6 @@ def main():
     load_spider_databases(conn, config['spider']['dev_tables_path'],
         config['spider']['dev_db_path'])
     print('Done')
-    print('Loading Spider test databases...', end='')
-    load_spider_databases(conn, config['spider']['test_tables_path'],
-        config['spider']['test_db_path'])
-    print('Done')
 
     conn.close()
 
