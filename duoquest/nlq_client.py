@@ -21,7 +21,7 @@ class NLQClient:
         task.mode = self.mode or ''
         task.tsq_level = tsq_level
         task.db_name = schema.db_id
-        task.timeout = timeout
+        task.timeout = timeout or 0
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)
