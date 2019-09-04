@@ -44,7 +44,7 @@ class Database(object):
         elif self.dataset == 'wikisql':
             conn = self.conn
         else:
-            conn = sqlite3.connect(db_path)
+            conn = sqlite3.connect(self.db_path)
         return conn
 
     def intersects_range(self, schema, col_id, range_val):
