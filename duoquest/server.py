@@ -38,9 +38,10 @@ class DuoquestServer:
             return
 
         nlqc.connect()
-        tid, db, nlq, tsq_proto, schema_proto = row
+        tid, db_path, nlq, tsq_proto, schema_proto = row
 
         schema = Schema.from_proto(schema_proto)
+        db = Database(db_path, args.dataset)
 
         print(f'Running task {tid}...')
         print(f'Database: {db} || NLQ: {nlq}')
