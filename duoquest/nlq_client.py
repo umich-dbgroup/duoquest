@@ -32,7 +32,7 @@ class NLQClient:
         msg = self.conn.recv_bytes()
         proto_cands = ProtoCandidates()
         proto_cands.ParseFromString(msg)
-        return proto_cands.cqs
+        return proto_cands
 
     def close(self):
         self.conn.send_bytes(b'close')

@@ -46,7 +46,7 @@ class DuoquestServer:
         db = Database(db_path, None, db_name=db_name)
 
         print(f'Running task {tid}...')
-        print(f'Database: {db} || NLQ: {nlq}')
+        print(f'Database: {db_name} || NLQ: {nlq}')
 
         tsq = TableSketchQuery.from_proto(tsq_proto)
         print(tsq)
@@ -62,7 +62,8 @@ class DuoquestServer:
 
             question_toks = tokenize(nlq)
 
-            cqs = nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
+            proto_out = nlqc.run(tid, schema, question_toks, tsq_level,
+                timeout=timeout)
 
             t.join()
             nlqc.close()
@@ -71,8 +72,9 @@ class DuoquestServer:
             status = 'error'
             error_msg = str(e)
 
-        output_json = list(map(lambda x: generate_sql_str(x, schema), cqs))
-        output_proto = cqs.SerializeToString()
+        output_json = list(map(lambda x: generate_sql_str(x, schema),
+            proto_out.cqs))
+        output_proto = proto_out.cqs.SerializeToString()
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
@@ -107,9 +109,9 @@ class DuoquestServer:
         t.start()
         ready.wait()
 
-        cqs = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
+        proto_out = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
             timeout=timeout)
-        cqs = list(map(lambda x: generate_sql_str(x, schema), cqs))
+        cqs = list(map(lambda x: generate_sql_str(x, schema), proto_out.cqs))
 
         t.join()
 
