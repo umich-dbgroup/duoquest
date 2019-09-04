@@ -1,3 +1,4 @@
+import json
 import math
 import sqlite3
 import threading
@@ -72,8 +73,8 @@ class DuoquestServer:
             status = 'error'
             error_msg = str(e)
 
-        output_json = list(map(lambda x: generate_sql_str(x, schema),
-            proto_out.cqs))
+        output_json = json.dumps(list(map(lambda x: generate_sql_str(x, schema),
+            proto_out.cqs)))
         output_proto = proto_out.SerializeToString()
 
         print('Updating database with results...', end='')
