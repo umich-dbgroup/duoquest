@@ -56,9 +56,7 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 
 ### Task Database Setup
 
-Run `init_task_db.py`.
-
-### Task Database Schema
+Run `python3 init_task_db.py`. This will set up the task database, which has the following schema:
 
 **Tasks**
 
@@ -81,3 +79,9 @@ Run `init_task_db.py`.
 | name | text | database name |
 | path | text | database path in file system |
 | schema_proto | blob | schema protobuf |
+
+### Procedure
+
+1. Get the Synthesizer running following the instructions under the **Run Tests** section above.
+2. Get the main Duoquest queue manager running using `python3 main.py`.
+2. Add new tasks using the CLI (`python3 cli.py`) or the web front-end (under construction).
