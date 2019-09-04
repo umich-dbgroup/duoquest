@@ -12,6 +12,7 @@ from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRU
 from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
 from .external.process_sql import tokenize
+from .database import Database
 from .query import generate_sql_str
 from .schema import Schema
 from .tsq import TableSketchQuery
