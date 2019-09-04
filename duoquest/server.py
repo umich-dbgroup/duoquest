@@ -38,8 +38,6 @@ class DuoquestServer:
 
         tid, db, nlq, tsq_proto, schema_proto = row
 
-        print(f'Running task <{tid}>...')
-
         schema = Schema.from_proto(schema_proto)
 
         print(f'Running task {tid}...')
