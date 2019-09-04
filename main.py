@@ -15,6 +15,7 @@ def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
+    print('Initializing Duoquest...')
     verifier = DuoquestVerifier(debug=args.debug)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier,
@@ -22,6 +23,7 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
 
+    print('Processing queue...')
     while True:
         server.run_next_in_queue(nlqc, args.tsq_level)
 
