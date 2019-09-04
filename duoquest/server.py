@@ -74,7 +74,7 @@ class DuoquestServer:
 
         output_json = list(map(lambda x: generate_sql_str(x, schema),
             proto_out.cqs))
-        output_proto = proto_out.cqs.SerializeToString()
+        output_proto = proto_out.SerializeToString()
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
