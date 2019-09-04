@@ -13,6 +13,7 @@ from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
 from .external.process_sql import tokenize
 from .query import generate_sql_str
 from .schema import Schema
+from .tsq import TableSketchQuery
 
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_base=None, task_db=None):
