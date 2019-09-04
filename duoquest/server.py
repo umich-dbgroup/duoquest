@@ -28,7 +28,8 @@ class DuoquestServer:
     def run_next_in_queue(self, nlqc, tsq_level, timeout=None):
         conn = sqlite3.connect(self.task_db)
         cur = conn.cursor()
-        cur.execute('''SELECT t.tid, t.db, t.nlq, t.tsq_proto, d.schema_proto
+        cur.execute('''SELECT t.tid, t.db, d.path, t.nlq, t.tsq_proto,
+                              d.schema_proto
                        FROM tasks t JOIN databases d ON d.name = t.db
                        WHERE status = ? ORDER BY time ASC LIMIT 1''',
                     ('waiting',))
@@ -39,10 +40,10 @@ class DuoquestServer:
             return
 
         nlqc.connect()
-        tid, db_path, nlq, tsq_proto, schema_proto = row
+        tid, db_name, db_path, nlq, tsq_proto, schema_proto = row
 
         schema = Schema.from_proto(schema_proto)
-        db = Database(db_path, args.dataset)
+        db = Database(db_path, args.dataset, db_name=db_name)
 
         print(f'Running task {tid}...')
         print(f'Database: {db} || NLQ: {nlq}')
