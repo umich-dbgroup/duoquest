@@ -38,9 +38,9 @@ class TableSketchQuery:
             types.append(proto_col_type_to_text(type))
 
         values = []
-        for row in proto_tsq.rows:
+        for proto_row in proto_tsq.rows:
             row = []
-            for i, cell in enumerate(row.cells):
+            for i, cell in enumerate(proto_row.cells):
                 if types[i] == 'number':
                     row.append(float(cell))
                 else:
