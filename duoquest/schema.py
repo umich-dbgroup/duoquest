@@ -304,7 +304,7 @@ class Schema(object):
                 column = Column(col.id, table, proto_col_type_to_text(col.type),
                     col.sem_name, col.syn_name, pk=col.is_pk)
                 table.add_col(column)
-                schema.columns.append(col)
+                schema.columns.append(column)
 
         for fkpk in schema_proto.fkpks:
             fk_col = schema.get_col(fkpk.fk_col_id)
