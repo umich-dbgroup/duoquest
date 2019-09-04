@@ -130,7 +130,6 @@ def main():
     tsq.limit = input_limit()
 
     print(tsq.to_proto())
-    print(tsq.to_proto().SerializeToString())
 
     cur = conn.cursor()
     cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto, status, time)

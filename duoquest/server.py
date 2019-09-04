@@ -12,6 +12,7 @@ from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
 from .external.process_sql import tokenize
 from .query import generate_sql_str
+from .schema import Schema
 
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_base=None, task_db=None):
