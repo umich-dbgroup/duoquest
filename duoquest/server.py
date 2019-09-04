@@ -43,7 +43,7 @@ class DuoquestServer:
         tid, db_name, db_path, nlq, tsq_proto, schema_proto = row
 
         schema = Schema.from_proto(schema_proto)
-        db = Database(db_path, args.dataset, db_name=db_name)
+        db = Database(db_path, None, db_name=db_name)
 
         print(f'Running task {tid}...')
         print(f'Database: {db} || NLQ: {nlq}')
