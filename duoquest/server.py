@@ -61,6 +61,7 @@ class DuoquestServer:
 
             t.join()
         except Exception as e:
+            print(e)
             status = 'error'
             error_msg = str(e)
 
