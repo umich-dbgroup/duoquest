@@ -2,6 +2,7 @@ import math
 import sqlite3
 import threading
 import time
+import traceback
 from tribool import Tribool
 
 from multiprocessing.connection import Listener
@@ -61,7 +62,7 @@ class DuoquestServer:
 
             t.join()
         except Exception as e:
-            print(e)
+            traceback.print_exc()
             status = 'error'
             error_msg = str(e)
 
