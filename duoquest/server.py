@@ -71,8 +71,8 @@ class DuoquestServer:
             status = 'error'
             error_msg = str(e)
 
-        output_proto = cqs
         output_json = list(map(lambda x: generate_sql_str(x, schema), cqs))
+        output_proto = cqs.SerializeToString()
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
