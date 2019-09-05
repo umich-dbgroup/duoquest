@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+  <h1>Tasks</h1>
+  <table class='table'>
+    <tr>
+      <th>Task ID</th>
+      <th>Database</th>
+      <th>NLQ</th>
+      <th>Status</th>
+      <th>Error Message</th>
+    </tr>
+    {% for task in tasks %}
+    <tr>
+      <td>
+        <a href='/admin/tasks/{{ task['tid'] }}'>{{ task['tid'] }}</a>
+      </td>
+      <td>{{ task['db'] }}</td>
+      <td>{{ task['nlq'] }}</td>
+      <td>
+        {% include 'components/task_status.html' %}
+      </td>
+      <td>{{ task['error_msg'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

@@ -1,0 +1,17 @@
+main.container {
+  margin-top: 75px;
+}
+
+#tsq {
+  width: auto;
+}
+
+#tsq td, #tsq th {
+  width: 150px;
+  height: 49px;
+  text-align: center;
+}
+
+#tsq th.tsq-input-head {
+  vertical-align: middle;
+}

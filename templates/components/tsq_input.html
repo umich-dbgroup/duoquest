@@ -1,0 +1,35 @@
+<div class='alert alert-secondary'>
+  <em>Columns:</em>
+  <div class="btn-group" role="group">
+    <button id='tsq-add-col' type="button" class="btn btn-sm btn-primary">Add</button>
+    <button id='tsq-del-col' type="button" class="btn btn-sm btn-danger" disabled>Remove</button>
+  </div>
+  &nbsp;
+  <em>Rows:</em>
+  <div class="btn-group" role="group">
+    <button id='tsq-add-row' type="button" class="btn btn-sm btn-primary">Add</button>
+    <button id='tsq-del-row' type="button" class="btn btn-sm btn-danger" disabled>Remove</button>
+  </div>
+</div>
+
+<table id='tsq' class='table table-bordered' data-num-cols='1'>
+  <tr id='tsq-type-row'>
+    <th class='table-primary tsq-input-head'>Types</th>
+    <td data-toggle='tooltip' title='`text` OR `number`'></td>
+  </tr>
+  <tr id='tsq-value-head-row'>
+    <th id='tsq-values-head' class='table-primary tsq-input-head' rowspan='1'>Values</th>
+    <td></td>
+  </tr>
+</table>
+
+<div class="form-group">
+  <label for='limit'>Limit to <em>n</em> results (set 0 for no limit)</label>
+  <input id='limit' name='limit' class="form-control" type="number" value="0" />
+</div>
+<div class="form-check">
+  <input name='order' class="form-check-input" type="checkbox" value="" id="order">
+  <label class="form-check-label" for="order">
+    Result rows should be ordered
+  </label>
+</div>

@@ -1,0 +1,35 @@
+<table class='table table-bordered table-sm'>
+  <tr>
+    <th class='table-primary'>Types</th>
+    {% for type in tsq.types %}
+      <th>{{ type }}</th>
+    {% endfor %}
+  </tr>
+  <tr>
+    <th class='table-primary' colspan='{{ tsq.num_cols + 1 }}'>Values</th>
+  </tr>
+  {% if tsq.values %}
+    {% for row in tsq.values %}
+    <tr>
+      <td class='table-secondary'></td>
+      {% for cell in row %}
+      <td>{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  {% else %}
+    <tr'><td colspan='{{ tsq.num_cols + 1 }}'>No values in this TSQ.</td></tr>
+  {% endif %}
+  <tr>
+    <th class='table-primary'>Ordered?</th>
+    <td colspan='{{ tsq.num_cols }}'>
+      {% if tsq.order %}&#x2714;{% else %}&#x2718;{% endif %}
+    </td>
+  </tr>
+  <tr>
+    <th class='table-primary'>Limit?</th>
+    <td colspan='{{ tsq.num_cols }}'>
+      {% if tsq.limit %}{{ tsq.limit }}{% else %}&#x2718;{% endif %}
+    </td>
+  </tr>
+</table>

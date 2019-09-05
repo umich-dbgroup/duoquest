@@ -1,0 +1,11 @@
+{% if task['status'] == 'waiting' %}
+  <span class='badge badge-warning'>waiting</span>
+{% elif task['status'] == 'running' %}
+  <span class='badge badge-primary'>running</span>
+{% elif task['status'] == 'done' %}
+  <span class='badge badge-success'>done</span>
+{% elif task['status'] == 'error' %}
+  <span class='badge badge-danger'>error</span>
+{% else %}
+  {{ task['status'] }}
+{% endif %}

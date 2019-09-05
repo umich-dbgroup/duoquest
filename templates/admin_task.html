@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Task Info{% endblock %}
+{% block content %}
+<h1>Task Info</h1>
+<table class='table'>
+  <tr>
+    <th>Task ID</th>
+    <td>{{ task['tid'] }}</td>
+  </tr>
+  <tr>
+    <th>Database</th>
+    <td>{{ task['db'] }}</td>
+  </tr>
+  <tr>
+    <th>NLQ</th>
+    <td>{{ task['nlq'] }}</td>
+  </tr>
+  <tr>
+    <th>TSQ</th>
+    <td>
+      {% with tsq = task['tsq'] %}
+        {% include 'components/tsq_view.html' %}
+      {% endwith %}
+    </td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td>{% include 'components/task_status.html' %}</td>
+  </tr>
+  <tr>
+    <th>Output</th>
+    <td>{{ task['output_proto'] }}</td>
+  </tr>
+  <tr>
+    <th>Error Message</th>
+    <td>{{ task['error_msg'] }}</td>
+  </tr>
+</table>
+{% endblock %}
