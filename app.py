@@ -58,6 +58,11 @@ def task(tid):
         return redirect(url_for('tasks'))
     return render_template('task.html', task=task, path=request.path)
 
+@app.route('/tasks/<tid>/rerun')
+def task_rerun(tid):
+    rerun_task(tid)
+    return json.dumps({ 'success': True })
+
 @app.route('/tasks/<tid>/results')
 def task_results(tid):
     return json.dumps(load_results(tid, request.args.get('offset', default=0)))
@@ -166,6 +171,18 @@ def add_task(db_name, nlq, tsq):
     conn.close()
 
     return tid, True
+
+def rerun_task(tid):
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    # clear all results
+    cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
+    # clear error message and set status to waiting
+    cur.execute('UPDATE tasks SET status = ?, error_msg = ? WHERE tid = ?',
+        ('waiting', None, tid))
+
+    conn.commit()
+    conn.close()
 
 def sanitize_values(values):
     for row in values:
