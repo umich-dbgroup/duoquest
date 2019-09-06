@@ -27,7 +27,7 @@
       </td>
       <td>{{ task['error_msg'] }}</td>
       <td>
-        <button data-tid='{{ task["tid"] }}' class="rerun btn btn-block btn-secondary {% if task['status'] == 'waiting' or task['status'] == 'running' %}disabled{% endif %}">Rerun</button>
+        <button data-tid='{{ task["tid"] }}' class="rerun btn btn-block btn-secondary" {% if task['status'] == 'waiting' or task['status'] == 'running' %}disabled{% endif %}>Rerun</button>
       </td>
     </tr>
     {% endfor %}
