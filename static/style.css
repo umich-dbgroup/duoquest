@@ -2,16 +2,21 @@ main.container {
   margin-top: 75px;
 }
 
-#tsq {
+.tsq {
   width: auto;
 }
 
-#tsq td, #tsq th {
+.tsq td, .tsq th {
   width: 150px;
   height: 49px;
   text-align: center;
+  vertical-align: middle;
 }
 
-#tsq th.tsq-input-head {
-  vertical-align: middle;
+#task-results .card-header {
+  line-height: 30px;
+}
+
+#task-results .result-info {
+  padding: 15px;
 }

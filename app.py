@@ -61,6 +61,10 @@ def task(tid):
 def task_results(tid):
     return json.dumps(load_results(tid, request.args.get('offset', default=0)))
 
+@app.route('/results/<rid>/preview')
+def result_run(rid):
+    return json.dumps(result_query_preview(rid))
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -116,6 +120,31 @@ def load_results(tid, offset):
 
     output = { 'results': results, 'status': status }
     conn.close()
+    return output
+
+def result_query_preview(rid):
+    conn = sqlite3.connect(config['db']['path'])
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    cur.execute('''SELECT d.path, r.query FROM results r
+                     JOIN tasks t ON r.tid = t.tid
+                     JOIN databases d ON t.db = d.name
+                   WHERE rid = ?''', (rid,))
+    query_info = cur.fetchone()
+    conn.close()
+
+    db_conn = sqlite3.connect(query_info['path'])
+    cur = db_conn.cursor()
+
+    query = query_info['query']
+    if 'LIMIT' not in query:
+        query += ' LIMIT 5'
+
+    cur.execute(query)
+    results = cur.fetchall()
+
+    output = { 'results': results }
+    db_conn.close()
     return output
 
 def add_task(db_name, nlq, tsq):

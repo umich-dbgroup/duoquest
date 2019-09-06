@@ -1,25 +1,30 @@
-<table class='table table-bordered table-sm'>
+<table class='table table-bordered tsq'>
   <tr>
-    <th class='table-primary'>Types</th>
+    <th class='table-primary tsq-head'>Types</th>
     {% for type in tsq.types %}
-      <th>{{ type }}</th>
+      <td>{{ type }}</td>
     {% endfor %}
   </tr>
   <tr>
-    <th class='table-primary' colspan='{{ tsq.num_cols + 1 }}'>Values</th>
+    <th class='table-primary tsq-head' rowspan='{{ tsq.values|length }}'>Values</th>
+    {% if tsq.values|length > 0 %}
+      {% for cell in tsq.values[0] %}
+      <td>{{ cell }}</td>
+      {% endfor %}
+    {% else %}
+      <td>No values in this TSQ. </td>
+    {% endif %}
   </tr>
-  {% if tsq.values %}
-    {% for row in tsq.values %}
+  {% if tsq.values|length > 1 %}
+  {% for row in tsq.values[1:] %}
     <tr>
-      <td class='table-secondary'></td>
       {% for cell in row %}
       <td>{{ cell }}</td>
       {% endfor %}
     </tr>
-    {% endfor %}
-  {% else %}
-    <tr'><td colspan='{{ tsq.num_cols + 1 }}'>No values in this TSQ.</td></tr>
+  {% endfor %}
   {% endif %}
+
   <tr>
     <th class='table-primary'>Ordered?</th>
     <td colspan='{{ tsq.num_cols }}'>
