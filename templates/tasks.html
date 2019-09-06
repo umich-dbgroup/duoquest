@@ -14,6 +14,7 @@
       <th>Status</th>
       <th>Error Message</th>
       <th>Rerun</th>
+      <th>Delete</th>
     </tr>
     {% for task in tasks %}
     <tr>
@@ -27,10 +28,14 @@
       </td>
       <td>{{ task['error_msg'] }}</td>
       <td>
-        <button data-tid='{{ task["tid"] }}' class="rerun btn btn-block btn-secondary"
+        <button data-tid='{{ task["tid"] }}' class="rerun-task btn btn-block btn-secondary"
         {% if task['status'] == 'waiting' or task['status'] == 'running' %}disabled{% endif %}>
           Rerun
         </button>
+      </td>
+      <td>
+        <button data-tid='{{ task["tid"] }}' class="del-task btn btn-block btn-danger"
+        {% if task['status'] == 'running' %}disabled{% endif %}>Delete</button>
       </td>
     </tr>
     {% endfor %}

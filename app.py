@@ -61,6 +61,11 @@ def task_rerun(tid):
     rerun_task(tid)
     return json.dumps({ 'success': True })
 
+@app.route('/tasks/<tid>/delete')
+def task_delete(tid):
+    delete_task(tid)
+    return json.dumps({ 'success': True })
+
 @app.route('/tasks/<tid>/results')
 def task_results(tid):
     return json.dumps(load_results(tid, request.args.get('offset', default=0)))
@@ -169,6 +174,17 @@ def add_task(db_name, nlq, tsq):
     conn.close()
 
     return tid, True
+
+def delete_task(tid):
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    # clear all results
+    cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
+    # clear task
+    cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
+
+    conn.commit()
+    conn.close()
 
 def rerun_task(tid):
     conn = sqlite3.connect(config['db']['path'])
