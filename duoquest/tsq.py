@@ -41,13 +41,13 @@ class TableSketchQuery:
         for proto_row in proto_tsq.rows:
             row = []
             for i, cell in enumerate(proto_row.cells):
-                if types[i] == 'number':
-                    if cell:
+                if cell == '':
+                    row.append(None)
+                else:
+                    if types[i] == 'number':
                         row.append(float(cell))
                     else:
-                        row.append(None)
-                else:
-                    row.append(cell)
+                        row.append(cell)
             values.append(row)
 
         limit = proto_tsq.limit or None

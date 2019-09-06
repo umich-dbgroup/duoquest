@@ -30,9 +30,7 @@ def start():
             order='order' in request.form,
             limit=int(request.form.get('limit')) or None)
         tsq.types = json.loads(request.form.get('types'))
-        values = json.loads(request.form.get('values'))
-        tsq.values = sanitize_values(values)
-
+        tsq.values = json.loads(request.form.get('values'))
         tid, status = add_task(db_name, nlq, tsq)
 
         if status:
@@ -183,10 +181,3 @@ def rerun_task(tid):
 
     conn.commit()
     conn.close()
-
-def sanitize_values(values):
-    for row in values:
-        for i, cell in enumerate(row):
-            if cell == '':
-                row[i] = None
-    return values
