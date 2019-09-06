@@ -6,12 +6,13 @@
     {% endfor %}
   </tr>
   <tr>
-    <th class='table-primary tsq-head' rowspan='{{ tsq.values|length }}'>Values</th>
     {% if tsq.values|length > 0 %}
+      <th class='table-primary tsq-head' rowspan='{{ tsq.values|length }}'>Values</th>
       {% for cell in tsq.values[0] %}
       <td>{{ cell }}</td>
       {% endfor %}
     {% else %}
+      <th class='table-primary tsq-head' rowspan='1'>Values</th>
       <td>No values in this TSQ. </td>
     {% endif %}
   </tr>
