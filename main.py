@@ -8,7 +8,7 @@ from duoquest.vars import *
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--timeout', default=15)
+    parser.add_argument('--timeout', default=30)
     parser.add_argument('--tsq_level', choices=TSQ_LEVELS, default='default')
     parser.add_argument('--debug', action='store_true', help='Debugging output')
     args = parser.parse_args()
