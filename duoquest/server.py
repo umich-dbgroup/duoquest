@@ -68,12 +68,13 @@ class DuoquestServer:
                     ('running', tid))
         conn.commit()
 
-        tsq = TableSketchQuery.from_proto(tsq_proto)
-        print(tsq)
-
-        status = 'done'
-        error_msg = None
         try:
+            tsq = TableSketchQuery.from_proto(tsq_proto)
+            print(tsq)
+
+            status = 'done'
+            error_msg = None
+            
             ready = Event()
             t = threading.Thread(target=self.task_thread,
                 args=(tid, db, schema, nlqc, tsq, ready, tsq_level))
