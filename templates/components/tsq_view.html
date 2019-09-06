@@ -13,7 +13,7 @@
       {% endfor %}
     {% else %}
       <th class='table-primary tsq-head' rowspan='1'>Values</th>
-      <td>No values in this TSQ. </td>
+      <td colspan='{{ tsq.types|length }}'>No values in this TSQ. </td>
     {% endif %}
   </tr>
   {% if tsq.values|length > 1 %}
