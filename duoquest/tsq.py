@@ -42,7 +42,10 @@ class TableSketchQuery:
             row = []
             for i, cell in enumerate(proto_row.cells):
                 if types[i] == 'number':
-                    row.append(float(cell))
+                    if cell:
+                        row.append(float(cell))
+                    else:
+                        row.append(None)
                 else:
                     row.append(cell)
             values.append(row)

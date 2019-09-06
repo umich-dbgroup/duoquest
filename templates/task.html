@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block title %}Task Info{% endblock %}
+{% block scripts %}
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+  <script src="/static/scripts/task.js"></script>
+{% endblock %}
+{% block content %}
+<h2>Query</h2>
+<table class='table table-sm'>
+  <tr>
+    <th>Task ID</th>
+    <td>{{ task['tid'] }}</td>
+  </tr>
+  <tr>
+    <th>Database</th>
+    <td>{{ task['db'] }}</td>
+  </tr>
+  <tr>
+    <th>NLQ</th>
+    <td>{{ task['nlq'] }}</td>
+  </tr>
+  <tr>
+    <th>TSQ</th>
+    <td>
+      {% with tsq = task['tsq'] %}
+        {% include 'components/tsq_view.html' %}
+      {% endwith %}
+    </td>
+  </tr>
+</table>
+
+<h2>Results</h2>
+
+<ul class="list-group" id='task-results' data-offset="0" data-tid="{{ task['tid'] }}" data-status="{{ task['status'] }}">
+</ul>
+<div id="task-results-error" class="alert alert-danger" role="alert" style="display: none">
+  {% if task['error_msg'] %}
+  Error: {{ task['error_msg'] }}
+  {% else %}
+  Error: please refresh the page or try running the task again.
+  {% endif %}
+</div>
+<div id="task-results-waiting" class="alert alert-info" style="display: none">Task has not started executing yet...</div>
+<div id="task-results-spinner" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+{% endblock %}

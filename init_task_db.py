@@ -41,13 +41,14 @@ def main():
     print('Done')
 
     cur = conn.cursor()
-    print('Creating tasks table...', end='')
+    print('Creating tables...', end='')
     cur.execute('''CREATE TABLE tasks
                 (tid text, db text, nlq text, tsq_proto blob, status text,
-                 output_proto blob, output_json text, time integer,
-                 error_msg text)''')
+                 time integer, error_msg text)''')
     cur.execute('''CREATE TABLE databases
                 (name text, path text, schema_proto blob)''')
+    cur.execute('''CREATE TABLE results
+                (rid INTEGER PRIMARY KEY, tid text, query text)''')
     conn.commit()
     print('Done')
 

@@ -9,23 +9,29 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="/">Duoquest</a>
+      <a class="navbar-brand" href="{{ url_for('home') }}">Duoquest</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item {% if path == '/' %}active{% endif %}">
-            <a class="nav-link" href="/">Home</a>
+          <li class="nav-item {% if path == url_for('home') %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
           </li>
-          <li class="nav-item {% if path.startswith('/admin/tasks') %}active{% endif %}">
-            <a class="nav-link" href="/admin/tasks">Tasks Admin</a>
+          <li class="nav-item {% if path == url_for('start') %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('start') }}">Run Query</a>
+          </li>
+          <li class="nav-item {% if path.startswith(url_for('tasks')) %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('tasks') }}">Tasks</a>
           </li>
         </ul>
       </div>
     </nav>
 
     <main role="main" class="container">
+      {% if error %}
+      <div class='alert alert-danger'>{{ error }}</div>
+      {% endif %}
       {% block content %}
       {% endblock %}
     </main><!-- /.container -->

@@ -13,7 +13,7 @@
     {% for task in tasks %}
     <tr>
       <td>
-        <a href='/admin/tasks/{{ task['tid'] }}'>{{ task['tid'] }}</a>
+        <a href='{{ url_for("task", tid=task["tid"]) }}'>{{ task['tid'] }}</a>
       </td>
       <td>{{ task['db'] }}</td>
       <td>{{ task['nlq'] }}</td>

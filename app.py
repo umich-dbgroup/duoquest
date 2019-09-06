@@ -7,7 +7,7 @@ import uuid
 
 from duoquest.tsq import TableSketchQuery
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 app = Flask(__name__)
 
 config = configparser.ConfigParser()
@@ -32,29 +32,34 @@ def start():
         tsq.types = json.loads(request.form.get('types'))
         tsq.values = json.loads(request.form.get('values'))
 
-        if add_task(db_name, nlq, tsq):
-            # TODO: success case
-            pass
+        tid, status = add_task(db_name, nlq, tsq)
+
+        if status:
+            return redirect(url_for('task', tid=tid))
         else:
-            # TODO failure case
-            pass
+            databases = load_databases()
+            return render_template('start.html', databases=databases,
+                path=request.path, error='Starting task failed.')
     else:
         databases = load_databases()
         return render_template('start.html', databases=databases,
             path=request.path)
 
-# ------------
-# ADMIN ROUTES
-# ------------
-@app.route('/admin/tasks')
+@app.route('/tasks')
 def tasks():
     tasks = load_tasks()
-    return render_template('admin_tasks.html', tasks=tasks, path=request.path)
+    return render_template('tasks.html', tasks=tasks, path=request.path)
 
-@app.route('/admin/tasks/<tid>')
+@app.route('/tasks/<tid>')
 def task(tid):
     task = load_task(tid)
-    return render_template('admin_task.html', task=task, path=request.path)
+    if not task:
+        return redirect(url_for('tasks'))
+    return render_template('task.html', task=task, path=request.path)
+
+@app.route('/tasks/<tid>/results')
+def task_results(tid):
+    return json.dumps(load_results(tid, request.args.get('offset', default=0)))
 
 def dict_factory(cursor, row):
     d = {}
@@ -85,13 +90,33 @@ def load_task(tid):
     conn = sqlite3.connect(config['db']['path'])
     conn.row_factory = dict_factory
     cur = conn.cursor()
-    cur.execute('''SELECT tid, db, nlq, tsq_proto, status, output_proto,
-                   error_msg FROM tasks
+    cur.execute('''SELECT tid, db, nlq, tsq_proto, status, error_msg FROM tasks
                    WHERE tid = ?''', (tid,))
     task = cur.fetchone()
+
+    if not task:
+        return None
+
     task['tsq'] = TableSketchQuery.from_proto(task['tsq_proto'])
     conn.close()
     return task
+
+def load_results(tid, offset):
+    conn = sqlite3.connect(config['db']['path'])
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    cur.execute('SELECT status FROM tasks t WHERE t.tid = ?', (tid,))
+    status = cur.fetchone()['status']
+
+    cur = conn.cursor()
+    cur.execute('''SELECT rid, query FROM results r
+                   WHERE tid = ? AND rid > ? ORDER BY rid ASC''',
+                   (tid, offset))
+    results = cur.fetchall()
+
+    output = { 'results': results, 'status': status }
+    conn.close()
+    return output
 
 def add_task(db_name, nlq, tsq):
     conn = sqlite3.connect(config['db']['path'])
@@ -105,8 +130,9 @@ def add_task(db_name, nlq, tsq):
                         int(time.time())))
     except Exception as e:
         traceback.print_exc()
-        return False
+        return None, False
 
     conn.commit()
     conn.close()
-    return True
+
+    return tid, True

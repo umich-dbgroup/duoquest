@@ -49,6 +49,11 @@ class DuoquestServer:
         print(f'Running task {tid}...')
         print(f'Database: {db_name} || NLQ: {nlq}')
 
+        cur = conn.cursor()
+        cur.execute('UPDATE tasks SET status = ? WHERE tid = ?',
+                    ('running', tid))
+        conn.commit()
+
         tsq = TableSketchQuery.from_proto(tsq_proto)
         print(tsq)
 
@@ -57,14 +62,13 @@ class DuoquestServer:
         try:
             ready = Event()
             t = threading.Thread(target=self.task_thread,
-                args=(db, schema, nlqc, tsq, ready, tsq_level, None, None))
+                args=(tid, db, schema, nlqc, tsq, ready, tsq_level))
             t.start()
             ready.wait()
 
             question_toks = tokenize(nlq)
 
-            proto_out = nlqc.run(tid, schema, question_toks, tsq_level,
-                timeout=timeout)
+            nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
 
             t.join()
             nlqc.close()
@@ -73,15 +77,10 @@ class DuoquestServer:
             status = 'error'
             error_msg = str(e)
 
-        output_json = json.dumps(list(map(lambda x: generate_sql_str(x, schema),
-            proto_out.cqs)))
-        output_proto = proto_out.SerializeToString()
-
         print('Updating database with results...', end='')
         cur = conn.cursor()
-        cur.execute('''UPDATE tasks SET status = ?, output_proto = ?,
-                        output_json = ?, error_msg = ? WHERE tid = ?''',
-                        (status, output_proto, output_json, error_msg, tid))
+        cur.execute('UPDATE tasks SET status = ?, error_msg = ? WHERE tid = ?',
+                    (status, error_msg, tid))
         conn.commit()
         print('Done')
 
@@ -104,7 +103,7 @@ class DuoquestServer:
             print(tsq)
 
         ready = Event()
-        t = threading.Thread(target=self.task_thread,
+        t = threading.Thread(target=self.experiment_thread,
             args=(db, schema, nlqc, tsq, ready, tsq_level, eval_kmaps,
                 task['query']))
         t.start()
@@ -209,8 +208,61 @@ class DuoquestServer:
         print_avg_time(times)
         print_cdf(ranks, times, 10)
 
-    def task_thread(self, db, schema, nlqc, tsq, ready, tsq_level, eval_gold,
-        eval_kmaps):
+    def task_thread(self, tid, db, schema, nlqc, tsq, ready, tsq_level):
+        task_conn = sqlite3.connect(self.task_db)
+
+        address = ('localhost', self.port)
+        listener = Listener(address, authkey=self.authkey)
+        ready.set()
+        print(f'DuoquestServer listening on port {self.port}...')
+
+        conn = listener.accept()
+        print('DuoquestServer connection accepted from:',
+            listener.last_accepted)
+        while True:
+            msg = conn.recv_bytes()
+
+            try:
+                if msg.decode('utf-8') == 'close':
+                    conn.close()
+                    break
+            except Exception:
+                pass
+
+            protolist = ProtoQueryList()
+            protolist.ParseFromString(msg)
+
+            response = ProtoResult()
+            for query in protolist.queries:
+                if query.done_query:
+                    if tsq_level == 'nlq_only':
+                        result = Tribool(True)
+                    else:
+                        result = self.verifier.verify(db, schema, query, tsq)
+                else:
+                    if tsq_level == 'nlq_only' or tsq_level == 'chain':
+                        result = Tribool(None)
+                    else:
+                        result = self.verifier.verify(db, schema, query, tsq)
+
+                if result.value is None:
+                    response.results.append(UNKNOWN)
+                elif result.value:
+                    response.results.append(TRUE)
+
+                    cur = task_conn.cursor()
+                    cur.execute('INSERT INTO results (tid, query) VALUES (?,?)',
+                                (tid, generate_sql_str(query, schema)))
+                    task_conn.commit()
+                else:
+                    response.results.append(FALSE)
+
+            conn.send_bytes(response.SerializeToString())
+        listener.close()
+        task_conn.close()
+
+    def experiment_thread(self, db, schema, nlqc, tsq, ready, tsq_level,
+        eval_gold, eval_kmaps):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
