@@ -30,7 +30,8 @@ def start():
             order='order' in request.form,
             limit=int(request.form.get('limit')) or None)
         tsq.types = json.loads(request.form.get('types'))
-        tsq.values = json.loads(request.form.get('values'))
+        values = json.loads(request.form.get('values'))
+        tsq.values = sanitize_values(values)
 
         tid, status = add_task(db_name, nlq, tsq)
 
@@ -165,3 +166,10 @@ def add_task(db_name, nlq, tsq):
     conn.close()
 
     return tid, True
+
+def sanitize_values(values):
+    for row in values:
+        for i, cell in enumerate(row):
+            if cell == '':
+                row[i] = None
+    return values
