@@ -7,12 +7,12 @@ import traceback
 from tribool import Tribool
 
 from multiprocessing.connection import Listener
+from nltk import word_tokenize
 from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
-from .external.process_sql import tokenize
 from .database import Database
 from .query import generate_sql_str
 from .schema import Schema
@@ -80,7 +80,7 @@ class DuoquestServer:
             t.start()
             ready.wait()
 
-            question_toks = tokenize(nlq)
+            question_toks = [word.lower() for word in word_tokenize(nlq)]
 
             nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
 
