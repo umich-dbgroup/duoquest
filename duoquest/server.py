@@ -26,6 +26,20 @@ class DuoquestServer:
         self.out_base = out_base
         self.task_db = task_db
 
+    def reset_any_running(self):
+        conn = sqlite3.connect(self.task_db)
+        cur = conn.cursor()
+        cur.execute("SELECT tid FROM tasks WHERE status = ?", ('running',))
+        for row in cur.fetchall():
+            results_cur = conn.cursor()
+            results_cur.execute('DELETE FROM results WHERE tid = ?', (row[0],))
+
+            status_cur = conn.cursor()
+            status_cur.execute('''UPDATE tasks SET status = ?, error_msg = ?
+                                  WHERE tid = ?''', ('waiting', None, row[0]))
+        conn.commit()
+        conn.close()
+
     def run_next_in_queue(self, nlqc, tsq_level, timeout=None):
         conn = sqlite3.connect(self.task_db)
         cur = conn.cursor()

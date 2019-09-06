@@ -24,6 +24,9 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
 
+    print('Cleaning up any old tasks...')
+    server.reset_any_running()
+
     print('Processing queue...')
     while True:
         server.run_next_in_queue(nlqc, args.tsq_level, timeout=args.timeout)
