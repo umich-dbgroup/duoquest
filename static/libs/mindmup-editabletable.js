@@ -15,12 +15,11 @@ $.fn.editableTableWidget = function (options) {
 			showEditor = function (select) {
 				active = element.find('td:focus');
 				if (active.length) {
+					editor.tooltip('dispose');
 					if (active.attr('data-toggle') && active.attr('title')) {
 						editor.attr('data-toggle', active.attr('data-toggle'))
 									.attr('title', active.attr('title'))
 									.tooltip();
-					} else {
-						editor.tooltip('dispose');
 					}
 
 					editor.val(active.text())

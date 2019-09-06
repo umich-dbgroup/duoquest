@@ -10,6 +10,10 @@ function refresh_table() {
   $('#tsq').editableTableWidget();
 }
 
+function append_val_cell(selector) {
+  $(selector).append('<td data-toggle="tooltip" title="e.g. `My Text`, `42`, `[45,62]` (range)"></td>');
+}
+
 refresh_table();
 
 $('#tsq-add-col').on('click', function (e) {
@@ -17,8 +21,8 @@ $('#tsq-add-col').on('click', function (e) {
 
   $('#tsq-type-row').append('<td data-toggle="tooltip" title="`text` OR `number`"></td>');
 
-  $('#tsq-value-head-row').append('<td></td>');
-  $('.tsq-value-row').append('<td></td>');
+  append_val_cell('#tsq-value-head-row');
+  append_val_cell('.tsq-value-row');
   $('#tsq').attr('data-num-cols', num_cols + 1);
   $('#tsq-del-col').removeAttr('disabled');
   refresh_table();
@@ -41,7 +45,7 @@ $('#tsq-add-row').on('click', function (e) {
   $('#tsq-values-head').attr('rowspan', num_rows + 1);
   $('#tsq').append("<tr class='tsq-value-row'></tr>");
   for (var i = 0; i < $('#tsq').attr('data-num-cols'); i++) {
-    $('#tsq .tsq-value-row:last-child').append('<td></td>');
+    append_val_cell('#tsq .tsq-value-row:last-child');
   }
   $('#tsq-del-row').removeAttr('disabled');
   refresh_table();

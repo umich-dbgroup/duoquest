@@ -1,3 +1,5 @@
+import json
+
 from .proto.duoquest_pb2 import ProtoTSQ
 from .schema import proto_col_type_to_text, text_to_proto_col_type
 
@@ -45,7 +47,10 @@ class TableSketchQuery:
                     row.append(None)
                 else:
                     if types[i] == 'number':
-                        row.append(float(cell))
+                        if cell.startswith('[') and cell.endswith(']'):
+                            row.append(json.loads(cell))
+                        else:
+                            row.append(float(cell))
                     else:
                         row.append(cell)
             values.append(row)
