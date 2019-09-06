@@ -25,7 +25,7 @@ class TableSketchQuery:
         for row in self.values:
             proto_row = proto_tsq.rows.add()
             for cell in row:
-                proto_row.cells.append(cell)
+                proto_row.cells.append(cell or '')
         return proto_tsq
 
     @staticmethod
