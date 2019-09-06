@@ -25,7 +25,7 @@ function pollResults() {
              <div class="card-header">
                 <strong>Q${index}:</strong> ${result['query']}
                 <button class="btn btn-primary float-right btn-sm run-result-query"
-                 data-toggle="collapse" data-target="#result-${index}" data-rid=${result['rid']}>Query Preview</button>
+                 data-toggle="collapse" data-target="#result-${result['rid']}" data-rid=${result['rid']}>Query Preview</button>
             </div>
             <div id="result-${result['rid']}" class="result-info collapse" data-parent="#task-results">
               <div id="result-${result['rid']}-spinner" class="text-center"><div class="spinner-border"></div></div>
