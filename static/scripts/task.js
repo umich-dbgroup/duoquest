@@ -69,7 +69,7 @@ $(document).on('click', '.run-result-query', function () {
     $.get(`/results/${rid}/preview`, function (data) {
       data = JSON.parse(data);
 
-      var table = $('<table class="table table-sm"></table>');
+      var table = $('<table class="table table-sm table-bordered"></table>');
       data['results'].forEach(function (row) {
         var tr = $('<tr></tr>')
         row.forEach(function (cell) {
