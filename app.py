@@ -5,6 +5,8 @@ import time
 import traceback
 import uuid
 
+from walrus import Walrus
+
 from duoquest.tsq import TableSketchQuery
 
 from flask import Flask, redirect, render_template, request, url_for
@@ -12,6 +14,9 @@ app = Flask(__name__)
 
 config = configparser.ConfigParser()
 config.read('config.ini')
+
+walrus = Walrus(host=config['walrus']['host'],
+    port=config['walrus']['port'], db=0)
 
 # ------------
 # USER ROUTES
@@ -74,11 +79,19 @@ def task_results(tid):
 def result_run(rid):
     return json.dumps(result_query_preview(rid))
 
+@app.route('/databases/<db_name>/autocomplete')
+def database_autocomplete(db_name):
+    return json.dumps(autocomplete(db_name, request.args.get('term')))
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+def autocomplete(db_name, term):
+    ac = walrus.autocomplete(namespace=db_name)
+    return list(ac.search(term, limit=10))
 
 def load_tasks():
     conn = sqlite3.connect(config['db']['path'])

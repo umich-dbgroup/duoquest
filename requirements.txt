@@ -5,6 +5,8 @@ Jinja2==2.10.1
 MarkupSafe==1.1.1
 nltk==3.4.3
 protobuf==3.8.0
+redis==3.3.8
 six==1.12.0
 tribool==0.7.3
+walrus==0.8.0
 Werkzeug==0.15.6

@@ -56,7 +56,9 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 
 ### Task Database Setup
 
-Run `python3 init_task_db.py`. This will set up the task database and preload it with information from the Spider database. The task database has the following schema:
+First, make sure there is a running instance of [Redis](https://redis.io) on your machine.
+
+Run `python3 init_task_db.py`. This will set up the task database and preload it with information from the Spider database. It will also prepopulate the autocomplete database which uses redis. The task database has the following schema:
 
 **Tasks**
 

@@ -1,3 +1,31 @@
+function init_addons(active, editor) {
+	if (active.attr('data-toggle') && active.attr('title')) {
+		editor.attr('data-toggle', active.attr('data-toggle'))
+					.attr('title', active.attr('title'))
+					.tooltip();
+	}
+
+	if (active.parents('#tsq-type-row').length) {
+		editor.autocomplete({
+			minLength: 0,
+			source: ['text', 'number']
+		});
+		editor.autocomplete('search', '');
+	} else {
+		var db_name = $('#db-name option:selected').text();
+		editor.autocomplete({
+			source: `/databases/${db_name}/autocomplete`
+		});
+	}
+}
+
+function reset_addons(editor) {
+	editor.tooltip('dispose');
+	if (editor.autocomplete('instance')) {
+		editor.autocomplete('destroy');
+	}
+}
+
 /*global $, window*/
 $.fn.editableTableWidget = function (options) {
 	'use strict';
@@ -15,12 +43,8 @@ $.fn.editableTableWidget = function (options) {
 			showEditor = function (select) {
 				active = element.find('td:focus');
 				if (active.length) {
-					editor.tooltip('dispose');
-					if (active.attr('data-toggle') && active.attr('title')) {
-						editor.attr('data-toggle', active.attr('data-toggle'))
-									.attr('title', active.attr('title'))
-									.tooltip();
-					}
+					// Reset add-ons for TSQ input
+					reset_addons(editor);
 
 					editor.val(active.text())
 						.removeClass('error')
@@ -30,6 +54,9 @@ $.fn.editableTableWidget = function (options) {
 						.width(active.width())
 						.height(active.height())
 						.focus();
+
+					// Init add-ons for TSQ input
+					init_addons(active, editor);
 					if (select) {
 						editor.select();
 					}
