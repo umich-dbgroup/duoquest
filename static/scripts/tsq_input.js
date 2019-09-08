@@ -61,9 +61,3 @@ $('#tsq-del-row').on('click', function (e) {
     }
   }
 });
-
-$(document).on('validate', '#tsq-type-row td', function(e, val) {
-	if (val !== 'text' && val !== 'number') {
-		return false;
-	}
-});
