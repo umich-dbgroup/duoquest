@@ -52,9 +52,9 @@ class TableSketchQuery:
                         else:
                             float_val = float(cell)
                             if float_val.is_integer():
-                                row.append(int(cell))
+                                row.append(int(float_val))
                             else:
-                                row.append(float(cell))
+                                row.append(float_val)
                     else:
                         row.append(cell)
             values.append(row)
