@@ -34,7 +34,7 @@
               <div class="btn-group" role="group">
                 <button id='tsq-add-row' type="button" class="btn btn-sm btn-primary">Add</button>
                 <button id='tsq-del-row' type="button" class="btn btn-sm btn-danger"
-                  {% if not tsq or (tsq and not tsq.values) or (tsq and tsq.values and tsq.values|length <= 1) %}
+                  {% if not tsq or not tsq.values or (tsq and tsq.values and tsq.values|length <= 1) %}
                   disabled
                   {% endif %}>Remove</button>
               </div>
@@ -61,10 +61,12 @@
           {% for cell in tsq.values[0] %}
             <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'>{{ cell|default('', true) }}</td>
           {% endfor %}
-        {% else %}
+        {% else if tsq %}
           {% for i in range(tsq.num_cols) %}
             <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'></td>
           {% endfor %}
+        {% else %}
+          <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'></td>
         {% endif %}
       </tr>
       {% if tsq and tsq.values and tsq.values|length > 1 %}
