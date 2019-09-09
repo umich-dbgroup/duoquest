@@ -28,7 +28,6 @@ def home():
 @app.route('/start', methods=['GET', 'POST'])
 def start():
     if request.method == 'POST':
-        print(request.form)
         db_name = request.form.get('db_name')
         nlq = request.form.get('nlq')
         tsq = TableSketchQuery(int(request.form.get('num_cols')),
