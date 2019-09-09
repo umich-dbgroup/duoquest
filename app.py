@@ -166,7 +166,8 @@ def result_query_preview(rid):
     cur.execute(query)
     results = cur.fetchall()
 
-    output = { 'results': results, 'header': cur.description }
+    output = { 'results': results,
+        'header': list(map(lambda x: x[0], cur.description)) }
     db_conn.close()
     return output
 
