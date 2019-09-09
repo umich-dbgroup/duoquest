@@ -34,7 +34,7 @@
               <div class="btn-group" role="group">
                 <button id='tsq-add-row' type="button" class="btn btn-sm btn-primary">Add</button>
                 <button id='tsq-del-row' type="button" class="btn btn-sm btn-danger"
-                  {% if not tsq or (tsq and tsq.values and tsq.values[0]|length <= 1) %}
+                  {% if not tsq or (tsq and tsq.values and tsq.values|length <= 1) %}
                   disabled
                   {% endif %}>Remove</button>
               </div>
