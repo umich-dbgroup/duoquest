@@ -19,7 +19,7 @@ function pollResults() {
 
     if (data['results'].length > 0) {
       data['results'].forEach(function (result) {
-        var index = $('#task-results .card') + 1;
+        var index = $('#task-results .card').length + 1;
         var card = $(
           `<div class="card">
              <div class="card-header">
