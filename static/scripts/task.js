@@ -70,6 +70,12 @@ $(document).on('click', '.run-result-query', function () {
       data = JSON.parse(data);
 
       var table = $('<table class="table table-sm table-bordered"></table>');
+      var header = $('<tr></tr>');
+      data['header'].forEach(function(head) {
+          $(header).append(`<td>${cell}</td>`);
+      });
+      $(table).append(header);
+
       data['results'].forEach(function (row) {
         var tr = $('<tr></tr>')
         row.forEach(function (cell) {
