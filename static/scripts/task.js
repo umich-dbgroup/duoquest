@@ -72,7 +72,7 @@ $(document).on('click', '.run-result-query', function () {
       var table = $('<table class="table table-sm table-bordered"></table>');
       var header = $('<tr></tr>');
       data['header'].forEach(function(head) {
-          $(header).append(`<td>${cell}</td>`);
+          $(header).append(`<td>${head}</td>`);
       });
       $(table).append(header);
 
