@@ -50,7 +50,11 @@ class TableSketchQuery:
                         if cell.startswith('[') and cell.endswith(']'):
                             row.append(json.loads(cell))
                         else:
-                            row.append(float(cell))
+                            float_val = float(cell)
+                            if float_val.is_integer():
+                                row.append(int(cell))
+                            else:
+                                row.append(float(cell))
                     else:
                         row.append(cell)
             values.append(row)
