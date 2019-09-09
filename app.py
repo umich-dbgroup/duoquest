@@ -59,7 +59,9 @@ def task(tid):
     task = load_task(tid)
     if not task:
         return redirect(url_for('tasks'))
-    return render_template('task.html', task=task, path=request.path)
+    databases = load_databases()
+    return render_template('task.html', task=task, databases=databases,
+        path=request.path)
 
 @app.route('/tasks/<tid>/rerun')
 def task_rerun(tid):

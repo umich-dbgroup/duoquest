@@ -19,7 +19,7 @@
             <a class="nav-link" href="{{ url_for('home') }}">Home</a>
           </li>
           <li class="nav-item {% if path == url_for('start') %}active{% endif %}">
-            <a class="nav-link" href="{{ url_for('start') }}">Run Query</a>
+            <a class="nav-link" href="{{ url_for('start') }}">New Task</a>
           </li>
           <li class="nav-item {% if path.startswith(url_for('tasks')) %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('tasks') }}">Tasks</a>

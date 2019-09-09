@@ -1,38 +1,14 @@
 {% extends "layout.html" %}
-{% block title %}Run a query{% endblock %}
+{% block title %}New Task{% endblock %}
 {% block scripts %}
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="/static/libs/mindmup-editabletable-modified.js"></script>
-  <script src="/static/scripts/start.js"></script>
-  <script src="/static/scripts/tsq_input.js"></script>
+  <script src="/static/scripts/task_form.js"></script>
 {% endblock %}
 
 {% block content %}
-<form id='start' method='POST'>
-  <h1>Run a query</h1>
-  <div class='form-group'>
-    <label for='db-name'>Select database</label>
-    <select class='form-control' id='db-name' name='db_name'>
-      {% for db in databases %}
-        {% if db['name'] == 'concert_singer' %}
-        <option selected='selected'>concert_singer</option>
-        {% else %}
-          <option>{{ db['name'] }}</option>
-        {% endif %}
-      {% endfor %}
-    </select>
-  </div>
-  <div class='form-group'>
-    <label for='nlq'>Natural language query (NLQ)</label>
-    <input id='nlq' name='nlq' class="form-control form-control-lg" type="text" placeholder="e.g. How many singers are there?">
-  </div>
-  <div class='form-group'>
-    <label for='tsq'>Table sketch query (TSQ)</label>
-    {% include 'components/tsq_input.html' %}
-  </div>
-  <input type='submit' class='btn btn-block btn-primary btn-lg' value='Run query >'></input>
-</form>
+<h1>New Task</h1>
+{% include 'components/task_form.html' %}
 {% endblock %}

@@ -1,0 +1,93 @@
+<form id='task-form' method='POST' action='/start'>
+  <div class='form-row'>
+    <div class='form-group col-md-2'>
+      <label for='db-name'>Select database</label>
+      <select class='form-control form-control-lg' id='db-name' name='db_name'>
+        {% for db in databases %}
+          <option {% if task and task['db'] == db['name'] %}selected='selected'{% endif %}>{{ db['name'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class='form-group col-md-10'>
+      <label for='nlq'>Natural language query (NLQ)</label>
+      <input id='nlq' name='nlq' class="form-control form-control-lg" type="text"
+        placeholder="e.g. How many singers are there?"
+        value="{% if task and task['nlq'] %}{{ task['nlq'] }}{% endif %}" />
+    </div>
+  </div>
+  <div class='form-group'>
+    <label for='tsq'>Table sketch query (TSQ)</label>
+    <div class='row'>
+      <div class='col-md-6'>
+        <div class='alert alert-secondary'>
+          <div class='row'>
+            <div class='col-md-6'>
+              <em>Columns:</em>
+              <div class="btn-group" role="group">
+                <button id='tsq-add-col' type="button" class="btn btn-sm btn-primary">Add</button>
+                <button id='tsq-del-col' type="button" class="btn btn-sm btn-danger"
+                  {% if not tsq or (tsq and tsq.num_cols <= 1) %}disabled{% endif %}>Remove</button>
+              </div>
+            </div>
+            <div class='col-md-6'>
+              <em>Rows:</em>
+              <div class="btn-group" role="group">
+                <button id='tsq-add-row' type="button" class="btn btn-sm btn-primary">Add</button>
+                <button id='tsq-del-row' type="button" class="btn btn-sm btn-danger"
+                  {% if not tsq or (tsq and tsq.values and tsq.values[0]|length <= 1) %}
+                  disabled
+                  {% endif %}>Remove</button>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <table id='tsq' class='table table-bordered tsq'
+      data-num-cols='{% if tsq %}{{ tsq.num_cols }}{% else %}1{% endif %}'>
+      <tr id='tsq-type-row'>
+        <th class='table-primary tsq-head'>Types</th>
+        {% if tsq and tsq.types %}
+          {% for type in tsq.types %}
+            <td data-toggle='tooltip' title='`text` OR `number`'>{{ type }}</td>
+          {% endfor %}
+        {% else %}
+          <td data-toggle='tooltip' title='`text` OR `number`'></td>
+        {% endif %}
+      </tr>
+      <tr id='tsq-value-head-row'>
+        <th id='tsq-values-head' class='table-primary tsq-head' rowspan='1'>Values</th>
+        {% if tsq and tsq.values %}
+          {% for cell in tsq.values[0] %}
+            <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'>{{ cell|default('', true) }}</td>
+          {% endfor %}
+        {% else %}
+          <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'></td>
+        {% endif %}
+      </tr>
+      {% if tsq and tsq.values and tsq.values|length > 1 %}
+        {% for row in tsq.values[1:] %}
+        <tr class='tsq-value-row'>
+          {% for cell in row %}
+            <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'>{{ cell|default('', true)}}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      {% endif %}
+    </table>
+  </div>
+  <div class='form-row'>
+    <div class='form-group col-md-3'>
+      <label for='limit'>Limit to <em>n</em> results (set 0 for no limit)</label>
+      <input id='limit' name='limit' class="form-control" type="number"
+        value="{% if tsq and tsq.limit %}{{ tsq.limit }}{% else %}0{% endif %}" />
+    </div>
+    <div class='form-group col-md-3'>
+      <label class="form-check-label" for="order">Sort/order result rows</label>
+      <input name='order' class="form-control" type="checkbox" id="order"
+        {% if tsq and tsq.order %}checked{% endif %}>
+    </div>
+  </div>
+  <input type='submit' class='btn btn-block btn-primary btn-lg'
+    value='{% if tsq %}Modify query >{% else %}Run query >{% endif %}'></input>
+</form>
