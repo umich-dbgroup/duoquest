@@ -18,8 +18,8 @@ function pollResults() {
     $('#task-results').attr('data-status', data['status']);
 
     if (data['results'].length > 0) {
-      data['results'].forEach(function (result, j) {
-        var index = j + parseInt(offset) + 1;
+      data['results'].forEach(function (result) {
+        var index = $('#task-results .card') + 1;
         var card = $(
           `<div class="card">
              <div class="card-header">

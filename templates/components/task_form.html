@@ -56,7 +56,7 @@
         {% endif %}
       </tr>
       <tr id='tsq-value-head-row'>
-        <th id='tsq-values-head' class='table-primary tsq-head' rowspan='1'>Values</th>
+        <th id='tsq-values-head' class='table-primary tsq-head' rowspan='{% if tsq and tsq.values %}{{ tsq.values|length }}{% else %}1{% endif %}'>Values</th>
         {% if tsq and tsq.values %}
           {% for cell in tsq.values[0] %}
             <td data-toggle='tooltip' title='e.g. `My Text`, `42`, `[45,62]` (range)'>{{ cell|default('', true) }}</td>
