@@ -147,8 +147,27 @@ function refresh_table() {
   $('#tsq').editableTableWidget();
 }
 
-function append_val_cell(selector) {
-  $(selector).append('<td data-toggle="tooltip" title="e.g. `My Text`, `42`, `[45,62]` (range)"></td>');
+function add_value_row(values) {
+  var num_rows = get_num_rows();
+  $('#tsq-values-head').attr('rowspan', num_rows + 1);
+  $('#tsq').append("<tr class='tsq-value-row'></tr>");
+
+  if (!values) {
+    var values = [];
+    for (var i = 0; i < $('#tsq').attr('data-num-cols'); i++) {
+      values.push('');
+    }
+  }
+
+  for (var i = 0; i < values.length; i++) {
+    append_val_cell('#tsq .tsq-value-row:last-child', values[i]);
+  }
+  $('#tsq-del-row').removeAttr('disabled');
+  refresh_table();
+}
+
+function append_val_cell(selector, val) {
+  $(selector).append('<td data-toggle="tooltip" title="e.g. `My Text`, `42`, `[45,62]` (range)">' + val + '</td>');
 }
 
 refresh_table();
@@ -178,15 +197,9 @@ $('#tsq-del-col').on('click', function (e) {
   }
 });
 $('#tsq-add-row').on('click', function (e) {
-  var num_rows = get_num_rows();
-  $('#tsq-values-head').attr('rowspan', num_rows + 1);
-  $('#tsq').append("<tr class='tsq-value-row'></tr>");
-  for (var i = 0; i < $('#tsq').attr('data-num-cols'); i++) {
-    append_val_cell('#tsq .tsq-value-row:last-child');
-  }
-  $('#tsq-del-row').removeAttr('disabled');
-  refresh_table();
+  add_value_row();
 });
+
 $('#tsq-del-row').on('click', function (e) {
   var num_rows = get_num_rows();
   if (num_rows > 1) {

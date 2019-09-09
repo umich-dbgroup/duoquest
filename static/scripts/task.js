@@ -74,13 +74,15 @@ $(document).on('click', '.run-result-query', function () {
       data['header'].forEach(function(head) {
           $(header).append(`<th>${head}</th>`);
       });
+      $(header).append('<th></th>');
       $(table).append(header);
 
       data['results'].forEach(function (row) {
         var tr = $('<tr></tr>')
         row.forEach(function (cell) {
-          $(tr).append(`<td>${cell}</td>`);
+          $(tr).append(`<td class="result-cell">${cell}</td>`);
         });
+        $(tr).append('<td><button class="btn btn-success btn-sm add-result">Add to Query</button></td>')
         $(table).append(tr);
       });
       $(target_selector).append(table);
@@ -88,4 +90,12 @@ $(document).on('click', '.run-result-query', function () {
     });
     $(`#result-${rid}-spinner`).hide();
   }
+});
+
+$(document).on('click', '.add-result', function () {
+  var values = [];
+  $(this).parents('tr').children('.result-cell').each(function (i) {
+    values.push($(this).text());
+  });
+  add_value_row(values);
 });
