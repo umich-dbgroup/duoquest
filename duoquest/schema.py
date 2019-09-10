@@ -318,7 +318,7 @@ class Schema(object):
             for col_row in col_cur.fetchall():
                 syn_name = col_row[1]
                 sem_name = syn_name.replace('_', ' ').lower()
-                col_type = sqlite3_type_to_text(col_row[2])
+                col_type = sqlite3_type_to_text(col_row[2].lower())
                 is_pk = bool(col_row[5])
                 column = Column(len(schema.columns), table, col_type, sem_name,
                     syn_name, pk=is_pk)
