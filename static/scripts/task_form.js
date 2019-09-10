@@ -177,8 +177,8 @@ $('#tsq-add-col').on('click', function (e) {
 
   $('#tsq-type-row').append('<td data-toggle="tooltip" title="`text` OR `number`"></td>');
 
-  append_val_cell('#tsq-value-head-row');
-  append_val_cell('.tsq-value-row');
+  append_val_cell('#tsq-value-head-row', '');
+  append_val_cell('.tsq-value-row', '');
   $('#tsq').attr('data-num-cols', num_cols + 1);
   $('#tsq-del-col').removeAttr('disabled');
   refresh_table();
