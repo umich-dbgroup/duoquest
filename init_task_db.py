@@ -10,6 +10,7 @@ from duoquest.autocomplete import init_autocomplete
 from duoquest.schema import Schema
 
 def load_db_from_file(conn, walrus, db_name, db_path):
+    db_path = os.path.abspath(db_path)
     schema = Schema.from_db_path(db_path)
     schema_proto_str = schema.to_proto().SerializeToString()
 
