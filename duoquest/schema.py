@@ -17,7 +17,7 @@ def proto_col_type_to_text(proto_col_type):
         raise Exception(f'Unrecognized type: {proto_col_type}')
 
 def sqlite3_type_to_text(sqlite3_type):
-    if sqlite3_type in ('text', 'blob'):
+    if sqlite3_type in ('text', 'blob') or sqlite3_type.startswith('varchar'):
         return 'text'
     elif sqlite3_type in ('integer', 'int', 'real'):
         return 'number'
