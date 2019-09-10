@@ -13,6 +13,7 @@ from duoquest.schema import Schema
 from duoquest.tsq import TableSketchQuery
 
 from flask import Flask, flash, redirect, render_template, request, url_for
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'supersupersecretkey'
@@ -85,11 +86,12 @@ def databases_new():
         db_name = f'{orig_db_name}_{i}'
         i += 1
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], f'{db_name}.sqlite')
+    filename = secure_filename(f'{db_name}.sqlite')
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     i = 1
     while os.path.exists(filepath):
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'],
-            f'{db_name}_{i}.sqlite')
+        filename = secure_filename(f'{db_name}_{i}.sqlite')
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         i += 1
 
     file.save(filepath)
