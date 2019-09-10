@@ -9,6 +9,12 @@
 {% endblock %}
 
 {% block content %}
-<h1>New Task</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('tasks') }}">Tasks</a></li>
+    <li class="breadcrumb-item active" aria-current="page">New Task</li>
+  </ol>
+</nav>
 {% include 'components/task_form.html' %}
 {% endblock %}

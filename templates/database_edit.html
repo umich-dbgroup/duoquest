@@ -32,7 +32,7 @@
   {% endfor %}
 </table>
 <h2>Foreign Keys</h2>
-<form id='fkpk-form' action='{{ url_for("database_edit_fkpk", name=db["name"]) }}' method='POST'>
+<form id='fkpk-form' action='{{ url_for("database_edit_fkpk", name=db["name"]) }}' method='POST' class='mb-3'>
 <table class='table table-sm'>
   <tr>
     <th>Foreign Key ID</th>

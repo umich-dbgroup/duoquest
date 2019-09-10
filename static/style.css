@@ -2,10 +2,6 @@ main.container {
   margin-top: 75px;
 }
 
-#task-form, #database-form, #fkpk-form {
-  margin-bottom: 1rem;
-}
-
 .tsq {
   width: auto;
 }
@@ -46,10 +42,6 @@ main.container {
 
 .ui-helper-hidden-accessible {
   display: none;
-}
-
-.custom-file {
-  margin-bottom: 1rem;
 }
 
 .custom-file-input {

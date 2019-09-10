@@ -5,7 +5,15 @@
   <script src="{{ url_for('static', filename='scripts/tasks.js') }}"></script>
 {% endblock %}
 {% block content %}
-  <h1>Tasks</h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Tasks</li>
+    </ol>
+  </nav>
+  <div class='mb-3'>
+    <a href="{{ url_for('tasks_new') }}" class='btn btn-primary'>+ New Task</a>
+  </div>
   <table class='table'>
     <tr>
       <th>Task ID</th>

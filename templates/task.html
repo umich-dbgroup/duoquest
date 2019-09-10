@@ -9,26 +9,34 @@
   <script src="{{ url_for('static', filename='scripts/task_form.js') }}"></script>
 {% endblock %}
 {% block content %}
-<h2>Query</h2>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('tasks') }}">Tasks</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ task['tid'] }}</li>
+  </ol>
+</nav>
+<h3>Query</h3>
 {% with tsq = task['tsq'] %}
   {% include 'components/task_form.html' %}
 {% endwith %}
 
-<h2>Results</h2>
-
-<div class="accordion" id='task-results' data-offset="0" data-tid="{{ task['tid'] }}" data-status="{{ task['status'] }}">
-</div>
-<div id="task-results-error" class="alert alert-danger" role="alert" style="display: none">
-  {% if task['error_msg'] %}
-  Error: {{ task['error_msg'] }}
-  {% else %}
-  Error: please refresh the page or try running the task again.
-  {% endif %}
-</div>
-<div id="task-results-waiting" class="alert alert-info" style="display: none">Task has not started executing yet...</div>
-<div id="task-results-spinner" class="text-center">
-  <div class="spinner-border" role="status">
-    <span class="sr-only">Loading...</span>
+<h3>Results</h3>
+<div class='mb-3'>
+  <div class="accordion" id='task-results' data-offset="0" data-tid="{{ task['tid'] }}" data-status="{{ task['status'] }}">
+  </div>
+  <div id="task-results-error" class="alert alert-danger" role="alert" style="display: none">
+    {% if task['error_msg'] %}
+    Error: {{ task['error_msg'] }}
+    {% else %}
+    Error: please refresh the page or try running the task again.
+    {% endif %}
+  </div>
+  <div id="task-results-waiting" class="alert alert-info" style="display: none">Task has not started executing yet...</div>
+  <div id="task-results-spinner" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
   </div>
 </div>
 

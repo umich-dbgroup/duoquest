@@ -5,9 +5,15 @@
   <script src="{{ url_for('static', filename='scripts/databases.js') }}"></script>
 {% endblock %}
 {% block content %}
-<h2>New Database</h2>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Databases</li>
+  </ol>
+</nav>
+<h3>New Database</h3>
 <form id='database-form' action='{{ url_for("databases_new") }}' method='POST'
-  enctype='multipart/form-data'>
+  enctype='multipart/form-data' class='mb-3'>
   <div class='form-group'>
     <label for='db-name-input'>Database name</label>
     <input id='db-name-input' name='db_name' class='form-control' type='text' />
@@ -18,7 +24,7 @@
   </div>
   <input type='submit' class='form-submit btn btn-primary btn-block' value='Add database >' />
 </form>
-<h2>Databases</h2>
+<h3>Databases</h3>
 <table class='table table-sm'>
   <tr>
     <th>Name</th>
