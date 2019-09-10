@@ -5,12 +5,14 @@
   <script src="{{ url_for('static', filename='scripts/database_edit.js') }}"></script>
 {% endblock %}
 {% block content %}
-<h2>Edit Database</h2>
-<table class='table'>
-  <tr><th>Name</th><td>{{ db['name'] }}</td></tr>
-  <tr><th>Path</th><td>{{ db['path'] }}</td></tr>
-</table>
-<h2>Columns</h2>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('databases') }}">Databases</a></li>
+    <li class="breadcrumb-item active" >{{ db['name'] }} ({{ db['path'] }})</li>
+  </ol>
+</nav>
+<h3>Columns</h3>
 <table class='table table-sm'>
   <tr>
     <th>ID</th>
@@ -31,7 +33,7 @@
   </tr>
   {% endfor %}
 </table>
-<h2>Foreign Keys</h2>
+<h3>Foreign Keys</h3>
 <form id='fkpk-form' action='{{ url_for("database_edit_fkpk", name=db["name"]) }}' method='POST' class='mb-3'>
 <table class='table table-sm'>
   <tr>
@@ -54,10 +56,14 @@
 </table>
 <input type='submit' class='btn btn-block btn-primary' value='Save Changes' />
 </form>
-<h2>Autocomplete Tokens</h2>
+<h3>Autocomplete Tokens</h3>
+{% if ac_tokens %}
 <ul>
   {% for token in ac_tokens %}
   <li>{{ token }}</li>
   {% endfor %}
 </ul>
+{% else %}
+<div class='alert alert-warning'>No autocomplete tokens detected.</div>
+{% endif %}
 {% endblock %}
