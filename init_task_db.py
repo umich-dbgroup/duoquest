@@ -9,6 +9,18 @@ from walrus import Walrus
 from duoquest.autocomplete import init_autocomplete
 from duoquest.schema import Schema
 
+def load_db_from_file(conn, walrus, db_name, db_path):
+    schema = Schema.from_db_path(db_path)
+    schema_proto_str = schema.to_proto().SerializeToString()
+
+    init_autocomplete(schema, db_path, walrus)
+
+    cur = conn.cursor()
+    cur.execute('''INSERT INTO databases (name, schema_proto, path)
+                   VALUES (?, ?, ?)''', (db_name, schema_proto_str, db_path))
+    conn.commit()
+    return True
+
 def load_spider_databases(conn, walrus, schemas_path, db_root):
     schemas = json.load(open(schemas_path))
 
@@ -64,7 +76,10 @@ def clear_db(conn):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', choices=['init', 'delete', 'load_db'])
+    parser.add_argument('command', choices=['init', 'delete', 'load_db',
+        'load_db_from_file'])
+    parser.add_argument('--name')
+    parser.add_argument('--file')
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -85,7 +100,18 @@ def main():
         load_spider_databases(conn, walrus, config['spider']['dev_tables_path'],
             config['spider']['dev_db_path'])
         conn.close()
-
+    elif args.command == 'load_db_from_file':
+        if not args.name:
+            print('--name option required!')
+            exit()
+        if not args.file:
+            print('--file option required!')
+            exit()
+        conn = sqlite3.connect(db_path)
+        walrus = Walrus(host=config['walrus']['host'],
+            port=config['walrus']['port'], db=0)
+        load_db_from_file(conn, walrus, args.name, args.file)
+        conn.close()
 
 if __name__ == '__main__':
     main()
