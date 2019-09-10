@@ -1,4 +1,4 @@
-<form id='task-form' method='POST' action='/start'>
+<form id='task-form' method='POST' action='{{ url_for("tasks_new") }}'>
   <div class='form-row'>
     <div class='form-group col-md-2'>
       <label for='db-name'>Select database</label>

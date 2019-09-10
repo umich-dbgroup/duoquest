@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}Databases{% endblock %}
+{% block scripts %}
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename='scripts/database_edit.js') }}"></script>
+{% endblock %}
+{% block content %}
+<h2>Edit Database</h2>
+<table class='table'>
+  <tr><th>Name</th><td>{{ db['name'] }}</td></tr>
+  <tr><th>Path</th><td>{{ db['path'] }}</td></tr>
+</table>
+<h2>Columns</h2>
+<table class='table table-sm'>
+  <tr>
+    <th>ID</th>
+    <th>Semantic Name</th>
+    <th>Syntactic Name</th>
+    <th>Type</th>
+    <th>Table Name</th>
+    <th>Is PK</th>
+  </tr>
+  {% for col in db['schema'].columns %}
+  <tr>
+    <td>{{ col.id }}</td>
+    <td>{{ col.sem_name }}</td>
+    <td>{{ col.syn_name }}</td>
+    <td>{{ col.type }}</td>
+    <td>{{ col.table.syn_name }}</td>
+    <td>{% if col.pk %}&#10004;{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Foreign Keys</h2>
+<form id='fkpk-form' action='{{ url_for("database_edit_fkpk", name=db["name"]) }}' method='POST'>
+<table class='table table-sm'>
+  <tr>
+    <th>Foreign Key ID</th>
+    <th>Primary Key ID</th>
+    <th>Delete</th>
+  </tr>
+  {% for fkpk in db['fkpks'] %}
+  <tr class='fkpk-row'>
+    <td class='fkpk-row-fk'>{{ fkpk['fk'] }}</td>
+    <td class='fkpk-row-pk'>{{ fkpk['pk'] }}</td>
+    <td><button class='del-fkpk btn btn-sm btn-danger'>Delete</button></td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td><input id='add-fkpk-fk' type='number' class='form-control' /></td>
+    <td><input id='add-fkpk-pk' type='number' class='form-control' /></td>
+    <td><button class='add-fkpk btn btn-sm btn-success'>Add</button></td>
+  </tr>
+</table>
+<input type='submit' class='btn btn-block btn-primary' value='Save Changes' />
+</form>
+<h2>Autocomplete Tokens</h2>
+<ul>
+  {% for token in ac_tokens %}
+  <li>{{ token }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

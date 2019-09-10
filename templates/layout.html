@@ -18,20 +18,27 @@
           <li class="nav-item {% if path == url_for('home') %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('home') }}">Home</a>
           </li>
-          <li class="nav-item {% if path == url_for('start') %}active{% endif %}">
-            <a class="nav-link" href="{{ url_for('start') }}">New Task</a>
+          <li class="nav-item {% if path == url_for('tasks_new') %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('tasks_new') }}">New Task</a>
           </li>
           <li class="nav-item {% if path.startswith(url_for('tasks')) %}active{% endif %}">
             <a class="nav-link" href="{{ url_for('tasks') }}">Tasks</a>
+          </li>
+          <li class="nav-item {% if path.startswith(url_for('databases')) %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('databases') }}">Databases</a>
           </li>
         </ul>
       </div>
     </nav>
 
     <main role="main" class="container">
-      {% if error %}
-      <div class='alert alert-danger'>{{ error }}</div>
-      {% endif %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class='alert alert-{{ category }}'>{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
       {% block content %}
       {% endblock %}
     </main><!-- /.container -->

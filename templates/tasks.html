@@ -2,7 +2,7 @@
 {% block title %}Tasks{% endblock %}
 {% block scripts %}
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-  <script src="/static/scripts/tasks.js"></script>
+  <script src="{{ url_for('static', filename='scripts/tasks.js') }}"></script>
 {% endblock %}
 {% block content %}
   <h1>Tasks</h1>

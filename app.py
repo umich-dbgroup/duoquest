@@ -1,5 +1,6 @@
 import configparser
 import json
+import os
 import sqlite3
 import time
 import traceback
@@ -7,10 +8,16 @@ import uuid
 
 from walrus import Walrus
 
+from duoquest.autocomplete import init_autocomplete
+from duoquest.schema import Schema
 from duoquest.tsq import TableSketchQuery
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
+
 app = Flask(__name__)
+app.secret_key = 'supersupersecretkey'
+dir_path = os.path.dirname(os.path.realpath(__file__))
+app.config['UPLOAD_FOLDER'] = os.path.join(dir_path, 'uploads')
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -25,8 +32,80 @@ walrus = Walrus(host=config['walrus']['host'],
 def home():
     return render_template('index.html', path=request.path)
 
-@app.route('/start', methods=['GET', 'POST'])
-def start():
+@app.route('/databases')
+def databases():
+    databases = load_databases()
+    return render_template('databases.html', databases=databases,
+        path=request.path)
+
+@app.route('/databases/<name>/edit')
+def database_edit(name):
+    database = load_database(name)
+
+    ac = walrus.autocomplete(namespace=name)
+    ac_tokens = sorted(ac.list_titles())
+
+    return render_template('database_edit.html', db=database,
+        ac_tokens=ac_tokens, path=request.path)
+
+@app.route('/databases/<name>/edit', methods=['POST'])
+def database_edit_fkpk(name):
+    fkpks = json.loads(request.form.get('fkpks'))
+    success, err = edit_database_fkpks(name, fkpks)
+    if success:
+        flash(f'Foreign keys updated for <{name}> successfully', 'success')
+    else:
+        flash(err, 'danger')
+    return redirect(url_for('database_edit', name=name))
+
+@app.route('/databases/<name>/delete')
+def database_delete(name):
+    success, err = delete_database(name)
+    if success:
+        flash(f'Deleted <{name}> successfully', 'success')
+    else:
+        flash(err, 'danger')
+    return redirect(url_for('databases'))
+
+@app.route('/databases/new', methods=['POST'])
+def databases_new():
+    if 'db_file' not in request.files:
+        flash('No db_file in form.', 'danger')
+        return redirect(url_for('databases'))
+    file = request.files['db_file']
+
+    if not file or file.filename == '':
+        flash('No selected file.', 'danger')
+        return redirect(url_for('databases'))
+
+    orig_db_name = request.form.get('db_name')
+    db_name = orig_db_name
+    i = 1
+    while database_exists(db_name):
+        db_name = f'{orig_db_name}_{i}'
+        i += 1
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], f'{db_name}.sqlite')
+    i = 1
+    while os.path.exists(filepath):
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'],
+            f'{db_name}_{i}.sqlite')
+        i += 1
+
+    file.save(filepath)
+
+    add_new_database(db_name, filepath)
+    flash(f'Added new database <{db_name}>. Make sure to EDIT it to set FK-PK relationships!', 'success')
+
+    return redirect(url_for('databases'))
+
+@app.route('/tasks')
+def tasks():
+    tasks = load_tasks()
+    return render_template('tasks.html', tasks=tasks, path=request.path)
+
+@app.route('/tasks/new', methods=['GET', 'POST'])
+def tasks_new():
     if request.method == 'POST':
         db_name = request.form.get('db_name')
         nlq = request.form.get('nlq')
@@ -40,18 +119,12 @@ def start():
         if status:
             return redirect(url_for('task', tid=tid))
         else:
-            databases = load_databases()
-            return render_template('start.html', databases=databases,
-                path=request.path, error='Starting task failed.')
+            flash('Starting task failed.', 'danger')
+            return redirect(url_for('tasks_new'))
     else:
         databases = load_databases()
-        return render_template('start.html', databases=databases,
+        return render_template('tasks_new.html', databases=databases,
             path=request.path)
-
-@app.route('/tasks')
-def tasks():
-    tasks = load_tasks()
-    return render_template('tasks.html', tasks=tasks, path=request.path)
 
 @app.route('/tasks/<tid>')
 def task(tid):
@@ -108,7 +181,7 @@ def load_databases():
     conn = sqlite3.connect(config['db']['path'])
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute('SELECT name FROM databases ORDER BY name')
+    cur.execute('SELECT name, path FROM databases ORDER BY name')
     databases = cur.fetchall()
     conn.close()
     return databases
@@ -193,9 +266,7 @@ def add_task(db_name, nlq, tsq):
 def delete_task(tid):
     conn = sqlite3.connect(config['db']['path'])
     cur = conn.cursor()
-    # clear all results
     cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
-    # clear task
     cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
 
     conn.commit()
@@ -204,11 +275,104 @@ def delete_task(tid):
 def rerun_task(tid):
     conn = sqlite3.connect(config['db']['path'])
     cur = conn.cursor()
-    # clear all results
     cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
-    # clear error message and set status to waiting
     cur.execute('UPDATE tasks SET status = ?, error_msg = ? WHERE tid = ?',
         ('waiting', None, tid))
 
     conn.commit()
     conn.close()
+
+def load_database(name):
+    conn = sqlite3.connect(config['db']['path'])
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    cur.execute('''SELECT name, schema_proto, path FROM databases
+                   WHERE name = ?''', (name,))
+    db = cur.fetchone()
+
+    if not db:
+        return None
+
+    db['schema'] = Schema.from_proto(db['schema_proto'])
+    db['fkpks'] = []
+    for col in db['schema'].columns:
+        if col.fk_ref:
+            db['fkpks'].append({
+                'fk': col.id,
+                'pk': col.fk_ref
+            })
+    conn.close()
+    return db
+
+def edit_database_fkpks(name, fkpks):
+    try:
+        conn = sqlite3.connect(config['db']['path'])
+        cur = conn.cursor()
+        cur.execute('''SELECT schema_proto FROM databases
+                       WHERE name = ?''', (name,))
+        row = cur.fetchone()
+        if not row:
+            raise Exception(f'Database {name} does not exist')
+
+        schema = Schema.from_proto(row[0])
+        print(fkpks)
+        for fkpk in fkpks:
+            fk, pk = fkpk
+            schema.columns[fk].fk_ref = pk
+
+        schema_proto = schema.to_proto().SerializeToString()
+        cur = conn.cursor()
+        cur.execute('UPDATE databases SET schema_proto = ? WHERE name = ?',
+                    (schema_proto, name))
+        conn.commit()
+    except Exception as e:
+        return False, str(e)
+    return True, None
+
+def delete_database(db_name):
+    try:
+        conn = sqlite3.connect(config['db']['path'])
+        cur = conn.cursor()
+        cur.execute('SELECT tid FROM tasks WHERE db = ?', (db_name,))
+        for tid in cur.fetchall():
+            cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
+            cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
+
+        cur.execute('SELECT path FROM databases WHERE name = ?', (db_name,))
+        row = cur.fetchone()
+        if row and os.path.exists(row[0]):
+            os.remove(row[0])
+
+        cur.execute('DELETE FROM databases WHERE name = ?', (db_name,))
+
+        ac = walrus.autocomplete(namespace=db_name)
+        ac.flush()
+
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        return False, str(e)
+    return True, None
+
+def database_exists(db_name):
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    cur.execute('SELECT name FROM databases WHERE name = ? LIMIT 1', (db_name,))
+
+    if cur.fetchone():
+        return True
+    else:
+        return False
+
+def add_new_database(db_name, db_path):
+    schema = Schema.from_db_path(db_name, db_path)
+    schema_proto_str = schema.to_proto().SerializeToString()
+
+    init_autocomplete(schema, db_path, walrus)
+
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    cur.execute('''INSERT INTO databases (name, schema_proto, path)
+                   VALUES (?, ?, ?)''', (db_name, schema_proto_str, db_path))
+    conn.commit()
+    return True

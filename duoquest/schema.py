@@ -1,3 +1,4 @@
+import sqlite3
 from queue import Queue
 
 from .proto.duoquest_pb2 import ProtoColumn, ProtoFKPK, ProtoSchema, \
@@ -14,6 +15,16 @@ def proto_col_type_to_text(proto_col_type):
         return 'boolean'
     else:
         raise Exception(f'Unrecognized type: {proto_col_type}')
+
+def sqlite3_type_to_text(sqlite3_type):
+    if sqlite3_type in ('text', 'blob'):
+        return 'text'
+    elif sqlite3_type in ('integer', 'int', 'real'):
+        return 'number'
+    elif sqlite3_type in ('bool', 'boolean'):
+        return 'boolean'
+    else:
+        raise Exception(f'Unrecognized type: {sqlite3_type}')
 
 def text_to_proto_col_type(type):
     if type == 'text':
@@ -282,6 +293,40 @@ class Schema(object):
                     fkpk.pk_col_id = col.fk_ref
 
         return schema_proto
+
+    @staticmethod
+    def from_db_path(db_name, db_path):
+        schema = Schema()
+        schema.db_id = db_name
+        schema.tables = []
+        schema.columns = []
+
+        # '*' column
+        schema.columns.append(Column(0, None, 'all', 'all', '*', pk=False))
+
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute('''SELECT name FROM sqlite_master WHERE type = ?
+                       ORDER BY name''', ('table',))
+        for row in cur.fetchall():
+            sem_name = row[0].replace('_', ' ').lower()
+            table = Table(len(schema.tables), sem_name, row[0])
+            schema.tables.append(table)
+
+            col_cur = conn.cursor()
+            col_cur.execute(f"PRAGMA TABLE_INFO('{row[0]}')")
+            for col_row in col_cur.fetchall():
+                syn_name = col_row[1]
+                sem_name = syn_name.replace('_', ' ').lower()
+                col_type = sqlite3_type_to_text(col_row[2])
+                is_pk = bool(col_row[5])
+                column = Column(len(schema.columns), table, col_type, sem_name,
+                    syn_name, pk=is_pk)
+                table.add_col(column)
+                schema.columns.append(column)
+
+        conn.close()
+        return schema
 
     @staticmethod
     def from_proto(schema_proto_str):

@@ -6,14 +6,8 @@ import sqlite3
 
 from walrus import Walrus
 
+from duoquest.autocomplete import init_autocomplete
 from duoquest.schema import Schema
-
-def is_number(val):
-    try:
-        float(val)
-        return True
-    except Exception as e:
-        return False
 
 def load_spider_databases(conn, walrus, schemas_path, db_root):
     schemas = json.load(open(schemas_path))
@@ -31,28 +25,7 @@ def load_spider_databases(conn, walrus, schemas_path, db_root):
                        (db_name, schema_proto_str, db_path))
 
         print(f'Loading autocomplete for {db_name}...', end='')
-        ac = walrus.autocomplete(namespace=db_name)
-        ac.flush()
-
-        db_conn = sqlite3.connect(db_path)
-        db_conn.text_factory = bytes
-
-        phrases = set()
-        for col in schema.columns:
-            if col.type != 'text' or col.syn_name == '*':
-                continue
-
-            cur = db_conn.cursor()
-            cur.execute(f'SELECT DISTINCT "{col.syn_name}" FROM "{col.table.syn_name}"')
-            for phrase in cur.fetchall():
-                if phrase[0] and not is_number(phrase[0]):
-                    try:
-                        phrases.add(phrase[0].decode())
-                    except Exception as e:
-                        continue
-
-        for phrase in phrases:
-            ac.store(phrase)
+        init_autocomplete(schema, db_path, walrus)
         print('Done')
 
         db_conn.close()
