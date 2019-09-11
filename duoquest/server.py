@@ -10,7 +10,8 @@ from multiprocessing.connection import Listener
 from nltk import word_tokenize
 from threading import Event, Thread
 
-from .proto.duoquest_pb2 import ProtoQueryList, ProtoResult, FALSE, UNKNOWN, TRUE
+from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult,
+    FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
 from .database import Database
@@ -44,7 +45,7 @@ class DuoquestServer:
         conn = sqlite3.connect(self.task_db)
         cur = conn.cursor()
         cur.execute('''SELECT t.tid, t.db, d.path, t.nlq, t.tsq_proto,
-                              d.schema_proto
+                              t.literals_proto, d.schema_proto
                        FROM tasks t JOIN databases d ON d.name = t.db
                        WHERE status = ? ORDER BY time ASC LIMIT 1''',
                     ('waiting',))
@@ -55,13 +56,18 @@ class DuoquestServer:
             return
 
         nlqc.connect()
-        tid, db_name, db_path, nlq, tsq_proto, schema_proto = row
+        tid, db_name, db_path, nlq, tsq_proto, literals_proto, \
+            schema_proto = row
 
         schema = Schema.from_proto(schema_proto)
         db = Database(db_path, None, db_name=db_name)
+        literals = ProtoLiteralList()
+        literals.ParseFromString(literals_proto)
 
         print(f'Running task {tid}...')
         print(f'Database: {db_name} || NLQ: {nlq}')
+        print('LITERALS')
+        print(literals)
 
         cur = conn.cursor()
         cur.execute('UPDATE tasks SET status = ? WHERE tid = ?',
@@ -77,7 +83,7 @@ class DuoquestServer:
 
             ready = Event()
             t = threading.Thread(target=self.task_thread,
-                args=(tid, db, schema, nlqc, tsq, ready, tsq_level))
+                args=(tid, db, schema, nlqc, tsq, literals, ready, tsq_level))
             t.start()
             ready.wait()
 
@@ -106,6 +112,11 @@ class DuoquestServer:
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
+        # TODO: load this in from the experiment datasets somehow
+        literals = ProtoLiteralList()
+        print('LITERALS')
+        print(literals)
+
         tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
             tsq_rows)
         if tsq is None:
@@ -119,8 +130,8 @@ class DuoquestServer:
 
         ready = Event()
         t = threading.Thread(target=self.experiment_thread,
-            args=(db, schema, nlqc, tsq, ready, tsq_level, task['query'],
-                eval_kmaps))
+            args=(db, schema, nlqc, tsq, literals, ready, tsq_level,
+                task['query'], eval_kmaps))
         t.start()
         ready.wait()
 
@@ -223,7 +234,8 @@ class DuoquestServer:
         print_avg_time(times)
         print_cdf(ranks, times, 10)
 
-    def task_thread(self, tid, db, schema, nlqc, tsq, ready, tsq_level):
+    def task_thread(self, tid, db, schema, nlqc, tsq, literals, ready,
+        tsq_level):
         task_conn = sqlite3.connect(self.task_db)
 
         address = ('localhost', self.port)
@@ -253,12 +265,14 @@ class DuoquestServer:
                     if tsq_level == 'nlq_only':
                         result = Tribool(True)
                     else:
-                        result = self.verifier.verify(db, schema, query, tsq)
+                        result = self.verifier.verify(db, schema, query, tsq,
+                            literals)
                 else:
                     if tsq_level == 'nlq_only' or tsq_level == 'chain':
                         result = Tribool(None)
                     else:
-                        result = self.verifier.verify(db, schema, query, tsq)
+                        result = self.verifier.verify(db, schema, query, tsq,
+                            literals)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)
@@ -276,8 +290,8 @@ class DuoquestServer:
         listener.close()
         task_conn.close()
 
-    def experiment_thread(self, db, schema, nlqc, tsq, ready, tsq_level,
-        eval_gold, eval_kmaps):
+    def experiment_thread(self, db, schema, nlqc, tsq, literals, ready,
+        tsq_level, eval_gold, eval_kmaps):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -305,12 +319,14 @@ class DuoquestServer:
                     if tsq_level == 'nlq_only':
                         result = Tribool(True)
                     else:
-                        result = self.verifier.verify(db, schema, query, tsq)
+                        result = self.verifier.verify(db, schema, query, tsq,
+                            literals)
                 else:
                     if tsq_level == 'nlq_only' or tsq_level == 'chain':
                         result = Tribool(None)
                     else:
-                        result = self.verifier.verify(db, schema, query, tsq)
+                        result = self.verifier.verify(db, schema, query, tsq,
+                            literals)
 
                 if result.value is None:
                     response.results.append(UNKNOWN)

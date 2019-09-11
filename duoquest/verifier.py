@@ -422,7 +422,40 @@ class DuoquestVerifier:
 
         return None
 
-    def verify(self, db, schema, query, tsq, set_op=NO_SET_OP, lr=None):
+    def find_literal_usage(self, query, literal):
+        if query.set_op != NO_SET_OP:
+            if self.find_literal_usage(query.left) or \
+                self.find_literal_usage(query.right):
+                return True
+
+        for pred in query.where.predicates:
+            if pred.has_subquery == TRUE:
+                if self.find_literal_usage(pred.subquery, literal):
+                    return True
+            else:
+                if pred.col_id == literal.col_id \
+                    and literal.value in pred.value:
+                    return True
+
+        for pred in query.having.predicates:
+            if pred.has_subquery == TRUE:
+                if self.find_literal_usage(pred.subquery, literal):
+                    return True
+            else:
+                if pred.col_id == literal.col_id \
+                    and literal.value in pred.value:
+                    return True
+
+        return False
+
+    def prune_by_literals(self, query, literals):
+        for literal in literals:
+            if not find_literal_usage(query, literal):
+                return Tribool(False)
+        return None
+
+    def verify(self, db, schema, query, tsq, literals, set_op=NO_SET_OP,
+        lr=None):
         if self.debug:
             print(query)
 
@@ -477,6 +510,12 @@ class DuoquestVerifier:
                 return check_order
 
         if query.done_query:
+            # only perform on top-level query
+            if lr is None:
+                check_literals = self.prune_by_literals(query, literals)
+                if check_literals is not None:
+                    return check_literals
+
             # TODO: possibly still need to execute full query if there's set ops
             return Tribool(True)
 
