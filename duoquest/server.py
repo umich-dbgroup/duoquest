@@ -10,7 +10,7 @@ from multiprocessing.connection import Listener
 from nltk import word_tokenize
 from threading import Event, Thread
 
-from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult,
+from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
     FALSE, UNKNOWN, TRUE
 from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
     print_avg_time
