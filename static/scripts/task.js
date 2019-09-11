@@ -43,7 +43,7 @@ function pollResults() {
       $('#task-results-waiting').hide();
       if ($('#task-results').children().length === 0) {
           $('#task-results').append(`
-            <div class="alert alert-info">Failed to find any queries.</div>
+            <div class="alert alert-warning">Failed to find any queries.</div>
           `)
       }
     } else if (data['status'] === 'error') {
