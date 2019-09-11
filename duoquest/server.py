@@ -74,7 +74,7 @@ class DuoquestServer:
 
             status = 'done'
             error_msg = None
-            
+
             ready = Event()
             t = threading.Thread(target=self.task_thread,
                 args=(tid, db, schema, nlqc, tsq, ready, tsq_level))
@@ -119,8 +119,8 @@ class DuoquestServer:
 
         ready = Event()
         t = threading.Thread(target=self.experiment_thread,
-            args=(db, schema, nlqc, tsq, ready, tsq_level, eval_kmaps,
-                task['query']))
+            args=(db, schema, nlqc, tsq, ready, tsq_level, task['query'],
+                eval_kmaps))
         t.start()
         ready.wait()
 
