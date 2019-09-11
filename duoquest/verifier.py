@@ -450,7 +450,7 @@ class DuoquestVerifier:
 
     def prune_by_literals(self, query, literals):
         for literal in literals.lits:
-            if not find_literal_usage(query, literal):
+            if not self.find_literal_usage(query, literal):
                 return Tribool(False)
         return None
 
