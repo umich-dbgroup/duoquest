@@ -460,9 +460,9 @@ class DuoquestVerifier:
             print(query)
 
         if query.set_op != NO_SET_OP:
-            left = self.verify(db, schema, query.left, tsq, set_op=query.set_op,
-                lr='left')
-            right = self.verify(db, schema, query.right, tsq,
+            left = self.verify(db, schema, query.left, tsq, literals,
+                set_op=query.set_op, lr='left')
+            right = self.verify(db, schema, query.right, tsq, literals,
                 set_op=query.set_op, lr='right')
             if left.value == False or right.value == False:
                 return Tribool(False)
