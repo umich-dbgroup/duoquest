@@ -9,11 +9,10 @@ def is_number(val):
     except Exception as e:
         return False
 
-def init_autocomplete(schema, db_path, walrus, debug=False):
-    ac = walrus.autocomplete(namespace=schema.db_id)
+def init_autocomplete(schema, db_path, redis, debug=False):
     if debug:
         print('Flushing autocomplete...', end='')
-    ac.flush()
+    redis.delete(schema.db_id)
     if debug:
         print('Done')
 
@@ -41,9 +40,11 @@ def init_autocomplete(schema, db_path, walrus, debug=False):
                     continue
 
     print('Storing phrases in autocomplete...')
-    iterator = phrases
+    phrases = list(phrases)
+    batch_size = 20000
+    iterator = range(0, len(phrases), batch_size)
     if debug:
         iterator = tqdm(iterator)
-
-    for phrase in iterator:
-        ac.store(phrase)
+    for start in iterator:
+        end = start + batch_size
+        redis.zadd(schema.db_id, dict.fromkeys(phrases[start:end], 0), nx=True)

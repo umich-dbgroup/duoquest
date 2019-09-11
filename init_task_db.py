@@ -4,17 +4,22 @@ import json
 import os
 import sqlite3
 
-from walrus import Walrus
+from redis import Redis
 
 from duoquest.autocomplete import init_autocomplete
 from duoquest.schema import Schema
 
-def load_db_from_file(conn, walrus, db_name, db_path):
+def load_db_from_file(conn, redis, db_name, db_path):
+    cur = conn.cursor()
+    cur.execute('SELECT 1 FROM databases WHERE name = ?', (db_name,))
+    if cur.fetchone():
+        raise Exception(f'Database {db_name} already exists!')
+
     db_path = os.path.abspath(db_path)
     schema = Schema.from_db_path(db_name, db_path)
     schema_proto_str = schema.to_proto().SerializeToString()
 
-    init_autocomplete(schema, db_path, walrus, debug=True)
+    init_autocomplete(schema, db_path, redis, debug=True)
 
     cur = conn.cursor()
     cur.execute('''INSERT INTO databases (name, schema_proto, path)
@@ -22,7 +27,7 @@ def load_db_from_file(conn, walrus, db_name, db_path):
     conn.commit()
     return True
 
-def load_spider_databases(conn, walrus, schemas_path, db_root):
+def load_spider_databases(conn, redis, schemas_path, db_root):
     schemas = json.load(open(schemas_path))
 
     for schema_info in schemas:
@@ -38,7 +43,7 @@ def load_spider_databases(conn, walrus, schemas_path, db_root):
                        (db_name, schema_proto_str, db_path))
 
         print(f'Loading autocomplete for {db_name}...', end='')
-        init_autocomplete(schema, db_path, walrus)
+        init_autocomplete(schema, db_path, redis)
         print('Done')
 
         db_conn.close()
@@ -96,9 +101,9 @@ def main():
     elif args.command == 'load_db':
         conn = sqlite3.connect(db_path)
         clear_db(conn)
-        walrus = Walrus(host=config['walrus']['host'],
-            port=config['walrus']['port'], db=0)
-        load_spider_databases(conn, walrus, config['spider']['dev_tables_path'],
+        redis = Redis(host=config['redis']['host'],
+            port=config['redis']['port'], db=0)
+        load_spider_databases(conn, redis, config['spider']['dev_tables_path'],
             config['spider']['dev_db_path'])
         conn.close()
     elif args.command == 'load_db_from_file':
@@ -109,9 +114,9 @@ def main():
             print('--file option required!')
             exit()
         conn = sqlite3.connect(db_path)
-        walrus = Walrus(host=config['walrus']['host'],
-            port=config['walrus']['port'], db=0)
-        load_db_from_file(conn, walrus, args.name, args.file)
+        redis = Redis(host=config['redis']['host'],
+            port=config['redis']['port'], db=0)
+        load_db_from_file(conn, redis, args.name, args.file)
         conn.close()
 
 if __name__ == '__main__':

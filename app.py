@@ -6,7 +6,7 @@ import time
 import traceback
 import uuid
 
-from walrus import Walrus
+from redis import Redis
 
 from duoquest.autocomplete import init_autocomplete
 from duoquest.schema import Schema
@@ -23,8 +23,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(dir_path, 'uploads')
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-walrus = Walrus(host=config['walrus']['host'],
-    port=config['walrus']['port'], db=0)
+redis = Redis(host=config['redis']['host'], port=config['redis']['port'], db=0)
 
 # ------------
 # USER ROUTES
@@ -43,8 +42,7 @@ def databases():
 def database_edit(name):
     database = load_database(name)
 
-    ac = walrus.autocomplete(namespace=name)
-    ac_tokens = sorted(ac.list_titles())
+    ac_tokens = map(lambda x: x.decode(), redis.zrange(name, 0, 99))
 
     return render_template('database_edit.html', db=database,
         ac_tokens=ac_tokens, path=request.path)
@@ -166,8 +164,9 @@ def dict_factory(cursor, row):
     return d
 
 def autocomplete(db_name, term):
-    ac = walrus.autocomplete(namespace=db_name)
-    return list(ac.search(term, limit=10))
+    return list(map(lambda x: x.decode(),
+        redis.zrangebylex(db_name, f'[{term}',
+            f'[{term}\xff', start=0, num=10)))
 
 def load_tasks():
     conn = sqlite3.connect(config['db']['path'])
@@ -347,8 +346,7 @@ def delete_database(db_name):
 
         cur.execute('DELETE FROM databases WHERE name = ?', (db_name,))
 
-        ac = walrus.autocomplete(namespace=db_name)
-        ac.flush()
+        redis.delete(db_name)
 
         conn.commit()
         conn.close()
@@ -370,7 +368,7 @@ def add_new_database(db_name, db_path):
     schema = Schema.from_db_path(db_name, db_path)
     schema_proto_str = schema.to_proto().SerializeToString()
 
-    init_autocomplete(schema, db_path, walrus)
+    init_autocomplete(schema, db_path, redis)
 
     conn = sqlite3.connect(config['db']['path'])
     cur = conn.cursor()
