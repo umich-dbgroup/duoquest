@@ -136,7 +136,7 @@ class DuoquestServer:
         ready.wait()
 
         proto_out = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
-            timeout=timeout)
+            literals, timeout=timeout)
         cqs = list(map(lambda x: generate_sql_str(x, schema), proto_out.cqs))
 
         t.join()

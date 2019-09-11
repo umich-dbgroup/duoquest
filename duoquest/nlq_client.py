@@ -14,7 +14,7 @@ class NLQClient:
         address = ('localhost', self.port)
         self.conn = Client(address, authkey=self.authkey)
 
-    def run(self, tid, schema, nlq, tsq_level, timeout=None):
+    def run(self, tid, schema, nlq, tsq_level, literals, timeout=None):
         task = ProtoTask()
         task.id = str(tid)
         task.dataset = self.dataset or ''
@@ -27,6 +27,8 @@ class NLQClient:
                 task.nlq_tokens.append(token)
         else:
             task.nlq_tokens.append(nlq)
+
+        task.literals = literals
 
         self.conn.send_bytes(task.SerializeToString())
         msg = self.conn.recv_bytes()
