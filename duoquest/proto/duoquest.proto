@@ -10,6 +10,7 @@ message ProtoTask {
 
   string db_name = 4;
   repeated string nlq_tokens = 5;
+  repeated ProtoLiteral literals = 6;
   // int32 n = 6;
   // int32 b = 7;
 
@@ -65,6 +66,15 @@ enum ProtoColumnType {
   COL_TIME = 2;
   COL_BOOLEAN = 3;
 }
+
+//-------------------
+// LITERALS
+//-------------------
+message ProtoLiteral {
+  int32 col_id = 1;
+  string value = 2;
+}
+
 
 //-------------------
 // TABLE SKETCH QUERY
