@@ -451,6 +451,7 @@ class DuoquestVerifier:
     def prune_by_literals(self, query, literals):
         for literal in literals.lits:
             if not self.find_literal_usage(query, literal):
+                print(f'Prune: No literal {literal.col_id}:{literal.value}')
                 return Tribool(False)
         return None
 
