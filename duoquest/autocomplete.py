@@ -1,5 +1,7 @@
 import sqlite3
 
+from tqdm import tqdm
+
 def is_number(val):
     try:
         float(val)
@@ -7,15 +9,25 @@ def is_number(val):
     except Exception as e:
         return False
 
-def init_autocomplete(schema, db_path, walrus):
+def init_autocomplete(schema, db_path, walrus, debug=False):
     ac = walrus.autocomplete(namespace=schema.db_id)
+    if debug:
+        print('Flushing autocomplete...', end='')
     ac.flush()
+    if debug:
+        print('Done')
 
     conn = sqlite3.connect(db_path)
     conn.text_factory = bytes
 
     phrases = set()
-    for col in schema.columns:
+    print('Retrieving phrases from columns...')
+
+    iterator = schema.columns
+    if debug:
+        iterator = tqdm(iterator)
+
+    for col in iterator:
         if col.type != 'text' or col.syn_name == '*':
             continue
 
@@ -28,5 +40,10 @@ def init_autocomplete(schema, db_path, walrus):
                 except Exception as e:
                     continue
 
-    for phrase in phrases:
+    print('Storing phrases in autocomplete...')
+    iterator = phrases
+    if debug:
+        iterator = tqdm(iterator)
+
+    for phrase in iterator:
         ac.store(phrase)
