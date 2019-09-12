@@ -10,9 +10,9 @@
     </div>
     <div class='form-group col-md-10'>
       <label for='nlq'>Natural language query (NLQ)</label>
-      <input id='nlq' name='nlq' class="form-control form-control-lg" type="text"
+      <input id='nlq' class="form-control form-control-lg" type="text"
         placeholder="e.g. How many singers are there?"
-        value="{% if task and task['nlq'] %}{{ task['nlq'] }}{% endif %}" />
+        value="{% if task and task['nlq_with_literals'] %}{{ task['nlq_with_literals'] }}{% endif %}" />
     </div>
   </div>
   <div class='form-group'>

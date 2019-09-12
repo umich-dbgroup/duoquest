@@ -1,3 +1,50 @@
+/* NLQ related code */
+var tagify = new Tagify($('#nlq')[0], {
+	mode: 'mix',
+	pattern: /"/,
+	enforceWhiteList: true,
+
+	// Initial loading whitelist
+	whitelist: get_initial_whitelist($('#nlq').val())
+});
+
+var controller = false;
+
+tagify.on('input', function (e) {
+	let m = e.detail && e.detail.textContent.match(/"(.+)/);
+	if (m) {
+		let value = m[1];
+		tagify.settings.whitelist.length = 0; // reset the whitelist
+
+	  // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
+	  controller && controller.abort();
+	  controller = new AbortController();
+
+		let db_name = $('#db-name option:selected').text();
+
+	  fetch(`/databases/${db_name}/autocomplete?term=${value}`, {signal:controller.signal})
+	    .then(RES => RES.json())
+	    .then(function(whitelist){
+	      tagify.settings.whitelist = whitelist;
+	      tagify.dropdown.show.call(tagify, value); // render the suggestions dropdown
+	    });
+	}
+});
+
+tagify.on('add', function (e) {
+	let last_tag_found = false;
+	$('.tagify span').contents().each(function (i) {
+		if ($(this)[0] == $('.tagify tag:last-child')[0]) {
+			last_tag_found = true;
+		} else if (last_tag_found &&
+			$(this)[0].textContent !== String.fromCharCode(8288) &&
+			$(this).parents('tag').length === 0) {
+			$(this).remove();
+		}
+	});
+	tagify.update();
+});
+
 /*global $, window*/
 $.fn.editableTableWidget = function (options) {
 	'use strict';
@@ -222,7 +269,7 @@ $('#task-form').on('submit', function(e) {
   $('#tsq-type-row td').each(function (i) {
     type_input = $(this).text();
     if (type_input !== 'text' && type_input !== 'number') {
-      // TODO: send error message! Bootstrap toast?
+      error_message('Each column in the TSQ requires at least a type.');
       e.preventDefault();
     } else {
       types.push(type_input);
@@ -253,6 +300,20 @@ $('#task-form').on('submit', function(e) {
           .attr("name", "values")
           .attr("value", JSON.stringify(values))
           .appendTo("#task-form");
+
+	let nlq = parse_tagify_text($('#nlq').val());
+	$("<input />").attr("type", "hidden")
+          .attr("name", "nlq")
+          .attr("value", nlq['nlq'])
+          .appendTo("#task-form");
+	$("<input />").attr("type", "hidden")
+          .attr("name", "literals")
+          .attr("value", JSON.stringify(nlq['literals']))
+          .appendTo("#task-form");
+	$("<input />").attr("type", "hidden")
+          .attr("name", "nlq_with_literals")
+          .attr("value", nlq['nlq_with_literals'])
+          .appendTo("#task-form");
   return true;
 });
 
@@ -282,4 +343,57 @@ function reset_addons(editor) {
 	if (editor.autocomplete('instance')) {
 		editor.autocomplete('destroy');
 	}
+}
+
+function get_initial_whitelist(text) {
+	let literals = [];
+	let it = text.matchAll(/\[\[([^\]]*)\]\]/g);
+	let m = it.next();
+
+	let nlq = text;
+	while (!m.done) {
+		let parsed = JSON.parse(m.value[1]);
+		let literal = {
+			'col_id': parsed['data-col-id'],
+			'value': parsed['value']
+		}
+		literals.push(literal);
+		m = it.next();
+	}
+	return literals;
+}
+
+function parse_tagify_text(text) {
+	let literals = [];
+	let it = text.matchAll(/\[\[([^\]]*)\]\]/g);
+
+	let m = it.next();
+
+	let nlq = text;
+	while (!m.done) {
+		let parsed = JSON.parse(m.value[1]);
+		let literal = {
+			'col_id': parsed['data-col-id'],
+			'value': parsed['value']
+		}
+		nlq = nlq.replace(m.value[0], literal['value']);
+		literals.push(literal);
+		m = it.next();
+	}
+
+	return {
+		'nlq': nlq,
+		'literals': literals,
+		'nlq_with_literals': text
+	};
+}
+
+function error_message(msg) {
+	$('#alerts').append(`
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  	${msg}
+  	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    	<span aria-hidden="true">&times;</span>
+  	</button>
+		</div>`)
 }

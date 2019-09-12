@@ -37,6 +37,7 @@ def load_spider_databases(conn, redis, schemas_path, db_root):
         schema_proto_str = schema.to_proto().SerializeToString()
         db_path = os.path.join(db_root, f'{db_name}/{db_name}.sqlite')
 
+        db_conn = sqlite3.connect(db_path)
         cur = conn.cursor()
         cur.execute('''INSERT INTO databases (name, schema_proto, path)
                        VALUES (?, ?, ?)''',
@@ -66,8 +67,9 @@ def init(conn):
     cur = conn.cursor()
     print('Creating tables...', end='')
     cur.execute('''CREATE TABLE tasks
-                (tid text, db text, nlq text, tsq_proto blob, status text,
-                 time integer, error_msg text)''')
+                (tid text, db text, nlq text, nlq_with_literals text,
+                tsq_proto blob, literals_proto blob, status text, time integer,
+                error_msg text)''')
     cur.execute('''CREATE TABLE databases
                 (name text, path text, schema_proto blob)''')
     cur.execute('''CREATE TABLE results

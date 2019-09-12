@@ -20,7 +20,8 @@ def init_autocomplete(schema, db_path, redis, debug=False):
     conn.text_factory = bytes
 
     phrases = set()
-    print('Retrieving phrases from columns...')
+    if debug:
+        print('Retrieving phrases from columns...')
 
     iterator = schema.columns
     if debug:
@@ -35,11 +36,12 @@ def init_autocomplete(schema, db_path, redis, debug=False):
         for phrase in cur.fetchall():
             if phrase[0] and not is_number(phrase[0]):
                 try:
-                    phrases.add(phrase[0].decode())
+                    phrases.add(f'{phrase[0].decode()}||{col.id}')
                 except Exception as e:
                     continue
 
-    print('Storing phrases in autocomplete...')
+    if debug:
+        print('Storing phrases in autocomplete...')
     phrases = list(phrases)
     batch_size = 20000
     iterator = range(0, len(phrases), batch_size)

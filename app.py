@@ -9,6 +9,7 @@ import uuid
 from redis import Redis
 
 from duoquest.autocomplete import init_autocomplete
+from duoquest.proto.duoquest_pb2 import ProtoLiteralList
 from duoquest.schema import Schema
 from duoquest.tsq import TableSketchQuery
 
@@ -99,6 +100,19 @@ def databases_new():
 
     return redirect(url_for('databases'))
 
+@app.route('/databases/<db_name>/autocomplete')
+def database_autocomplete(db_name):
+    return json.dumps(autocomplete(db_name, request.args.get('term')))
+
+@app.route('/databases/<db_name>/reset_autocomplete')
+def database_reset_autocomplete(db_name):
+    success, err = reset_autocomplete(db_name)
+    if success:
+        flash('Successfully reset autocomplete.', 'success')
+    else:
+        flash(err, 'error')
+    return redirect(url_for('database_edit', name=db_name))
+
 @app.route('/tasks')
 def tasks():
     tasks = load_tasks()
@@ -109,12 +123,21 @@ def tasks_new():
     if request.method == 'POST':
         db_name = request.form.get('db_name')
         nlq = request.form.get('nlq')
+        nlq_with_literals = request.form.get('nlq_with_literals')
+        literals = json.loads(request.form.get('literals'))
+        literals_proto = ProtoLiteralList()
+        for literal in literals:
+            literal_proto = literals_proto.lits.add()
+            literal_proto.col_id = int(literal['col_id'])
+            literal_proto.value = literal['value']
+        literals_proto = literals_proto.SerializeToString()
         tsq = TableSketchQuery(int(request.form.get('num_cols')),
             order='order' in request.form,
             limit=int(request.form.get('limit')) or None)
         tsq.types = json.loads(request.form.get('types'))
         tsq.values = json.loads(request.form.get('values'))
-        tid, status = add_task(db_name, nlq, tsq)
+        tid, status = add_task(db_name, nlq, tsq, literals_proto,
+            nlq_with_literals)
 
         if status:
             return redirect(url_for('task', tid=tid))
@@ -153,10 +176,6 @@ def task_results(tid):
 def result_run(rid):
     return json.dumps(result_query_preview(rid))
 
-@app.route('/databases/<db_name>/autocomplete')
-def database_autocomplete(db_name):
-    return json.dumps(autocomplete(db_name, request.args.get('term')))
-
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -164,9 +183,29 @@ def dict_factory(cursor, row):
     return d
 
 def autocomplete(db_name, term):
-    return list(map(lambda x: x.decode(),
+    return list(
+        map(lambda x: { 'value': x[0], 'data-col-id': x[1] },
+        map(lambda x: x.decode().split('||'),
         redis.zrangebylex(db_name, f'[{term}',
-            f'[{term}\xff', start=0, num=10)))
+            f'[{term}\xff', start=0, num=10))))
+
+def reset_autocomplete(db_name):
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    cur.execute('SELECT schema_proto, path FROM databases WHERE name = ?',
+        (db_name,))
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        return False, f'Database {db_name} not found'
+
+    schema = Schema.from_proto(row[0])
+    db_path = row[1]
+
+    init_autocomplete(schema, db_path, redis)
+
+    conn.close()
+    return True, None
 
 def load_tasks():
     conn = sqlite3.connect(config['db']['path'])
@@ -191,8 +230,8 @@ def load_task(tid):
     conn = sqlite3.connect(config['db']['path'])
     conn.row_factory = dict_factory
     cur = conn.cursor()
-    cur.execute('''SELECT tid, db, nlq, tsq_proto, status, error_msg FROM tasks
-                   WHERE tid = ?''', (tid,))
+    cur.execute('''SELECT tid, db, nlq, tsq_proto, nlq_with_literals, status,
+                   error_msg FROM tasks WHERE tid = ?''', (tid,))
     task = cur.fetchone()
 
     if not task:
@@ -245,16 +284,17 @@ def result_query_preview(rid):
     db_conn.close()
     return output
 
-def add_task(db_name, nlq, tsq):
+def add_task(db_name, nlq, tsq, literals_proto, nlq_with_literals):
     conn = sqlite3.connect(config['db']['path'])
     cur = conn.cursor()
     tid = str(uuid.uuid4())
     try:
         tsq_proto = tsq.to_proto().SerializeToString()
-        cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto, status, time)
-                       VALUES (?, ?, ?, ?, ?, ?)''',
-                       (tid, db_name, nlq, tsq_proto, 'waiting',
-                        int(time.time())))
+        cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto,
+                       literals_proto, nlq_with_literals, status, time)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                       (tid, db_name, nlq, tsq_proto, literals_proto,
+                        nlq_with_literals, 'waiting', int(time.time())))
     except Exception as e:
         traceback.print_exc()
         return None, False
