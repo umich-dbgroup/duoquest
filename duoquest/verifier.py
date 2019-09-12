@@ -112,24 +112,22 @@ class DuoquestVerifier:
         if query.having.logical_op == OR and not query.done_having:
             return False
 
-        # if GROUP BY is present, must be done
-        if query.has_group_by == TRUE and not query.done_group_by:
-            return False
-
-        # if query contains any aggregate, then WHERE must be done if present
+        # if query contains any aggregate, then WHERE and GROUP BY must be done
         if any(map(lambda x: x.has_agg == TRUE, query.select)):
             if query.has_where == UNKNOWN or \
                 (query.has_where == TRUE and not query.done_where):
                 return False
-        else:
+            if query.has_group_by == TRUE and not query.done_group_by:
+                return False
+        # else:
             # when query has GROUP BY and no aggregate in select
             # make sure that HAVING and ORDER BY are both complete if present
-            if query.has_group_by == TRUE:
-                if query.has_having == UNKNOWN or \
-                    query.has_order_by == UNKNOWN or \
-                    (query.has_having == TRUE and not query.done_having) or \
-                    (query.has_order_by == TRUE and not query.done_order_by):
-                    return False
+            # if query.has_group_by == TRUE:
+            #     if query.has_having == UNKNOWN or \
+            #         query.has_order_by == UNKNOWN or \
+            #         (query.has_having == TRUE and not query.done_having) or \
+            #         (query.has_order_by == TRUE and not query.done_order_by):
+            #         return False
 
         return True
 
