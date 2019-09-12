@@ -242,7 +242,7 @@ class DuoquestVerifier:
         else:
             return None
 
-    def prune_by_subquery(self, schema, pred):
+    def prune_by_subquery(self, schema, pred, literals):
         if pred.op == BETWEEN:
             if self.debug:
                 print('Prune: cannot have BETWEEN with subquery.')
@@ -290,7 +290,7 @@ class DuoquestVerifier:
                 print('Prune: subquery cannot have ORDER BY without LIMIT.')
             return Tribool(False)
 
-        subq = self.prune_by_semantics(schema, pred.subquery)
+        subq = self.prune_by_semantics(schema, pred.subquery, literals)
         if subq is not None:
             return subq
 
@@ -344,7 +344,7 @@ class DuoquestVerifier:
 
             if pred.has_subquery == TRUE:
                 subquery_count += 1
-                subq = self.prune_by_subquery(schema, pred)
+                subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
                     return subq
 
@@ -356,7 +356,7 @@ class DuoquestVerifier:
 
             if pred.has_subquery == TRUE:
                 subquery_count += 1
-                subq = self.prune_by_subquery(schema, pred)
+                subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
                     return subq
 
