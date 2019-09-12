@@ -1,3 +1,5 @@
+import timeout_decorator
+
 from numbers import Number
 from tribool import Tribool
 
@@ -149,6 +151,7 @@ class DuoquestVerifier:
 
         return True
 
+    @timeout_decorator.timeout(5)
     def prune_by_row(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
 
@@ -527,9 +530,12 @@ class DuoquestVerifier:
                     return check_values
 
         if can_check_values and self.ready_for_row_check(query, tsq):
-            check_row = self.prune_by_row(db, schema, query, tsq)
-            if check_row is not None:
-                return check_row
+            try:
+                check_row = self.prune_by_row(db, schema, query, tsq)
+                if check_row is not None:
+                    return check_row
+            except Exception as e:
+                pass
 
         if self.ready_for_order_check(query, tsq):
             check_order = self.prune_by_order(db, schema, query, tsq)
