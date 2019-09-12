@@ -29,7 +29,7 @@ def main():
 
     print('Processing queue...')
     while True:
-        server.run_next_in_queue(nlqc, args.tsq_level, timeout=args.timeout)
+        server.run_next_in_queue(nlqc, args.tsq_level, timeout=int(args.timeout))
 
 if __name__ == '__main__':
     main()
