@@ -37,13 +37,14 @@ def init_autocomplete(schema, db_path, redis, debug=False):
             if phrase[0] and not is_number(phrase[0]):
                 try:
                     val = phrase[0].decode()
-                    cleaned = val.trim().lower()
+                    cleaned = val.strip().lower()
                     phrases.add(f'{cleaned}\t{val}\t{col.id}')
                 except Exception as e:
                     continue
 
     if debug:
         print('Storing phrases in autocomplete...')
+
     phrases = list(phrases)
     batch_size = 20000
     iterator = range(0, len(phrases), batch_size)
