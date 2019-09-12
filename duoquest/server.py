@@ -89,7 +89,8 @@ class DuoquestServer:
 
             question_toks = [word.lower() for word in word_tokenize(nlq)]
 
-            nlqc.run(tid, schema, question_toks, tsq_level, timeout=timeout)
+            nlqc.run(tid, schema, question_toks, tsq_level, literals,
+                timeout=timeout)
 
             t.join()
             nlqc.close()
