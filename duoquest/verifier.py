@@ -296,7 +296,7 @@ class DuoquestVerifier:
 
         return None
 
-    def prune_by_semantics(self, schema, query, set_op=None):
+    def prune_by_semantics(self, schema, query, literals, set_op=None):
         for agg_col in query.select:
             col_type = schema.get_col(agg_col.col_id).type
             if agg_col.has_agg == TRUE:
@@ -320,11 +320,17 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             col_type = schema.get_col(pred.col_id).type
-            if col_type == 'text' and \
-                pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
-                if self.debug:
-                    print('Prune: invalid op for text column.')
-                return Tribool(False)
+            if col_type == 'text':
+                if pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
+                    if self.debug:
+                        print('Prune: invalid op for text column.')
+                    return Tribool(False)
+                if pred.has_subquery == FALSE:
+                    if pred.col_id not in \
+                        map(lambda x: x.col_id, literals.lits):
+                        if self.debug:
+                            print(f'Prune: no literals for col <{pred.col_id}>')
+                        return Tribool(False)
             if col_type == 'number' and pred.op == LIKE:
                 if self.debug:
                     print('Prune: cannot have LIKE with numeric column.')
@@ -484,7 +490,7 @@ class DuoquestVerifier:
         if check_num_cols is not None:
             return check_num_cols
 
-        check_semantics = self.prune_by_semantics(schema, query)
+        check_semantics = self.prune_by_semantics(schema, query, literals)
         if check_semantics is not None:
             return check_semantics
 
