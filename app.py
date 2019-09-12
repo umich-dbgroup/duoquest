@@ -184,10 +184,10 @@ def dict_factory(cursor, row):
 
 def autocomplete(db_name, term):
     return list(
-        map(lambda x: { 'value': x[0], 'data-col-id': x[1] },
+        map(lambda x: { 'value': x[1], 'data-col-id': x[2] },
         map(lambda x: x.decode().split('\t'),
-        redis.zrangebylex(db_name, f'[{term}',
-            f'[{term}\xff', start=0, num=10))))
+        redis.zrangebylex(db_name, f'[{term.lower()}',
+            f'[{term.lower()}\xff', start=0, num=10))))
 
 def reset_autocomplete(db_name):
     conn = sqlite3.connect(config['db']['path'])
