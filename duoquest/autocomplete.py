@@ -36,7 +36,7 @@ def init_autocomplete(schema, db_path, redis, debug=False):
         for phrase in cur.fetchall():
             if phrase[0] and not is_number(phrase[0]):
                 try:
-                    phrases.add(f'{phrase[0].decode()}||{col.id}')
+                    phrases.add(f'{phrase[0].decode()}\t{col.id}')
                 except Exception as e:
                     continue
 
