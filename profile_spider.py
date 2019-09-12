@@ -3,7 +3,7 @@ import json
 
 from operator import add
 
-from main import load_schemas
+from experiments import load_schemas
 
 WHERE_OPS = ('not', 'between', '=', '>', '<', '>=', '<=', '!=', 'in',
     'like', 'is', 'exists')
@@ -89,6 +89,11 @@ def main():
     from_subq_count = 0
     order_by_2 = 0
     order_by_3 = 0
+
+    fk_in_select = 0
+    pk_in_where = 0
+    fk_in_where = 0
+
     for mode in ('dev', 'test'):
         data = json.load(open(config['spider'][f'{mode}_path']))
         db_path = config['spider'][f'{mode}_db_path']
@@ -97,7 +102,16 @@ def main():
         schemas, _ = load_schemas(schemas_path)
 
         for i, task in enumerate(data):
+            schema = schemas[task['db_id']]
+
             subq, in_from = contains_subquery(task['sql'])
+
+            found_fk_in_select = False
+            for agg, val_unit in task['sql']['select'][1]:
+                if agg == 0 and schema.get_col(val_unit[1][1]).fk_ref:
+                    found_fk_in_select = True
+            if found_fk_in_select:
+                fk_in_select += 1
 
             # contains more than 1 ORDER BY column
             if 'orderBy' in task['sql'] and task['sql']['orderBy'] \
@@ -106,6 +120,20 @@ def main():
                     order_by_2 += 1
                 elif len(task['sql']['orderBy'][1]) == 3:
                     order_by_3 += 1
+
+            found_fk_in_where = False
+            found_pk_in_where = False
+            for item in task['sql']['where']:
+                if not isinstance(item, str):
+                    col = schema.get_col(item[2][1][1])
+                    if col.fk_ref:
+                        found_fk_in_where = True
+                    elif col.pk:
+                        found_pk_in_where = True
+            if found_fk_in_where:
+                fk_in_where += 1
+            if found_pk_in_where:
+                pk_in_where += 1
 
             if subq:
                 if in_from:
@@ -148,8 +176,12 @@ def main():
                 print(f"-- COVERAGE INFO: {cum_subq_infos}")
                 print(f"-- FROM SUBQUERIES: {from_subq_count}\n")
 
-            print(f'ORDER BY (2 Columns): {order_by_2}')
-            print(f'ORDER BY (3 Columns): {order_by_3}')
+        print(f'ORDER BY (2 Columns): {order_by_2}')
+        print(f'ORDER BY (3 Columns): {order_by_3}')
+
+        print(f'FK IN SELECT: {fk_in_select}')
+        print(f'FK IN WHERE: {fk_in_where}')
+        print(f'PK IN WHERE: {pk_in_where}')
 
 
 if __name__ == '__main__':

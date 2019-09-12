@@ -15,10 +15,15 @@ def to_tribool_proto(proto_tribool):
         return Tribool(False)
 
 class DuoquestVerifier:
-    def __init__(self, use_cache=False, debug=False):
+    def __init__(self, use_cache=False, debug=False, no_fk_select=False,
+        no_pk_where=False, no_fk_where=False):
         if use_cache:
             # TODO: initialize cache
             pass
+
+        self.no_fk_select = no_fk_select
+        self.no_pk_where = no_pk_where
+        self.no_fk_where = no_fk_where
 
         self.debug = debug
 
@@ -27,7 +32,7 @@ class DuoquestVerifier:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
 
-            if schema.get_col(agg_col.col_id).fk_ref:
+            if self.no_fk_select and schema.get_col(agg_col.col_id).fk_ref:
                 if self.debug:
                     print('Prune: foreign keys are not to be projected.')
                 return Tribool(False)
@@ -319,11 +324,15 @@ class DuoquestVerifier:
                     print('Prune: cannot have * in WHERE clause.')
                 return Tribool(False)
 
-            if schema.get_col(pred.col_id).fk_ref:
+            if self.no_fk_where and schema.get_col(pred.col_id).fk_ref:
                 if self.debug:
                     print('Prune: cannot have foreign key in WHERE clause.')
                 return Tribool(False)
 
+            if self.no_pk_where and schema.get_col(pred.col_id).pk:
+                if self.debug:
+                    print('Prune: cannot have primary key in WHERE clause.')
+                return Tribool(False)
 
             col_type = schema.get_col(pred.col_id).type
             if col_type == 'text':

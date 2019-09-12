@@ -17,7 +17,8 @@ def main():
     config.read('config.ini')
 
     print('Initializing Duoquest...')
-    verifier = DuoquestVerifier(debug=args.debug)
+    verifier = DuoquestVerifier(debug=args.debug, no_fk_select=True,
+        no_fk_where=True, no_pk_where=True)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier,
         task_db=config['db']['path'])
