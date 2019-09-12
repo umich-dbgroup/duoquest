@@ -319,6 +319,12 @@ class DuoquestVerifier:
                     print('Prune: cannot have * in WHERE clause.')
                 return Tribool(False)
 
+            if schema.get_col(pred.col_id).fk_ref:
+                if self.debug:
+                    print('Prune: cannot have foreign key in WHERE clause.')
+                return Tribool(False)
+
+
             col_type = schema.get_col(pred.col_id).type
             if col_type == 'text':
                 if pred.op not in (EQUALS, NEQ, LIKE, IN, NOT_IN):
