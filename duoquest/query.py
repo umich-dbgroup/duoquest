@@ -485,7 +485,7 @@ def verify_sql_str(pq, schema, tsq_row):
         if (pq.has_where == TRUE and pq.where.predicates) or verify_non_agg:
             clauses.append(where_clause_str(pq, schema, aliases,
                 verify=verify_non_agg))
-        if pq.has_group_by == TRUE:
+        if pq.has_group_by == TRUE and pq.done_group_by:
             clauses.append(group_by_clause_str(pq, schema, aliases))
         if (pq.has_having == TRUE and pq.having.predicates) or verify_agg:
             clauses.append(having_clause_str(pq, schema, aliases,
