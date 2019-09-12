@@ -26,6 +26,12 @@ class DuoquestVerifier:
         if tsq.types:
             tsq_type = tsq.types[pos]
             col_type = schema.get_col(agg_col.col_id).type
+
+            if schema.get_col(agg_col.col_id).fk_ref:
+                if self.debug:
+                    print('Prune: foreign keys are not to be projected.')
+                return Tribool(False)
+
             if agg_col.has_agg == TRUE:
                 if tsq_type != 'number':
                     if self.debug:
@@ -451,7 +457,8 @@ class DuoquestVerifier:
     def prune_by_literals(self, query, literals):
         for literal in literals.lits:
             if not self.find_literal_usage(query, literal):
-                print(f'Prune: No literal {literal.col_id}:{literal.value}')
+                if self.debug:
+                    print(f'Prune: No literal {literal.col_id}:{literal.value}')
                 return Tribool(False)
         return None
 
