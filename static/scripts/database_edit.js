@@ -3,6 +3,14 @@ $(document).on('click', '.del-fkpk', function (e) {
   $(this).parents('tr').remove();
 });
 
+$('.add-fkpk-input').on('keypress', function (e) {
+    if (e.which == 13) { // ENTER
+      e.preventDefault();
+      $('.add-fkpk').trigger('click');
+      $('#add-fkpk-fk').focus();
+    }
+});
+
 $('.add-fkpk').on('click', function (e) {
   e.preventDefault();
   var fk = $('#add-fkpk-fk').val();
