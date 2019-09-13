@@ -26,9 +26,9 @@ function pollResults() {
                 <strong>Q${index}:</strong> ${result['query']}
                 <div class="float-right">
                 <button class="btn btn-primary btn-sm run-result-query" data-load-type="preview"
-                 data-toggle="collapse" data-target="#result-${result['rid']}" data-rid=${result['rid']}>Query Preview</button>
+                 data-target="#result-${result['rid']}" data-rid=${result['rid']}>Query Preview</button>
                 <button class="btn btn-success btn-sm run-result-query" data-load-type="full"
-                  data-toggle="collapse" data-target="#result-${result['rid']}" data-rid=${result['rid']}>Full Query View</button>
+                  data-target="#result-${result['rid']}" data-rid=${result['rid']}>Full Query View</button>
                 </div>
             </div>
             <div id="result-${result['rid']}" class="result-info collapse" data-parent="#task-results">
@@ -36,7 +36,9 @@ function pollResults() {
             </div>
           `);
         $('#task-results').append(card);
-        $(card).find('.collapse').collapse({ toggle: false });
+        $(card).find('.collapse').collapse({
+          toggle: false
+        });
       });
       $('#task-results').attr('data-offset', data['results'][data['results'].length - 1]['rid']);
     }
@@ -65,11 +67,11 @@ function pollResults() {
 }
 
 $(document).on('click', '.run-result-query', function (e) {
-  if (!$(this).attr('data-loaded')) {
-    let rid = $(this).attr('data-rid');
-    let target_selector = $(this).attr('data-target');
-    self = $(this)
+  let rid = $(this).attr('data-rid');
+  let target_selector = $(this).attr('data-target');
+  self = $(this)
 
+  if (!$(this).attr('data-loaded')) {
     let url = "";
     if ($(this).attr('data-load-type') === 'preview') {
       url = `/results/${rid}/preview`;
@@ -107,6 +109,8 @@ $(document).on('click', '.run-result-query', function (e) {
       });
       $(`#result-${rid}-spinner`).hide();
     }
+  } else {
+    $(target_selector).collapse('toggle');
   }
 });
 
