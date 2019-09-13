@@ -28,7 +28,7 @@ class NLQClient:
         else:
             task.nlq_tokens.append(nlq)
 
-        task.literals = literals
+        task.literals.CopyFrom(literals)
 
         self.conn.send_bytes(task.SerializeToString())
         msg = self.conn.recv_bytes()
