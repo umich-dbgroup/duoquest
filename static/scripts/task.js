@@ -67,7 +67,6 @@ $(document).on('click', '.run-result-query', function () {
     let rid = $(this).attr('data-rid');
     let target_selector = $(this).attr('data-target');
     self = $(this)
-    $('.run-result-query[data-loaded]').removeAttr('data-loaded');
 
     let url = "";
     if ($(this).attr('data-load-type') === 'preview') {
@@ -77,6 +76,9 @@ $(document).on('click', '.run-result-query', function () {
     }
 
     if (url) {
+      $('.run-result-query[data-loaded]').removeAttr('data-loaded');
+      $(target_selector).find('table').remove();
+
       $.get(url, function (data) {
         data = JSON.parse(data);
 
