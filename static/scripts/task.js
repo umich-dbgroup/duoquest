@@ -78,6 +78,8 @@ $(document).on('click', '.run-result-query', function () {
     if (url) {
       $('.run-result-query[data-loaded]').removeAttr('data-loaded');
       $(target_selector).find('table').remove();
+      $(`#result-${rid}-spinner`).show();
+      $(target_selector).collapse('show');
 
       $.get(url, function (data) {
         data = JSON.parse(data);
