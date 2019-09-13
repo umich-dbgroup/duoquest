@@ -128,7 +128,8 @@ def tasks_new():
         literals_proto = ProtoLiteralList()
         for literal in literals:
             literal_proto = literals_proto.lits.add()
-            literal_proto.col_id = int(literal['col_id'])
+            for col_id in literal['col_id'].split(','):
+                literal_proto.col_id.append(int(col_id))
             literal_proto.value = literal['value']
         literals_proto = literals_proto.SerializeToString()
         tsq = TableSketchQuery(int(request.form.get('num_cols')),

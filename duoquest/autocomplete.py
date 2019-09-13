@@ -19,7 +19,7 @@ def init_autocomplete(schema, db_path, redis, debug=False):
     conn = sqlite3.connect(db_path)
     conn.text_factory = bytes
 
-    phrases = set()
+    phrases = {}
     if debug:
         print('Retrieving phrases from columns...')
 
@@ -38,14 +38,20 @@ def init_autocomplete(schema, db_path, redis, debug=False):
                 try:
                     val = phrase[0].decode()
                     cleaned = val.strip().lower()
-                    phrases.add(f'{cleaned}\t{val}\t{col.id}')
+
+                    phrase_key = f'{cleaned}\t{val}'
+
+                    if phrase_key not in phrases:
+                        phrases[phrase_key] = []
+
+                    phrases[phrase_key].append(str(col.id))
                 except Exception as e:
                     continue
 
     if debug:
         print('Storing phrases in autocomplete...')
 
-    phrases = list(phrases)
+    phrases = [f'{k}\t{",".join(v)}' for k, v in phrases.items()]
     batch_size = 20000
     iterator = range(0, len(phrases), batch_size)
     if debug:

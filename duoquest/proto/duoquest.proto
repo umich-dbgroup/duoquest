@@ -75,7 +75,7 @@ message ProtoLiteralList {
 }
 
 message ProtoLiteral {
-  int32 col_id = 1;
+  repeated int32 col_id = 1;
   string value = 2;
 }
 

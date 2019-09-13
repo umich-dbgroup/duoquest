@@ -470,7 +470,7 @@ class DuoquestVerifier:
                 if self.find_literal_usage(pred.subquery, literal):
                     return True
             else:
-                if pred.col_id == literal.col_id \
+                if pred.col_id in literal.col_id \
                     and literal.value in pred.value:
                     return True
 
