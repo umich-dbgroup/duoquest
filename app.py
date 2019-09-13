@@ -279,7 +279,7 @@ def result_query_view(rid, limit=None):
 
     query = query_info['query']
     if limit and 'LIMIT' not in query:
-        query += ' LIMIT 20'
+        query += f' LIMIT {limit}'
 
     cur.execute(query)
     results = cur.fetchall()
