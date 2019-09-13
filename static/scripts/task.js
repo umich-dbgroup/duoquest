@@ -62,8 +62,10 @@ function pollResults() {
   });
 }
 
-$(document).on('click', '.run-result-query', function () {
+$(document).on('click', '.run-result-query', function (e) {
   if (!$(this).attr('data-loaded')) {
+    e.preventDefault();
+
     let rid = $(this).attr('data-rid');
     let target_selector = $(this).attr('data-target');
     self = $(this)
