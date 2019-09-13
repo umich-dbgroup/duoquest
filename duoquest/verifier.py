@@ -550,6 +550,7 @@ class DuoquestVerifier:
                     return check_literals
 
             # TODO: possibly still need to execute full query if there's set ops
+            print('Success: Query verified.')
             return Tribool(True)
 
         return Tribool(None)        # return indeterminate
