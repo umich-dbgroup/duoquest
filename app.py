@@ -173,9 +173,13 @@ def task_delete(tid):
 def task_results(tid):
     return json.dumps(load_results(tid, request.args.get('offset', default=0)))
 
+@app.route('/results/<rid>/view')
+def result_view(rid):
+    return json.dumps(result_query_view(rid))
+
 @app.route('/results/<rid>/preview')
-def result_run(rid):
-    return json.dumps(result_query_preview(rid))
+def result_preview(rid):
+    return json.dumps(result_query_view(rid, limit=10))
 
 def dict_factory(cursor, row):
     d = {}
@@ -259,7 +263,7 @@ def load_results(tid, offset):
     conn.close()
     return output
 
-def result_query_preview(rid):
+def result_query_view(rid, limit=None):
     conn = sqlite3.connect(config['db']['path'])
     conn.row_factory = dict_factory
     cur = conn.cursor()
@@ -274,7 +278,7 @@ def result_query_preview(rid):
     cur = db_conn.cursor()
 
     query = query_info['query']
-    if 'LIMIT' not in query:
+    if limit and 'LIMIT' not in query:
         query += ' LIMIT 20'
 
     cur.execute(query)
