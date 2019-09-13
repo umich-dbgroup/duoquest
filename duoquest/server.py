@@ -84,6 +84,7 @@ class DuoquestServer:
             ready = Event()
             t = threading.Thread(target=self.task_thread,
                 args=(tid, db, schema, nlqc, tsq, literals, ready, tsq_level))
+
             t.start()
             ready.wait()
 
@@ -247,6 +248,9 @@ class DuoquestServer:
         conn = listener.accept()
         print('DuoquestServer connection accepted from:',
             listener.last_accepted)
+
+        seen_queries = set()
+
         while True:
             msg = conn.recv_bytes()
 
@@ -280,10 +284,13 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    cur = task_conn.cursor()
-                    cur.execute('INSERT INTO results (tid, query) VALUES (?,?)',
-                                (tid, generate_sql_str(query, schema)))
-                    task_conn.commit()
+                    sql_str = generate_sql_str(query, schema)
+                    if sql_str not in seen_queries:
+                        cur = task_conn.cursor()
+                        cur.execute('INSERT INTO results (tid, query) VALUES (?,?)',
+                                    (tid, sql_str))
+                        task_conn.commit()
+                        seen_queries.add(sql_str)
                 else:
                     response.results.append(FALSE)
 
