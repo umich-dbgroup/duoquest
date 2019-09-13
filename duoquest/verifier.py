@@ -345,7 +345,7 @@ class DuoquestVerifier:
                     return Tribool(False)
                 if pred.has_subquery == FALSE:
                     if pred.col_id not in \
-                        map(lambda x: x.col_id, literals.lits):
+                        [cid for lit in literals.lits for cid in lit.col_id]:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
