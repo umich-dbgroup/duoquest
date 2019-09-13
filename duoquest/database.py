@@ -119,6 +119,7 @@ class Database(object):
     # I9. Do not permit tasks where a subquery has more than 1 WHERE predicate.
     #     [Task Scope]
     # I10. Do not permit tasks with more than 1 ORDER BY column.
+    # I11. Do not permit tasks with more than 1 HAVING predicate.
     #
     # TSQ generation conditions:
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
@@ -189,6 +190,10 @@ class Database(object):
 
         if 'orderBy' in sql and sql['orderBy'] and len(sql['orderBy'][1]) > 1:
             print('Failed I10.')
+            return None
+
+        if 'having' in sql and sql['having'] and len(sql['having']) > 1:
+            print('Failed I11.')
             return None
 
         for pred in sql['where']:

@@ -90,6 +90,9 @@ def main():
     order_by_2 = 0
     order_by_3 = 0
 
+    having_more_than_1 = 0
+    having_more_than_2 = 0
+
     fk_in_select = 0
     pk_in_where = 0
     fk_in_where = 0
@@ -112,6 +115,13 @@ def main():
                     found_fk_in_select = True
             if found_fk_in_select:
                 fk_in_select += 1
+
+            # contains more than 1 HAVING predicate
+            if 'having' in task['sql'] and task['sql']['having'] \
+                and len(task['sql']['having']) > 1:
+                having_more_than_1 += 1
+                if len(task['sql']['having']) > 3:
+                    having_more_than_2 += 1
 
             # contains more than 1 ORDER BY column
             if 'orderBy' in task['sql'] and task['sql']['orderBy'] \
@@ -175,6 +185,9 @@ def main():
                 print(f"-- SUBQUERIES: {subq_count}")
                 print(f"-- COVERAGE INFO: {cum_subq_infos}")
                 print(f"-- FROM SUBQUERIES: {from_subq_count}\n")
+
+        print(f'HAVING (> 1 Predicate): {having_more_than_1}')
+        print(f'HAVING (> 2 Predicates): {having_more_than_2}')
 
         print(f'ORDER BY (2 Columns): {order_by_2}')
         print(f'ORDER BY (3 Columns): {order_by_3}')
