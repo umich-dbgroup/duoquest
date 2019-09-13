@@ -24,10 +24,12 @@ function pollResults() {
           `<div class="card">
              <div class="card-header">
                 <strong>Q${index}:</strong> ${result['query']}
-                <button class="btn btn-primary float-right btn-sm run-result-query" data-load-type="preview"
+                <div class="float-right">
+                <button class="btn btn-primary btn-sm run-result-query" data-load-type="preview"
                  data-toggle="collapse" data-target="#result-${result['rid']}" data-rid=${result['rid']}>Query Preview</button>
-                <button class="btn btn-success float-right btn-sm run-result-query" data-load-type="full"
+                <button class="btn btn-success btn-sm run-result-query" data-load-type="full"
                   data-toggle="collapse" data-target="#result-${result['rid']}" data-rid=${result['rid']}>Full Query View</button>
+                </div>
             </div>
             <div id="result-${result['rid']}" class="result-info collapse" data-parent="#task-results">
               <div id="result-${result['rid']}-spinner" class="text-center"><div class="spinner-border"></div></div>
@@ -64,8 +66,6 @@ function pollResults() {
 
 $(document).on('click', '.run-result-query', function (e) {
   if (!$(this).attr('data-loaded')) {
-    e.stopPropagation();
-
     let rid = $(this).attr('data-rid');
     let target_selector = $(this).attr('data-target');
     self = $(this)
