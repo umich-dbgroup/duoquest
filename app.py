@@ -275,7 +275,7 @@ def result_query_preview(rid):
 
     query = query_info['query']
     if 'LIMIT' not in query:
-        query += ' LIMIT 5'
+        query += ' LIMIT 20'
 
     cur.execute(query)
     results = cur.fetchall()
