@@ -11,7 +11,8 @@
     </ol>
   </nav>
   <div class='mb-3'>
-    <a href="{{ url_for('tasks_new') }}" class='btn btn-primary'>+ New Task</a>
+    <a href="{{ url_for('tasks_new', tsq_level='default') }}" class='btn btn-primary'>+ New Duoquest Task</a>
+    <a href="{{ url_for('tasks_new', tsq_level='nlq_only') }}" class='btn btn-secondary'>+ New NLQ Task</a>
   </div>
   <table class='table'>
     <tr>
