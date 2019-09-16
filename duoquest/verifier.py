@@ -504,7 +504,7 @@ class DuoquestVerifier:
                 return Tribool(None)
 
         # only check clauses if not child of a set op
-        check_clauses = self.prune_by_clauses(query, tsq, set_op)
+        check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
         if check_clauses is not None:
             return check_clauses
 
