@@ -41,7 +41,7 @@ class DuoquestServer:
         conn.commit()
         conn.close()
 
-    def run_next_in_queue(self, nlqc, tsq_level, timeout=None):
+    def run_next_in_queue(self, nlqc, timeout=None):
         conn = sqlite3.connect(self.task_db)
         cur = conn.cursor()
         cur.execute('''SELECT t.tid, t.db, d.path, t.nlq, t.tsq_proto,
@@ -75,8 +75,12 @@ class DuoquestServer:
         conn.commit()
 
         try:
-            tsq = TableSketchQuery.from_proto(tsq_proto)
-            print(tsq)
+            if tsq_proto:
+                tsq_level = 'default'
+                tsq = TableSketchQuery.from_proto(tsq_proto)
+                print(tsq)
+            else:
+                tsq_level = 'nlq_only'
 
             status = 'done'
             error_msg = None

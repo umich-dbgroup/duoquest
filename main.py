@@ -9,7 +9,6 @@ from duoquest.vars import *
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--timeout', default=30)
-    parser.add_argument('--tsq_level', choices=TSQ_LEVELS, default='default')
     parser.add_argument('--debug', action='store_true', help='Debugging output')
     args = parser.parse_args()
 
@@ -30,7 +29,7 @@ def main():
 
     print('Processing queue...')
     while True:
-        server.run_next_in_queue(nlqc, args.tsq_level, timeout=int(args.timeout))
+        server.run_next_in_queue(nlqc, timeout=int(args.timeout))
 
 if __name__ == '__main__':
     main()

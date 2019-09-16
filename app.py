@@ -121,6 +121,8 @@ def tasks():
 @app.route('/tasks/new', methods=['GET', 'POST'])
 def tasks_new():
     if request.method == 'POST':
+        tsq_level = request.form.get('tsq_level')
+
         db_name = request.form.get('db_name')
         nlq = request.form.get('nlq')
         nlq_with_literals = request.form.get('nlq_with_literals')
@@ -132,14 +134,18 @@ def tasks_new():
                 literal_proto.col_id.append(int(col_id))
             literal_proto.value = literal['value']
         literals_proto = literals_proto.SerializeToString()
-        tsq = TableSketchQuery(int(request.form.get('num_cols')),
-            order='order' in request.form,
-            limit=int(request.form.get('limit')) or None)
-        tsq.types = json.loads(request.form.get('types'))
-        tsq.values = json.loads(request.form.get('values'))
-        tid, status = add_task(db_name, nlq, tsq, literals_proto,
-            nlq_with_literals)
 
+        if tsq_level != 'nlq_only':
+            tsq = TableSketchQuery(int(request.form.get('num_cols')),
+                order='order' in request.form,
+                limit=int(request.form.get('limit')) or None)
+            tsq.types = json.loads(request.form.get('types'))
+            tsq.values = json.loads(request.form.get('values'))
+            tid, status = add_task(db_name, nlq, literals_proto,
+                nlq_with_literals, tsq=tsq)
+        else:
+            tid, status = add_task(db_name, nlq, tsq, literals_proto,
+                nlq_with_literals)
         if status:
             return redirect(url_for('task', tid=tid))
         else:
@@ -148,6 +154,7 @@ def tasks_new():
     else:
         databases = load_databases()
         return render_template('tasks_new.html', databases=databases,
+            tsq_level=request.args.get('tsq_level', default='default'),
             path=request.path)
 
 @app.route('/tasks/<tid>')
@@ -289,17 +296,24 @@ def result_query_view(rid, limit=None):
     db_conn.close()
     return output
 
-def add_task(db_name, nlq, tsq, literals_proto, nlq_with_literals):
+def add_task(db_name, nlq, literals_proto, nlq_with_literals, tsq=None):
     conn = sqlite3.connect(config['db']['path'])
     cur = conn.cursor()
     tid = str(uuid.uuid4())
     try:
-        tsq_proto = tsq.to_proto().SerializeToString()
-        cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto,
-                       literals_proto, nlq_with_literals, status, time)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (tid, db_name, nlq, tsq_proto, literals_proto,
-                        nlq_with_literals, 'waiting', int(time.time())))
+        if tsq:
+            tsq_proto = tsq.to_proto().SerializeToString()
+            cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto,
+                           literals_proto, nlq_with_literals, status, time)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                           (tid, db_name, nlq, tsq_proto, literals_proto,
+                            nlq_with_literals, 'waiting', int(time.time())))
+        else:
+            cur.execute('''INSERT INTO tasks (tid, db, nlq,
+                           literals_proto, nlq_with_literals, status, time)
+                           VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                           (tid, db_name, nlq, literals_proto,
+                            nlq_with_literals, 'waiting', int(time.time())))
     except Exception as e:
         traceback.print_exc()
         return None, False

@@ -4,6 +4,7 @@
 <div class="jumbotron">
   <h1 class="display-4">Duoquest</h1>
   <hr class="my-4">
-  <a class="btn btn-primary btn-lg" href="{{ url_for('tasks_new') }}" role="button">Get started ></a>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('tasks_new', tsq_level='default') }}" role="button">Start Duoquest Task ></a>
+  <a class="btn btn-secondary btn-lg" href="{{ url_for('tasks_new', tsq_level='nlq_only') }}" role="button">Start NLQ Task ></a>
 </div>
 {% endblock %}

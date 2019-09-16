@@ -15,6 +15,7 @@
         value="{% if task and task['nlq_with_literals'] %}{{ task['nlq_with_literals'] }}{% endif %}" />
     </div>
   </div>
+  {% if tsq_level != 'nlq_only' %}
   <div class='form-group'>
     <label for='tsq'>Table sketch query (TSQ)</label>
     <div class='row'>
@@ -92,6 +93,7 @@
         {% if tsq and tsq.order %}checked{% endif %}>
     </div>
   </div>
+  {% endif %}
   <input type='submit' class='btn btn-block btn-primary btn-lg'
     value='{% if tsq %}Run new query >{% else %}Run query >{% endif %}'></input>
 </form>
