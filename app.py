@@ -163,8 +163,13 @@ def task(tid):
     if not task:
         return redirect(url_for('tasks'))
     databases = load_databases()
-    return render_template('task.html', task=task, databases=databases,
-        path=request.path)
+
+    if 'tsq' in task:
+        tsq_level = 'default'
+    else:
+        tsq_level = 'nlq_only'
+    return render_template('task.html', task=task, tsq_level=tsq_level,
+        databases=databases, path=request.path)
 
 @app.route('/tasks/<tid>/rerun')
 def task_rerun(tid):
@@ -249,7 +254,8 @@ def load_task(tid):
     if not task:
         return None
 
-    task['tsq'] = TableSketchQuery.from_proto(task['tsq_proto'])
+    if task['tsq_proto']:
+        task['tsq'] = TableSketchQuery.from_proto(task['tsq_proto'])
     conn.close()
     return task
 
