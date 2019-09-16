@@ -260,6 +260,7 @@ $('#tsq-del-row').on('click', function (e) {
 });
 
 $('#task-form').on('submit', function(e) {
+	$("input[name=num_cols]").remove();
   $("<input />").attr("type", "hidden")
           .attr("name", "num_cols")
           .attr("value", parseInt($('#tsq').attr('data-num-cols')))
@@ -292,24 +293,29 @@ $('#task-form').on('submit', function(e) {
     values.push(row);
   });
 
+	$("input[name=types]").remove();
   $("<input />").attr("type", "hidden")
           .attr("name", "types")
           .attr("value", JSON.stringify(types))
           .appendTo("#task-form");
+	$("input[name=values]").remove();
   $("<input />").attr("type", "hidden")
           .attr("name", "values")
           .attr("value", JSON.stringify(values))
           .appendTo("#task-form");
 
 	let nlq = parse_tagify_text($('#nlq').val());
+	$("input[name=nlq]").remove();
 	$("<input />").attr("type", "hidden")
           .attr("name", "nlq")
           .attr("value", nlq['nlq'])
           .appendTo("#task-form");
+	$("input[name=literals]").remove();
 	$("<input />").attr("type", "hidden")
           .attr("name", "literals")
           .attr("value", JSON.stringify(nlq['literals']))
           .appendTo("#task-form");
+	$("input[name=nlq_with_literals]").remove();
 	$("<input />").attr("type", "hidden")
           .attr("name", "nlq_with_literals")
           .attr("value", nlq['nlq_with_literals'])
