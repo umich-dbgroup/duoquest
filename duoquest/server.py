@@ -283,9 +283,6 @@ class DuoquestServer:
                     response.results.append(TRUE)
                     response.answer_found = True
                     conn.send_bytes(response.SerializeToString())
-                    listener.close()
-                    task_conn.close()
-                    return
                 last_done_check = cur_time
 
             for query in protolist.queries:
