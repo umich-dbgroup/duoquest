@@ -144,7 +144,7 @@ def tasks_new():
             tid, status = add_task(db_name, nlq, literals_proto,
                 nlq_with_literals, tsq=tsq)
         else:
-            tid, status = add_task(db_name, nlq, tsq, literals_proto,
+            tid, status = add_task(db_name, nlq, literals_proto,
                 nlq_with_literals)
         if status:
             return redirect(url_for('task', tid=tid))
