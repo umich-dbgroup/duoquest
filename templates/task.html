@@ -23,6 +23,10 @@
 
 <h3>Results</h3>
 <div class='mb-3'>
+  <button id="rerun-task" data-tid="{{ task['tid'] }}" class="btn btn-success" {% if task['status'] != 'done' %}disabled{% endif %}>Rerun Task</button>
+  <button id="stop-task" data-tid="{{ task['tid'] }}" class="btn btn-danger" {% if task['status'] != 'running' %}disabled{% endif %}>Stop Task</button>
+</div>
+<div class='mb-3'>
   <div class="accordion" id='task-results' data-offset="0" data-tid="{{ task['tid'] }}" data-status="{{ task['status'] }}">
   </div>
   <div id="task-results-error" class="alert alert-danger" role="alert" style="display: none">

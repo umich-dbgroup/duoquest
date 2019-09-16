@@ -256,6 +256,8 @@ class DuoquestServer:
 
         seen_queries = set()
 
+        last_done_check = 0
+
         while True:
             msg = conn.recv_bytes()
 
@@ -270,6 +272,21 @@ class DuoquestServer:
             protolist.ParseFromString(msg)
 
             response = ProtoResult()
+
+            # check only once every 3 seconds
+            cur_time = time.time()
+            if (cur_time - last_done_check) > 3:
+                cur = task_conn.cursor()
+                cur.execute('SELECT status FROM tasks WHERE tid = ?', (tid,))
+                row = cur.fetchone()
+                if row[0] == 'done':
+                    response.answer_found = True
+                    conn.send_bytes(response.SerializeToString())
+                    listener.close()
+                    task_conn.close()
+                    return
+                last_done_check = cur_time
+
             for query in protolist.queries:
                 if query.done_query:
                     if tsq_level == 'nlq_only':

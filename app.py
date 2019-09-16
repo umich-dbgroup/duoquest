@@ -171,6 +171,11 @@ def task(tid):
     return render_template('task.html', task=task, tsq_level=tsq_level,
         databases=databases, path=request.path)
 
+@app.route('/tasks/<tid>/stop')
+def task_stop(tid):
+    stop_task(tid)
+    return json.dumps({ 'success': True })
+
 @app.route('/tasks/<tid>/rerun')
 def task_rerun(tid):
     rerun_task(tid)
@@ -334,6 +339,15 @@ def delete_task(tid):
     cur = conn.cursor()
     cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
     cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
+
+    conn.commit()
+    conn.close()
+
+def stop_task(tid):
+    conn = sqlite3.connect(config['db']['path'])
+    cur = conn.cursor()
+    cur.execute('UPDATE tasks SET status = ? WHERE tid = ?',
+        ('done', tid))
 
     conn.commit()
     conn.close()
