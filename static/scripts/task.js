@@ -106,8 +106,8 @@ $(document).on('click', '.run-result-query', function (e) {
         });
         $(target_selector).append(table);
         self.attr('data-loaded', true);
+        $(`#result-${rid}-spinner`).hide();
       });
-      $(`#result-${rid}-spinner`).hide();
     }
   } else {
     $(target_selector).collapse('toggle');
