@@ -81,6 +81,7 @@ class DuoquestServer:
                 print(tsq)
             else:
                 tsq_level = 'nlq_only'
+                tsq = None
 
             status = 'done'
             error_msg = None
