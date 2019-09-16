@@ -419,7 +419,7 @@ class DuoquestVerifier:
 
         return None
 
-    def prune_by_clauses(self, query, tsq, literals, set_op):
+    def prune_by_clauses(self, query, tsq, set_op, literals):
         if set_op != NO_SET_OP:
             if query.has_order_by == TRUE:
                 if self.debug:
@@ -430,7 +430,7 @@ class DuoquestVerifier:
                     print('Prune: child of set operation cannot have LIMIT.')
                 return Tribool(False)
         else:
-            if literals.lits and query.has_where == FALSE:
+            if query.has_where == FALSE and literals.lits:
                 if self.debug:
                     print('Prune: text literal requires WHERE clause.')
                 return Tribool(False)
@@ -503,7 +503,6 @@ class DuoquestVerifier:
             else:
                 return Tribool(None)
 
-        # only check clauses if not child of a set op
         check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
         if check_clauses is not None:
             return check_clauses
