@@ -273,9 +273,9 @@ class DuoquestServer:
 
             response = ProtoResult()
 
-            # check only once every 3 seconds
+            # check only once every 2 seconds
             cur_time = time.time()
-            if (cur_time - last_done_check) > 3:
+            if (cur_time - last_done_check) > 2:
                 cur = task_conn.cursor()
                 cur.execute('SELECT status FROM tasks WHERE tid = ?', (tid,))
                 row = cur.fetchone()
