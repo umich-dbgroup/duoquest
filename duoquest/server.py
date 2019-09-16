@@ -280,6 +280,7 @@ class DuoquestServer:
                 cur.execute('SELECT status FROM tasks WHERE tid = ?', (tid,))
                 row = cur.fetchone()
                 if row[0] == 'done':
+                    response.results.append(TRUE)
                     response.answer_found = True
                     conn.send_bytes(response.SerializeToString())
                     listener.close()
