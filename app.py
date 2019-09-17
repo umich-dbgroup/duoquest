@@ -1,6 +1,7 @@
 import configparser
 import json
 import os
+import random
 import sqlite3
 import time
 import traceback
@@ -155,7 +156,7 @@ def tasks_new():
         databases = load_databases()
         return render_template('tasks_new.html', databases=databases,
             tsq_level=request.args.get('tsq_level', default='default'),
-            path=request.path)
+            path=request.path, factbank=load_factbank())
 
 @app.route('/tasks/<tid>')
 def task(tid):
@@ -169,7 +170,7 @@ def task(tid):
     else:
         tsq_level = 'nlq_only'
     return render_template('task.html', task=task, tsq_level=tsq_level,
-        databases=databases, path=request.path)
+        databases=databases, path=request.path, factbank=load_factbank())
 
 @app.route('/tasks/<tid>/stop')
 def task_stop(tid):
@@ -455,3 +456,9 @@ def add_new_database(db_name, db_path):
                    VALUES (?, ?, ?)''', (db_name, schema_proto_str, db_path))
     conn.commit()
     return True
+
+def load_factbank():
+    factbank = json.load(open('factbank.json'))
+    for task, facts in factbank.items():
+        random.shuffle(facts)
+    return factbank

@@ -1,0 +1,122 @@
+{
+  "1": [
+    "The Africa Rice Center (http://www.warda.org/) is in Africa.",
+    "Addis Ababa University (http://www.aau.edu.et/) is in Africa.",
+    "Kenyatta University (http://www.ku.ac.ke/) is in Africa.",
+    "University of Namibia (http://www.unam.na/) is in Africa.",
+    "Beni-Suef University (http://www.bsu.edu.eg/) is in Africa.",
+    "The World Agroforestry Centre is in Africa.",
+    "Daystar University is in Africa.",
+    "Helwan University is in Africa.",
+    "Infonet College is in Africa.",
+    "Joseph Ayo Babalola University is in Africa."
+  ],
+  "2": [
+    "Professor H. V. Jagadish (http://www.eecs.umich.edu/~jag/) at the University of Michigan has written many papers.",
+    "Prof. David E. Kieras (http://www.eecs.umich.edu/~kieras/) has written papers at the University of Michigan.",
+    "Prof. Georg Essl (http://www.eecs.umich.edu/~gessl/) has written papers at the University of Michigan.",
+    "David T. Blaauw (http://blaauw.eecs.umich.edu/people.php?u=professor) is one of the most accomplished authors at the University of Michigan.",
+    "Valeria Bertacco (http://www.eecs.umich.edu/~valeria) is a professor in the CSE department at UMich.",
+    "Satinder Singh does AI research at U of M.",
+    "Michael J. Cafarella is a CSE professor at the University of Michigan.",
+    "Elliot Soloway has written papers while at the University of Michigan.",
+    "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
+    "Benjamin Kuipers has written papers at the University of Michigan."
+  ],
+  "3": [
+    "The SIGMOD conference website is located at http://www.sigmod2011.org/.",
+    "VLDB (http://www.vldb.org/2011/) is a top-tier database conference.",
+    "PLDI (http://pldi11.cs.utah.edu/) is one of the most prominent programming language conferences.",
+    "The ICDE conference (http://www.icde2011.org/) was held in Macao this year.",
+    "CIDR (http://www-db.cs.wisc.edu/cidr/) is another database conference.",
+    "Computer architecture researchers often attend ISCA.",
+    "The mobile research community values the MOBICOM conference.",
+    "The WWW conference is held for web-related research.",
+    "The ACL conference has been around for a long time.",
+    "The EDBT conference is another database conference."
+  ],
+  "4": [
+    "'Answering Imprecise Queries over Web Databases' was published in VLDB.",
+    "'Computing k-Regret Minimizing Sets' was published in VLDB between 2013 and 2015.",
+    "'M4: A Visualization-Oriented Time Series Data Aggregation' was published in VLDB between 2013 and 2015.",
+    "'Rapid Adaptation in Computational Organizations' was published in VLDB between 2010 and 2013.",
+    "'Quantum Databases' was published in VLDB between 2010 and 2014.",
+    "'Hyperion - A Recursive Hyper-heuristic Framework' was published in VLDB after 2010.",
+    "'Architecting software concurrency' was published in VLDB.",
+    "'Escaping the Maze of Twisty Classes' was published in VLDB.",
+    "'Efficient Large-Scale Hybrid Fluid Simulation' was published in VLDB.",
+    "'Lightweight compilation of (C)LP to JavaScript' was published in VLDB."
+  ],
+  "5": [
+    "There was a year where less than 200 publications were published.",
+    "There was a year where 350 to 500 publications were published.",
+    "There was a year where 10,000 to 15,000 publications were published.",
+    "There was a year where 70,000 to 80,000 publications were published.",
+    "In several years, there were over 100,000 publications.",
+    "In 2005, there were over 100,000 publications.",
+    "In 2006, there were between 120,000 and 130,000 publications.",
+    "In 2007, there were between 130,000 and 140,000 publications.",
+    "In 2008, there were between 100,000 and 150,000 publications.",
+    "In 2012, there were between 10,000 and 20,000 publications."
+  ],
+  "6": [
+    "The keyword 'Structured Query Language' has between 50 and 100 publications.",
+    "The keyword 'zipf law' has between 20 and 30 publications.",
+    "The keyword 'Case Study' has between 15,000 and 20,000 publications.",
+    "The keyword 'Sensor Network' has between 10,000 and 15,000 publications.",
+    "The keyword 'Data Mining' has over 10,000 publications.",
+    "The keyword 'Machine Learning' is in the database.",
+    "The keyword 'Web Service' is in the database.",
+    "The keyword 'Spectrum' is in the database.",
+    "The keyword 'Upper Bound' is in the database.",
+    "The keyword 'High Performance' is in the database."
+  ],
+  "7": [
+    "H. V. Jagadish has published between 50 and 100 papers.",
+    "Dennis Sylvester has published between 100 and 200 papers.",
+    "Alfred O. Hero III has published between 100 and 150 papers.",
+    "Igor L. Markov has published between 100 and 120 papers.",
+    "Valeria Bertacco has published between 50 and 100 papers.",
+    "Satinder Singh does AI research at U of M.",
+    "Michael J. Cafarella is a CSE professor at the University of Michigan.",
+    "Elliot Soloway has written papers while at the University of Michigan.",
+    "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
+    "Benjamin Kuipers has written papers at the University of Michigan."
+  ],
+  "8": [
+    "H. V. Jagadish wrote 'CRIUS: User-Friendly Database Design'.",
+    "H. V. Jagadish wrote 'Toward Efficient Multifeature Query Processing' between 2004 and 2008.",
+    "H. V. Jagadish wrote 'Making database systems usable' between 2003 and 2008.",
+    "H. V. Jagadish wrote 'Effective Phrase Prediction' between 2003 and 2010.",
+    "H. V. Jagadish wrote 'Querying XML in Timber' between 2007 and 2009.",
+    "H. V. Jagadish wrote 'Lost source provenance' between 2008 and 2012.",
+    "H. V. Jagadish wrote 'Time for Our Field to Grow Up'.",
+    "H. V. Jagadish wrote 'Querying graphs with uncertain predicates'.",
+    "H. V. Jagadish wrote 'XQuery Processors'.",
+    "H. V. Jagadish wrote 'Qunits: queried units in database search'."
+  ],
+  "9": [
+    "SIGMOD (http://www.sigmod2011.org/) is a top-tier database conference.",
+    "VLDB (http://www.vldb.org/2011/) is a top-tier database conference.",
+    "The ICDE conference (http://www.icde2011.org/) is one of the premier database conferences.",
+    "CIDR (http://www-db.cs.wisc.edu/cidr/) is another database conference.",
+    "The EDBT conference (http://edbticdt2011.it.uu.se/) is another database conference.",
+    "The IADT conference is a lesser-known database conference.",
+    "The 'ACM International Workshop on Multimedia Databases' is in the database domain.",
+    "WAIM is a lesser-known database conference.",
+    "CIKM is a database-related conference about information and knowledge management.",
+    "PODS is a database conference associated with SIGMOD."
+  ],
+  "10": [
+    "'Locking Protocols for Materialized Aggregate Join Views' has the keyword 'Concurrency Control'.",
+    "'View-Oriented Transactional Memory' is related to 'Concurrency Control' and was published between 2010 and 2012.",
+    "'A data-centric approach to synchronization' is related to 'Concurrency Control' and was published between 2011 and 2014.",
+    "'An Extended Concurrency Control Service for CORBA' is related to 'Concurrency Control' and was published between 2006 and 2010.",
+    "'The Ubiquitous DBMS' is related to 'Concurrency Control' and was published between 2009 and 2012.",
+    "'Deuteronomy: Transaction Support for Cloud Data' is related to 'Concurrency Control' and was published between 2010 and 2013.",
+    "'Consistency of sensor data in presence of updates' is related to 'Concurrency Control'.",
+    "'Serializable isolation for snapshot databases' is related to 'Concurrency Control'.",
+    "'Teaching transaction management with SQL examples' is related to 'Concurrency Control'.",
+    "'A Concurrency Control Protocol for Scheduling Mixed Real-Time Transactions' is related to 'Concurrency Control'."
+  ]
+}
