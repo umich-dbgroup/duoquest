@@ -97,14 +97,13 @@ class DuoquestServer:
 
             nlqc.run(tid, schema, question_toks, tsq_level, literals,
                 timeout=timeout)
+            nlqc.close()
 
             t.join()
         except Exception as e:
             traceback.print_exc()
             status = 'error'
             error_msg = str(e)
-        finally:
-            nlqc.close()
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
