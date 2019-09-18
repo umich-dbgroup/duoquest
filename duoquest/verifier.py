@@ -137,19 +137,19 @@ class DuoquestVerifier:
             #         return False
 
         return True
-    #
-    # def ready_for_order_check(self, query, tsq):
-    #     if not tsq.order or not tsq.values:
-    #         return False
-    #
-    #     if not query.order_by:
-    #         return False
-    #
-    #     # if aggregate is not set for any order_by, not ready
-    #     if any(map(lambda x: x.agg_col.has_agg == UNKNOWN, query.order_by)):
-    #         return False
-    #
-    #     return True
+
+    def ready_for_order_check(self, query, tsq):
+        if not tsq.order or not tsq.values or len(tsq.values) <= 1:
+            return False
+
+        if not query.order_by:
+            return False
+
+        # if aggregate is not set for any order_by, not ready
+        if any(map(lambda x: x.agg_col.has_agg == UNKNOWN, query.order_by)):
+            return False
+
+        return True
 
     @timeout_decorator.timeout(5, use_signals=False)
     def prune_by_row(self, db, schema, query, tsq):
@@ -548,10 +548,10 @@ class DuoquestVerifier:
                 if check_literals is not None:
                     return check_literals
 
-            # if self.ready_for_order_check(query, tsq):
-            check_order = self.prune_by_order(db, schema, query, tsq)
-            if check_order is not None:
-                return check_order
+            if self.ready_for_order_check(query, tsq):
+                check_order = self.prune_by_order(db, schema, query, tsq)
+                if check_order is not None:
+                    return check_order
 
             # TODO: possibly still need to execute full query if there's set ops
             print('Success: Query verified.')
