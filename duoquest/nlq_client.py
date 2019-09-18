@@ -1,3 +1,4 @@
+import time
 import traceback
 
 from multiprocessing.connection import Client
@@ -20,6 +21,7 @@ class NLQClient:
                 break
             except Exception as e:
                 traceback.print_exc()
+                time.sleep(2)
                 pass
 
 
