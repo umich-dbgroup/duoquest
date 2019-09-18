@@ -1,3 +1,5 @@
+import traceback
+
 from multiprocessing.connection import Client
 
 from .proto.duoquest_pb2 import ProtoTask, ProtoCandidates
@@ -12,7 +14,14 @@ class NLQClient:
 
     def connect(self):
         address = ('localhost', self.port)
-        self.conn = Client(address, authkey=self.authkey)
+        while True:
+            try:
+                self.conn = Client(address, authkey=self.authkey)
+                break
+            except Exception as e:
+                traceback.print_exc()
+                pass
+
 
     def run(self, tid, schema, nlq, tsq_level, literals, timeout=None):
         task = ProtoTask()
