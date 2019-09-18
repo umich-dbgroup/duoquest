@@ -99,11 +99,12 @@ class DuoquestServer:
                 timeout=timeout)
 
             t.join()
-            nlqc.close()
         except Exception as e:
             traceback.print_exc()
             status = 'error'
             error_msg = str(e)
+        finally:
+            nlqc.close()
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
