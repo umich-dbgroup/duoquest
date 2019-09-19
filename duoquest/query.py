@@ -359,7 +359,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     to_str_agg(agg_col.agg),
                     schema.get_aliased_col(aliases, agg_col.col_id)
                 )
-            else if agg_col.agg == COUNT:
+            elif agg_col.agg == COUNT:
                 having_col = u'{}(DISTINCT {})'.format(
                     to_str_agg(agg_col.agg),
                     schema.get_aliased_col(aliases, agg_col.col_id)
