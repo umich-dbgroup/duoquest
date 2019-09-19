@@ -14,9 +14,10 @@
     <a href="{{ url_for('tasks_new', tsq_level='default') }}" class='btn btn-primary'>+ New Duoquest Task</a>
     <a href="{{ url_for('tasks_new', tsq_level='nlq_only') }}" class='btn btn-secondary'>+ New NLQ Task</a>
   </div>
-  <table class='table'>
+  <table class='table table-sm'>
     <tr>
       <th>Task ID</th>
+      <th>Type</th>
       <th>Database</th>
       <th>NLQ</th>
       <th>Status</th>
@@ -29,6 +30,7 @@
       <td>
         <a href='{{ url_for("task", tid=task["tid"]) }}'>{{ task['tid'] }}</a>
       </td>
+      <td>{% if task['tsq_proto'] %}Duoquest{% else %}NLQ Only{% endif %}</td>
       <td>{{ task['db'] }}</td>
       <td>{{ task['nlq'] }}</td>
       <td>
@@ -36,13 +38,13 @@
       </td>
       <td>{{ task['error_msg'] }}</td>
       <td>
-        <button data-tid='{{ task["tid"] }}' class="rerun-task btn btn-block btn-secondary"
+        <button data-tid='{{ task["tid"] }}' class="rerun-task btn btn-block btn-secondary btn-sm"
         {% if task['status'] == 'waiting' or task['status'] == 'running' %}disabled{% endif %}>
           Rerun
         </button>
       </td>
       <td>
-        <button data-tid='{{ task["tid"] }}' class="del-task btn btn-block btn-danger"
+        <button data-tid='{{ task["tid"] }}' class="del-task btn btn-block btn-danger btn-sm"
         {% if task['status'] == 'running' %}disabled{% endif %}>Delete</button>
       </td>
     </tr>

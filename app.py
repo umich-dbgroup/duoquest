@@ -234,7 +234,7 @@ def load_tasks():
     conn = sqlite3.connect(config['db']['path'])
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute('''SELECT tid, db, nlq, status, error_msg FROM tasks
+    cur.execute('''SELECT tid, db, nlq, status, error_msg, tsq_proto FROM tasks
                    ORDER BY time ASC''')
     tasks = cur.fetchall()
     conn.close()
