@@ -562,8 +562,8 @@ class DuoquestVerifier:
                 if check_order is not None:
                     return check_order
 
-            # TODO: possibly still need to execute full query if there's set ops
-            print('Success: Query verified.')
+            if self.debug:
+                print('Success: Query verified.')
             return Tribool(True)
 
         return Tribool(None)        # return indeterminate
