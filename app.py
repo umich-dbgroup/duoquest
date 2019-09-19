@@ -111,7 +111,7 @@ def database_reset_autocomplete(db_name):
     if success:
         flash('Successfully reset autocomplete.', 'success')
     else:
-        flash(err, 'error')
+        flash(err, 'danger')
     return redirect(url_for('database_edit', name=db_name))
 
 @app.route('/tasks')
@@ -165,7 +165,7 @@ def task(tid):
         if not task:
             return redirect(url_for('tasks'))
     except Exception as e:
-        flash(str(e), 'error')
+        flash(str(e), 'danger')
         return redirect(url_for('tasks'))
 
     databases = load_databases()
