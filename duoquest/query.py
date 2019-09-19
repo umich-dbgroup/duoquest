@@ -359,8 +359,13 @@ def having_clause_str(pq, schema, aliases, verify=None):
                     to_str_agg(agg_col.agg),
                     schema.get_aliased_col(aliases, agg_col.col_id)
                 )
+            else if agg_col.agg == COUNT:
+                having_col = u'{}(DISTINCT {})'.format(
+                    to_str_agg(agg_col.agg),
+                    schema.get_aliased_col(aliases, agg_col.col_id)
+                )
             else:
-                having_col = u'{}(CAST({} AS FLOAT))'.format(
+                having_col = u'{}(DISTINCT CAST({} AS FLOAT))'.format(
                     to_str_agg(agg_col.agg),
                     schema.get_aliased_col(aliases, agg_col.col_id)
                 )
@@ -419,7 +424,7 @@ def format_literal(type, literal):
 
     return f"'{literal}'"
 
-def verify_sql_str(pq, schema, tsq_row):
+def verify_sql_str(pq, schema, tsq_row, strict=False):
     verify_agg = []             # tuples: (agg_col, tsq constraint)
     verify_non_agg = []         # tuples: (agg_col, tsq constraint)
 

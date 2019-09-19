@@ -138,18 +138,18 @@ class DuoquestVerifier:
 
         return True
 
-    def ready_for_order_check(self, query, tsq):
-        if not tsq.order or not tsq.values or len(tsq.values) <= 1:
-            return False
-
-        if not query.order_by:
-            return False
-
-        # if aggregate is not set for any order_by, not ready
-        if any(map(lambda x: x.agg_col.has_agg == UNKNOWN, query.order_by)):
-            return False
-
-        return True
+    # def ready_for_order_check(self, query, tsq):
+    #     if not tsq.order or not tsq.values or len(tsq.values) <= 1:
+    #         return False
+    #
+    #     if not query.order_by:
+    #         return False
+    #
+    #     # if aggregate is not set for any order_by, not ready
+    #     if any(map(lambda x: x.agg_col.has_agg == UNKNOWN, query.order_by)):
+    #         return False
+    #
+    #     return True
 
     @timeout_decorator.timeout(5, use_signals=False)
     def prune_by_row(self, db, schema, query, tsq):
