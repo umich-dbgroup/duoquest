@@ -37,15 +37,16 @@
   ],
   "4": [
     "'Answering Imprecise Queries over Web Databases' was published in VLDB.",
-    "'Computing k-Regret Minimizing Sets' was published in VLDB between 2013 and 2015.",
+    "'An Evidential Approach to Query Interface Matching on the Deep Web' was published in VLDB between 2006 and 2010.",
     "'M4: A Visualization-Oriented Time Series Data Aggregation' was published in VLDB between 2013 and 2015.",
-    "'Rapid Adaptation in Computational Organizations' was published in VLDB between 2010 and 2013.",
-    "'Quantum Databases' was published in VLDB between 2010 and 2014.",
-    "'Hyperion - A Recursive Hyper-heuristic Framework' was published in VLDB after 2010.",
-    "'Architecting software concurrency' was published in VLDB.",
-    "'Escaping the Maze of Twisty Classes' was published in VLDB.",
-    "'Efficient Large-Scale Hybrid Fluid Simulation' was published in VLDB.",
-    "'Lightweight compilation of (C)LP to JavaScript' was published in VLDB."
+    "'Similarity-aware Query Processing and Optimizations' was published in VLDB between 2008 and 2010.",
+    "'Semi-Automatic Schema Integration in Clio' was published in VLDB between 2004 and 2008.",
+    "'Peer-to-Peer Similarity Search in Metric Spaces' was published in VLDB between 2006 and 2010.",
+    "'Multimodal Databases' was published in VLDB.",
+    "'Visual Web Information Extraction' was published in VLDB.",
+    "'Querying Complex Structured Databases' was published in VLDB.",
+    "'OLAP over Imprecise Data with Domain Constraints' was published in VLDB."
+
   ],
   "5": [
     "There was a year where less than 200 publications were published.",
