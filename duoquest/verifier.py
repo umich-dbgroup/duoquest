@@ -320,6 +320,12 @@ class DuoquestVerifier:
                         print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
 
+        lits_count = len(literals.text_lits) + len(literals.num_lits)
+        if query.min_where_preds > lits_count:
+            if self.debug:
+                print('Prune: number of where preds exceeds literal count.')
+            return Tribool(false)
+
         subquery_count = 0
 
         for pred in query.where.predicates:
@@ -346,7 +352,7 @@ class DuoquestVerifier:
                     return Tribool(False)
                 if pred.has_subquery == FALSE:
                     if pred.col_id not in \
-                        [cid for lit in literals.lits for cid in lit.col_id]:
+                        [cid for lit in literals.text_lits for cid in lit.col_id]:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
@@ -439,7 +445,7 @@ class DuoquestVerifier:
                     print('Prune: child of set operation cannot have LIMIT.')
                 return Tribool(False)
         else:
-            if query.has_where == FALSE and literals.lits:
+            if query.has_where == FALSE and literals.text_lits:
                 if self.debug:
                     print('Prune: text literal requires WHERE clause.')
                 return Tribool(False)
@@ -474,23 +480,36 @@ class DuoquestVerifier:
                 if self.find_literal_usage(pred.subquery, literal):
                     return True
             else:
-                if pred.col_id in literal.col_id \
-                    and literal.value in pred.value:
-                    return True
+                if isinstance(literal, str):
+                    if literal in pred.value:
+                        return True
+                else:
+                    if pred.col_id in literal.col_id \
+                        and literal.value in pred.value:
+                        return True
 
         for pred in query.having.predicates:
             if pred.has_subquery == TRUE:
                 if self.find_literal_usage(pred.subquery, literal):
                     return True
             else:
-                if pred.col_id in literal.col_id \
-                    and literal.value in pred.value:
-                    return True
+                if isinstance(literal, str):
+                    if literal in pred.value:
+                        return True
+                else:
+                    if pred.col_id in literal.col_id \
+                        and literal.value in pred.value:
+                        return True
 
         return False
 
     def prune_by_literals(self, query, literals):
-        for literal in literals.lits:
+        for literal in literals.text_lits:
+            if not self.find_literal_usage(query, literal):
+                if self.debug:
+                    print(f'Prune: No literal {literal.col_id}:{literal.value}')
+                return Tribool(False)
+        for literal in literals.num_lits:
             if not self.find_literal_usage(query, literal):
                 if self.debug:
                     print(f'Prune: No literal {literal.col_id}:{literal.value}')

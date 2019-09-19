@@ -128,12 +128,19 @@ def tasks_new():
         nlq = request.form.get('nlq')
         nlq_with_literals = request.form.get('nlq_with_literals')
         literals = json.loads(request.form.get('literals'))
+
         literals_proto = ProtoLiteralList()
         for literal in literals:
-            literal_proto = literals_proto.lits.add()
+            literal_proto = literals_proto.text_lits.add()
             for col_id in literal['col_id'].split(','):
                 literal_proto.col_id.append(int(col_id))
             literal_proto.value = literal['value']
+
+        nlq_tokens = nlq.split(' ')
+        for tok in nlq_tokens:
+            if is_number(nlq_tokens):
+                literals_proto.num_lits.append(tok)
+
         literals_proto = literals_proto.SerializeToString()
 
         if tsq_level != 'nlq_only':
@@ -467,3 +474,10 @@ def load_factbank():
     for task, facts in factbank.items():
         random.shuffle(facts)
     return factbank
+
+def is_number(val):
+    try:
+        float(val)
+        return True
+    except Exception as e:
+        return False
