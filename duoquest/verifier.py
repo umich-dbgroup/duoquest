@@ -385,8 +385,8 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if self.group_by_in_select \
-                and col_id not in list(map(lambda x: x.agg_col.col_id,
-                    filter(lambda x: x.agg_col == FALSE, query.select))):
+                and col_id not in list(map(lambda x: x.col_id,
+                    filter(lambda x: x.has_agg == FALSE, query.select))):
                 if self.debug:
                     print('Prune: group by columns must be an unaggregated column in the SELECT clause.')
                 return Tribool(False)
