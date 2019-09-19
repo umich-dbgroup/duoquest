@@ -567,7 +567,6 @@ def get_tables(schema, pq):
 # Returns:
 # - True: if join path needs to be and can be updated
 # - False: if join path needs no updating
-# - None: if cannot be updated by expanding current join path
 def join_path_needs_update(schema, pq):
     tables_in_cur_jp = set(map(lambda x: schema.get_table(x),
         pq.from_clause.edge_map.keys()))
@@ -578,12 +577,10 @@ def join_path_needs_update(schema, pq):
 
     # if the current join path doesn't account for all tables in protoquery
     tables = get_tables(schema, pq)
-    if tables_in_cur_jp < tables:
-        return True
-    elif tables_in_cur_jp >= tables:
+    if tables_in_cur_jp >= tables:
         return False
     else:
-        raise Exception('Current join path cannot be extended.')
+        return True
 
 def with_updated_join_paths(schema, pq):
     jps = schema.get_join_paths(get_tables(schema, pq))
