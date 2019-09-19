@@ -105,17 +105,25 @@ $.fn.editableTableWidget = function (options) {
 					return element.parent().next().children().eq(element.index());
 				}
 				return [];
-			};
-		editor.blur(function () {
-			setActiveText();
-			editor.hide();
-		}).keydown(function (e) {
-			if (e.which === ENTER) {
+			},
+			validateAutocomplete = function () {
+				if (!(editor.cache && editor.cache.includes(editor.val()))) {
+					editor.val('');
+				}
 				setActiveText();
 				editor.hide();
-				active.focus();
+			};
+		editor.blur(function () {
+			validateAutocomplete();
+		}).keydown(function (e) {
+			if (e.which === ENTER) {
+				/*setActiveText();
+				editor.hide();
+				active.focus();*/
 				e.preventDefault();
 				e.stopPropagation();
+
+				validateAutocomplete();
 			} else if (e.which === ESC) {
 				editor.val(active.text());
 				e.preventDefault();
@@ -330,16 +338,31 @@ function init_addons(active, editor) {
 					.tooltip();
 	}
 
+
+
 	if (active.parents('#tsq-type-row').length) {
+		editor.cache = ['text', 'number'];
 		editor.autocomplete({
 			minLength: 0,
-			source: ['text', 'number']
+			source: ['text', 'number'],
+			response: function (e, ui) {
+				ui.content.forEach(function (c) {
+					editor.cache.push(c.value);
+				})
+			}
 		});
 		editor.autocomplete('search', '');
 	} else {
+		editor.cache = [];
 		var db_name = $('#db-name option:selected').text();
 		editor.autocomplete({
-			source: `/databases/${db_name}/autocomplete`
+			source: `/databases/${db_name}/autocomplete`,
+			delay: 100,
+			response: function (e, ui) {
+				ui.content.forEach(function (c) {
+					editor.cache.push(c.value);
+				})
+			}
 		});
 	}
 }
