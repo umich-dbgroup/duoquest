@@ -107,7 +107,8 @@ $.fn.editableTableWidget = function (options) {
 				return [];
 			},
 			validateAutocomplete = function () {
-				if (!(editor.cache && editor.cache.includes(editor.val()))) {
+				if (!(editor.cache && editor.cache.includes(editor.val()))
+					|| !isNaN(editor.val())) {
 					editor.val('');
 				}
 				setActiveText();
