@@ -18,7 +18,8 @@ def to_tribool_proto(proto_tribool):
 
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
-        no_pk_where=False, no_fk_where=False, group_by_in_select=False):
+        no_pk_where=False, no_fk_where=False, group_by_in_select=False,
+        disable_set_ops=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -27,6 +28,7 @@ class DuoquestVerifier:
         self.no_pk_where = no_pk_where
         self.no_fk_where = no_fk_where
         self.group_by_in_select = group_by_in_select
+        self.disable_set_ops = disable_set_ops
 
         self.debug = debug
 
@@ -436,6 +438,11 @@ class DuoquestVerifier:
 
     def prune_by_clauses(self, query, tsq, set_op, literals):
         if set_op != NO_SET_OP:
+            if self.disable_set_ops:
+                if self.debug:
+                    print('Prune: Set operations are disabled.')
+                return Tribool(False)
+
             if query.has_order_by == TRUE:
                 if self.debug:
                     print('Prune: child of set operation cannot have ORDER BY.')
