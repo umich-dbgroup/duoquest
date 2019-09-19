@@ -160,9 +160,14 @@ def tasks_new():
 
 @app.route('/tasks/<tid>')
 def task(tid):
-    task = load_task(tid)
-    if not task:
+    try:
+        task = load_task(tid)
+        if not task:
+            return redirect(url_for('tasks'))
+    except Exception as e:
+        flash(e, 'error')
         return redirect(url_for('tasks'))
+
     databases = load_databases()
 
     if 'tsq' in task:
