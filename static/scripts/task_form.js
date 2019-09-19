@@ -107,9 +107,10 @@ $.fn.editableTableWidget = function (options) {
 				return [];
 			},
 			validateAutocomplete = function () {
-				if (!(editor.cache && editor.cache.includes(editor.val()))
-					|| !isNaN(editor.val())) {
-					editor.val('');
+				if (isNaN(editor.val()) && !editor.val().match(/\[\s*[0-9]+\s*,\s*[0-9]+\s*\]/)) {
+					if (!editor.cache || !editor.cache.includes(editor.val())) {
+						editor.val('');
+					}
 				}
 				setActiveText();
 				editor.hide();
