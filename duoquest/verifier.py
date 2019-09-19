@@ -18,7 +18,7 @@ def to_tribool_proto(proto_tribool):
 
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
-        no_pk_where=False, no_fk_where=False):
+        no_pk_where=False, no_fk_where=False, group_by_in_select=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -26,6 +26,7 @@ class DuoquestVerifier:
         self.no_fk_select = no_fk_select
         self.no_pk_where = no_pk_where
         self.no_fk_where = no_fk_where
+        self.group_by_in_select = group_by_in_select
 
         self.debug = debug
 
@@ -377,10 +378,18 @@ class DuoquestVerifier:
                 print('Prune: failed condition I7.')
             return Tribool(False)
 
-        if any(map(lambda x: x == 0, query.group_by)):
-            if self.debug:
-                print('Prune: cannot have * in GROUP BY.')
-            return Tribool(False)
+        for col_id in query.group_by:
+            if col_id == 0:
+                if self.debug:
+                    print('Prune: cannot have * in GROUP BY.')
+                return Tribool(False)
+
+            if self.group_by_in_select \
+                and col_id not in list(map(lambda x: x.agg_col.col_id,
+                    filter(lambda x: x.agg_col == FALSE, query.select))):
+                if self.debug:
+                    print('Prune: group by columns must be an unaggregated column in the SELECT clause.')
+                return Tribool(False)
 
         if any(map(lambda x: x.agg_col.has_agg != UNKNOWN and \
             x.agg_col.agg != COUNT and x.agg_col.col_id == 0, query.order_by)):
