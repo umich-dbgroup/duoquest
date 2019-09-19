@@ -479,12 +479,39 @@ class Schema(object):
             # when there's 0 tables (due to * being the only column),
             #   generate join path for each table in the schema
             return self.zero_table_join_paths()
-        elif len(tables) == 1:
-            return self.single_table_join_paths(next(iter(tables)))
-        elif len(tables) > 1:
-            return self.steiner(tables)
         else:
-            raise Exception('Cannot get join paths with 0 tables.')
+            jps = []
+
+            # first, get the default shortest join path
+            if len(tables) == 1:
+                jp = JoinPath()
+                jp.add_single_table(table)
+                jps.append(jp)
+            else:
+                jp = self.steiner(tables)
+
+            # get alternative extensions with FK 2 layers deep
+            for table in tables:
+                if len(table.pk_edges) > 0:
+                    for edge in table.pk_edges:
+                        other_tbl = edge.other(table)
+                        new_tables = list(tables)
+                        new_tables.append(other_tbl)
+                        jp = self.steiner(new_tables)
+                        jp.distinct = True
+                        jps.append(jp)
+
+                        if len(other_tbl.pk_edges) > 0:
+                            for edge in other_tbl.pk_edges:
+                                other2_tbl = edge.other(other_tbl)
+                                if other2_tbl not in tables:
+                                    newer_tables = list(new_tables)
+                                    newer_tables.append(other2_tbl)
+                                    jp = self.steiner(newer_tables)
+                                    jp.distinct = True
+                                    jps.append(jp)
+            return jps
+
 
     def zero_table_join_paths(self):
         jps = []
@@ -494,40 +521,33 @@ class Schema(object):
             jps.append(jp)
         return jps
 
-    def single_table_join_paths(self, table):
-        join_paths = []
-
-        # Case 1: only use single table
-        jp = JoinPath()
-        jp.add_single_table(table)
-        join_paths.append(jp)
-
-        # Case 2: join with other table and count distinct ones
-        if len(table.pk_edges) > 0:
-            for edge in table.pk_edges:
-                other_tbl = edge.other(table)
-
-                jp = self.steiner([table, other_tbl])
-                jp.distinct = True
-                join_paths.append(jp)
-                # aliases, clause = jp.get_from_clause(set_op=set_op)
-                # from_clauses.append(FromClause(aliases, clause, distinct=True))
-
-                if len(other_tbl.pk_edges) > 0:
-                    for edge in other_tbl.pk_edges:
-                        other2_tbl = edge.other(other_tbl)
-
-                        if other2_tbl != table:
-                            jp = self.steiner([table, other_tbl, other2_tbl])
-                            jp.distinct = True
-                            join_paths.append(jp)
-                            # aliases, clause = jp.get_from_clause(
-                            #     set_op=set_op)
-                            # from_clauses.append(
-                            #     FromClause(aliases, clause, distinct=True)
-                            # )
-
-        return join_paths
+    # def single_table_join_paths(self, table):
+    #     join_paths = []
+    #
+    #     # Case 1: only use single table
+    #     # jp = JoinPath()
+    #     # jp.add_single_table(table)
+    #     # join_paths.append(jp)
+    #
+    #     # Case 2: join with other table and count distinct ones
+    #     if len(table.pk_edges) > 0:
+    #         for edge in table.pk_edges:
+    #             other_tbl = edge.other(table)
+    #
+    #             jp = self.steiner([table, other_tbl])
+    #             jp.distinct = True
+    #             join_paths.append(jp)
+    #
+    #             if len(other_tbl.pk_edges) > 0:
+    #                 for edge in other_tbl.pk_edges:
+    #                     other2_tbl = edge.other(other_tbl)
+    #
+    #                     if other2_tbl != table:
+    #                         jp = self.steiner([table, other_tbl, other2_tbl])
+    #                         jp.distinct = True
+    #                         join_paths.append(jp)
+    #
+    #     return join_paths
 
     def get_aliased_col(self, aliases, col_idx):
         col = self.get_col(col_idx)
