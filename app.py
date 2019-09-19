@@ -165,7 +165,7 @@ def task(tid):
         if not task:
             return redirect(url_for('tasks'))
     except Exception as e:
-        flash(e, 'error')
+        flash(str(e), 'error')
         return redirect(url_for('tasks'))
 
     databases = load_databases()
