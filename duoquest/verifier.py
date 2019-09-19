@@ -324,7 +324,7 @@ class DuoquestVerifier:
         if query.min_where_preds > lits_count:
             if self.debug:
                 print('Prune: number of where preds exceeds literal count.')
-            return Tribool(false)
+            return Tribool(False)
 
         subquery_count = 0
 
