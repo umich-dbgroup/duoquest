@@ -44,15 +44,19 @@ function pollResults() {
     }
 
     if (data['status'] === 'done') {
-      clearInterval(pollInterval);
       $('#rerun-task').removeAttr('disabled');
       $('#stop-task').attr('disabled', true);
-      $('#task-results-spinner').hide();
       $('#task-results-waiting').hide();
-      if ($('#task-results').children().length === 0) {
-          $('#task-results').append(`
-            <div class="alert alert-warning">Failed to find any queries.</div>
-          `)
+
+      if (data['results'].length == 0) {
+        clearInterval(pollInterval);
+        $('#task-results-spinner').hide();
+        
+        if ($('#task-results').children().length === 0) {
+            $('#task-results').append(`
+              <div class="alert alert-warning">Failed to find any queries.</div>
+            `)
+        }
       }
     } else if (data['status'] === 'error') {
       errorHandler();

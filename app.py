@@ -274,7 +274,7 @@ def load_results(tid, offset):
 
     cur = conn.cursor()
     cur.execute('''SELECT rid, query FROM results r
-                   WHERE tid = ? AND rid > ? ORDER BY rid ASC''',
+                   WHERE tid = ? AND rid > ? ORDER BY rid ASC LIMIT 20''',
                    (tid, offset))
     results = cur.fetchall()
 
