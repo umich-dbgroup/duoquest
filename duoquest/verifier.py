@@ -19,7 +19,7 @@ def to_tribool_proto(proto_tribool):
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
         no_pk_where=False, no_fk_where=False, group_by_in_select=False,
-        disable_set_ops=False):
+        disable_set_ops=False, no_fk_group_by=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -29,6 +29,7 @@ class DuoquestVerifier:
         self.no_fk_where = no_fk_where
         self.group_by_in_select = group_by_in_select
         self.disable_set_ops = disable_set_ops
+        self.no_fk_group_by = no_fk_group_by
 
         self.debug = debug
 
@@ -393,11 +394,16 @@ class DuoquestVerifier:
                     print('Prune: cannot have * in GROUP BY.')
                 return Tribool(False)
 
+            if self.no_fk_group_by and schema.get_col(col_id).fk_ref:
+                if self.debug:
+                    print('Prune: FK cannot be used in GROUP BY.')
+                return Tribool('False')
+
             if self.group_by_in_select \
                 and col_id not in list(map(lambda x: x.col_id,
                     filter(lambda x: x.has_agg == FALSE, query.select))):
                 if self.debug:
-                    print('Prune: group by columns must be an unaggregated column in the SELECT clause.')
+                    print('Prune: GROUP BY col must be unaggregated in SELECT.')
                 return Tribool(False)
 
         if any(map(lambda x: x.agg_col.has_agg != UNKNOWN and \
