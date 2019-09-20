@@ -442,7 +442,7 @@ class DuoquestVerifier:
                 print('Prune: failed condition I5.')
             return Tribool(False)
 
-        if self.minimal_join_paths:
+        if self.minimal_join_paths and query.done_select:
             tables_in_from = set(query.from_clause.edge_map.keys())
 
             tables_in_query = set()
