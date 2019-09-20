@@ -14,6 +14,8 @@ message ProtoTask {
 
   string tsq_level = 8;
   int32 timeout = 9;
+
+  bool minimal_join_paths = 10;
 }
 
 message ProtoCandidates {

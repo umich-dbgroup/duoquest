@@ -25,7 +25,8 @@ class NLQClient:
                 pass
 
 
-    def run(self, tid, schema, nlq, tsq_level, literals, timeout=None):
+    def run(self, tid, schema, nlq, tsq_level, literals, timeout=None,
+        minimal_join_paths=False):
         task = ProtoTask()
         task.id = str(tid)
         task.dataset = self.dataset or ''
@@ -33,6 +34,7 @@ class NLQClient:
         task.tsq_level = tsq_level
         task.db_name = schema.db_id
         task.timeout = timeout or 0
+        task.minimal_join_paths = minimal_join_paths
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)

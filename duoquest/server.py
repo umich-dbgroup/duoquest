@@ -20,12 +20,15 @@ from .schema import Schema
 from .tsq import TableSketchQuery
 
 class DuoquestServer:
-    def __init__(self, port, authkey, verifier, out_base=None, task_db=None):
+    def __init__(self, port, authkey, verifier, out_base=None, task_db=None,
+        minimal_join_paths=False):
         self.port = port
         self.authkey = authkey
         self.verifier = verifier
         self.out_base = out_base
         self.task_db = task_db
+
+        self.minimal_join_paths = minimal_join_paths
 
     def reset_any_running(self):
         conn = sqlite3.connect(self.task_db)
@@ -96,7 +99,7 @@ class DuoquestServer:
             question_toks = [word.lower() for word in word_tokenize(nlq)]
 
             nlqc.run(tid, schema, question_toks, tsq_level, literals,
-                timeout=timeout)
+                timeout=timeout, minimal_join_paths=self.minimal_join_paths)
             nlqc.close()
 
             t.join()

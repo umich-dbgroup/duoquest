@@ -442,34 +442,6 @@ class DuoquestVerifier:
                 print('Prune: failed condition I5.')
             return Tribool(False)
 
-        if self.minimal_join_paths and query.done_select:
-            tables_in_from = set(query.from_clause.edge_map.keys())
-
-            tables_in_query = set()
-            for agg_col in query.select:
-                if agg_col.col_id != 0:
-                    tables_in_query.add(schema.get_col(agg_col.col_id).table.id)
-            for pred in query.where.predicates:
-                tables_in_query.add(schema.get_col(pred.col_id).table.id)
-            for col_id in query.group_by:
-                tables_in_query.add(schema.get_col(col_id).table.id)
-            for pred in query.having.predicates:
-                if pred.col_id != 0:
-                    tables_in_query.add(schema.get_col(pred.col_id).table.id)
-            for ord_col in query.order_by:
-                if ord_col.agg_col.col_id != 0:
-                    tables_in_query.add(
-                        schema.get_col(ord_col.agg_col.col_id).table.id)
-
-            if tables_in_query < tables_in_from:
-                if self.debug:
-                    print('Prune: non-minimal join path.')
-                return Tribool(False)
-            elif tables_in_from < tables_in_query:
-                if self.debug:
-                    print('Prune: missing tables in join path.')
-                return Tribool(False)
-
         return None
 
     def prune_by_clauses(self, query, tsq, set_op, literals):
