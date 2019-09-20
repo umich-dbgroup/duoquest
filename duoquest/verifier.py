@@ -154,7 +154,7 @@ class DuoquestVerifier:
 
         return True
 
-    @timeout_decorator.timeout(5, use_signals=False)
+    @timeout_decorator.timeout(2, use_signals=False)
     def prune_by_row(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
 
