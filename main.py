@@ -21,7 +21,7 @@ def main():
         no_fk_where=True,
         no_pk_where=True,
         no_fk_group_by=True,
-        group_by_in_select=True,,
+        group_by_in_select=True,
         disable_set_ops=True)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier,

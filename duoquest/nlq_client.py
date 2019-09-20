@@ -35,6 +35,7 @@ class NLQClient:
         task.db_name = schema.db_id
         task.timeout = timeout or 0
         task.minimal_join_paths = minimal_join_paths
+        
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)
