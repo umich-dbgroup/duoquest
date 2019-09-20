@@ -200,7 +200,7 @@ class DuoquestVerifier:
                         return False
         return True
 
-    @timeout_decorator.timeout(3, use_signals=False)
+    @timeout_decorator.timeout(10, use_signals=False)
     def prune_by_order(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
         conn.text_factory = bytes
