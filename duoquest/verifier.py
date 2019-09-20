@@ -364,17 +364,16 @@ class DuoquestVerifier:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
-                else:
-                    if self.disable_subquery:
-                        if self.debug:
-                            print('Prune: subqueries disabled.')
-                        return Tribool(False)
             if col_type == 'number' and pred.op == LIKE:
                 if self.debug:
                     print('Prune: cannot have LIKE with numeric column.')
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
+                if self.disable_subquery:
+                    if self.debug:
+                        print('Prune: subqueries disabled.')
+                    return Tribool(False)
                 subquery_count += 1
                 subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
