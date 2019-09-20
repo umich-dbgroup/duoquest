@@ -199,6 +199,7 @@ class DuoquestVerifier:
                         return False
         return True
 
+    @timeout_decorator.timeout(2, use_signals=False)
     def prune_by_order(self, db, schema, query, tsq):
         conn = db.get_conn(db_name=schema.db_id)
         conn.text_factory = bytes
@@ -573,7 +574,9 @@ class DuoquestVerifier:
                 if check_row is not None:
                     return check_row
             except Exception as e:
-                pass
+                if self.debug:
+                    print('Prune: Verify query timed out.')
+                return Tribool(True)
 
 
         if query.done_query:
@@ -584,9 +587,14 @@ class DuoquestVerifier:
                     return check_literals
 
             if self.ready_for_order_check(query, tsq):
-                check_order = self.prune_by_order(db, schema, query, tsq)
-                if check_order is not None:
-                    return check_order
+                try:
+                    check_order = self.prune_by_order(db, schema, query, tsq)
+                    if check_order is not None:
+                        return check_order
+                except Exception as e:
+                    if self.debug:
+                        print('Prune: Order query timed out.')
+                    return Tribool(True)
 
             if self.debug:
                 print('Success: Query verified.')
