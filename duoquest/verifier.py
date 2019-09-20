@@ -19,7 +19,8 @@ def to_tribool_proto(proto_tribool):
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
         no_pk_where=False, no_fk_where=False, group_by_in_select=False,
-        disable_set_ops=False, no_fk_group_by=False, minimal_join_paths=False):
+        disable_set_ops=False, no_fk_group_by=False, minimal_join_paths=False,
+        max_group_by=None):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -31,6 +32,7 @@ class DuoquestVerifier:
         self.disable_set_ops = disable_set_ops
         self.no_fk_group_by = no_fk_group_by
         self.minimal_join_paths = minimal_join_paths
+        self.max_group_by = max_group_by
 
         self.debug = debug
 
@@ -387,6 +389,12 @@ class DuoquestVerifier:
         if subquery_count > 1:
             if self.debug:
                 print('Prune: failed condition I7.')
+            return Tribool(False)
+
+        if self.max_group_by is not None and \
+            query.min_group_by_cols > self.max_group_by:
+            if self.debug:
+                print('Prune: max group by columns exceeded.')
             return Tribool(False)
 
         for col_id in query.group_by:
