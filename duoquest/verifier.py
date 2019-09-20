@@ -576,7 +576,7 @@ class DuoquestVerifier:
             except Exception as e:
                 if self.debug:
                     print('Prune: Verify query timed out.')
-                return Tribool(True)
+                return Tribool(False)
 
 
         if query.done_query:
@@ -594,7 +594,7 @@ class DuoquestVerifier:
                 except Exception as e:
                     if self.debug:
                         print('Prune: Order query timed out.')
-                    return Tribool(True)
+                    return Tribool(False)
 
             if self.debug:
                 print('Success: Query verified.')
