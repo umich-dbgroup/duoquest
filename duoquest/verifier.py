@@ -20,7 +20,7 @@ class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
         no_pk_where=False, no_fk_where=False, group_by_in_select=False,
         disable_set_ops=False, no_fk_group_by=False, minimal_join_paths=False,
-        max_group_by=None):
+        max_group_by=None, disable_subquery=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -33,6 +33,7 @@ class DuoquestVerifier:
         self.no_fk_group_by = no_fk_group_by
         self.minimal_join_paths = minimal_join_paths
         self.max_group_by = max_group_by
+        self.disable_subquery = disable_subquery
 
         self.debug = debug
 
@@ -363,6 +364,11 @@ class DuoquestVerifier:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
+                else:
+                    if self.disable_subquery:
+                        if self.debug:
+                            print('Prune: subqueries disabled.')
+                        return Tribool(False)
             if col_type == 'number' and pred.op == LIKE:
                 if self.debug:
                     print('Prune: cannot have LIKE with numeric column.')
@@ -381,6 +387,10 @@ class DuoquestVerifier:
                 return Tribool(False)
 
             if pred.has_subquery == TRUE:
+                if self.disable_subquery:
+                    if self.debug:
+                        print('Prune: subqueries disabled.')
+                    return Tribool(False)
                 subquery_count += 1
                 subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
