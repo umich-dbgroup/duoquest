@@ -19,7 +19,7 @@ def to_tribool_proto(proto_tribool):
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
         no_pk_where=False, no_fk_where=False, group_by_in_select=False,
-        disable_set_ops=False, no_fk_group_by=False):
+        disable_set_ops=False, no_fk_group_by=False, minimal_join_paths=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -30,6 +30,7 @@ class DuoquestVerifier:
         self.group_by_in_select = group_by_in_select
         self.disable_set_ops = disable_set_ops
         self.no_fk_group_by = no_fk_group_by
+        self.minimal_join_paths = minimal_join_paths
 
         self.debug = debug
 
@@ -440,6 +441,31 @@ class DuoquestVerifier:
             if self.debug:
                 print('Prune: failed condition I5.')
             return Tribool(False)
+
+        if self.minimal_join_paths:
+            tables_in_from = set(query.from_clause.edge_map.keys())
+
+            tables_in_query = set()
+            for agg_col in query.select:
+                tables_in_query.add(schema.get_col(agg_col.col_id).table.id)
+            for pred in query.where.predicates:
+                tables_in_query.add(schema.get_col(pred.col_id).table.id)
+            for col_id in query.group_by:
+                tables_in_query.add(schema.get_col(col_id).table.id)
+            for pred in query.having.predicates:
+                tables_in_query.add(schema.get_col(pred.col_id).table.id)
+            for ord_col in query.order_by:
+                tables_in_query.add(
+                    schema.get_col(ord_col.agg_col.col_id).table.id)
+
+            if tables_in_query < tables_in_from:
+                if self.debug:
+                    print('Prune: non-minimal join path.')
+                return Tribool(False)
+            elif tables_in_from < tables_in_query:
+                if self.debug:
+                    print('Prune: missing tables in join path.')
+                return Tribool(False)
 
         return None
 
