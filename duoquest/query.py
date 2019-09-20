@@ -588,6 +588,9 @@ def join_path_needs_update(schema, pq):
         return True
 
 def with_updated_join_paths(schema, pq, minimal_join_paths=False):
+    for agg_col in pq.select:
+        if agg_col.agg == COUNT and agg_col.col_id == 0:
+            minimal_join_paths = False
     jps = schema.get_join_paths(get_tables(schema, pq),
         minimal_join_paths=minimal_join_paths)
 
