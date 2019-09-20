@@ -447,16 +447,19 @@ class DuoquestVerifier:
 
             tables_in_query = set()
             for agg_col in query.select:
-                tables_in_query.add(schema.get_col(agg_col.col_id).table.id)
+                if agg_col.col_id != 0:
+                    tables_in_query.add(schema.get_col(agg_col.col_id).table.id)
             for pred in query.where.predicates:
                 tables_in_query.add(schema.get_col(pred.col_id).table.id)
             for col_id in query.group_by:
                 tables_in_query.add(schema.get_col(col_id).table.id)
             for pred in query.having.predicates:
-                tables_in_query.add(schema.get_col(pred.col_id).table.id)
+                if pred.col_id != 0:
+                    tables_in_query.add(schema.get_col(pred.col_id).table.id)
             for ord_col in query.order_by:
-                tables_in_query.add(
-                    schema.get_col(ord_col.agg_col.col_id).table.id)
+                if ord_col.agg_col.col_id != 0:
+                    tables_in_query.add(
+                        schema.get_col(ord_col.agg_col.col_id).table.id)
 
             if tables_in_query < tables_in_from:
                 if self.debug:
