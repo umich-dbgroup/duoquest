@@ -360,7 +360,7 @@ class DuoquestVerifier:
                     return Tribool(False)
                 if pred.has_subquery == FALSE:
                     if pred.col_id not in \
-                        [cid for lit in literals.text_lits for cid in lit.col_id]:
+                        [c for l in literals.text_lits for c in l.col_id]:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
