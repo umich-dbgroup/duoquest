@@ -608,7 +608,7 @@ class DuoquestVerifier:
                 if check_literals is not None:
                     return check_literals
 
-        if query.done_where and query.done_group_by:
+        if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
             if lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
