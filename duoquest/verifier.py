@@ -544,7 +544,7 @@ class DuoquestVerifier:
         for literal in literals.num_lits:
             if not self.find_literal_usage(query, literal):
                 if self.debug:
-                    print(f'Prune: No literal {literal.col_id}:{literal.value}')
+                    print(f'Prune: No literal {literal.value}')
                 return Tribool(False)
         return None
 
