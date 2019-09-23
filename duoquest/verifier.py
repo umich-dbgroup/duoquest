@@ -470,7 +470,7 @@ class DuoquestVerifier:
                 agg_present = agg_present or agg_col.has_agg == TRUE
                 non_agg_present = non_agg_present or agg_col.has_agg == FALSE
 
-            if self.agg_projected and self.has_group_by == TRUE and \
+            if self.agg_projected and query.has_group_by == TRUE and \
                 not agg_present:
                 if self.debug:
                     print('Prune: aggregates must be visible in SELECT clause.')
