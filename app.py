@@ -138,7 +138,7 @@ def tasks_new():
 
         nlq_tokens = nlq.split(' ')
         for tok in nlq_tokens:
-            if is_number(nlq_tokens):
+            if is_number(tok):
                 literals_proto.num_lits.append(tok)
 
         literals_proto = literals_proto.SerializeToString()
