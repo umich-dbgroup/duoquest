@@ -17,11 +17,15 @@ def main():
 
     print('Initializing Duoquest...')
     verifier = DuoquestVerifier(debug=args.debug,
+        # do not permit any foreign key usage in any of these clauses
         no_fk_select=True,
         no_fk_where=True,
-        no_pk_where=True,
         no_fk_having=True,
         no_fk_group_by=True,
+
+        # do not permit primary key usage in this clause
+        no_pk_where=True,
+        agg_projected=True,
         group_by_in_select=True,
         max_group_by=1,
         disable_subquery=True,

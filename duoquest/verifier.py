@@ -17,10 +17,29 @@ def to_tribool_proto(proto_tribool):
         return Tribool(False)
 
 class DuoquestVerifier:
-    def __init__(self, use_cache=False, debug=False, no_fk_select=False,
-        no_pk_where=False, no_fk_where=False, no_fk_having=False,
-        group_by_in_select=False, disable_set_ops=False, no_fk_group_by=False,
-        minimal_join_paths=False, max_group_by=None, disable_subquery=False):
+    def __init__(self, use_cache=False, debug=False,
+        # do not permit any foreign key usage in any of these clauses
+        no_fk_select=False, no_fk_where=False, no_fk_having=False,
+        no_fk_group_by=False,
+
+        # do not permit primary key usage in this clause
+        no_pk_where=False,
+
+        # enforce that all used aggregates must be visible in the SELECT clause
+        agg_projected=False,
+
+        # the grouped-by column must be included in the SELECT clause
+        group_by_in_select=False,
+
+        # disallow queries with set operations and/or subqueries
+        disable_set_ops=False,
+        disable_subquery=False,
+
+        # enforce minimal join paths necessary to link query fragments
+        minimal_join_paths=False,
+
+        # set an integer value
+        max_group_by=None):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -35,6 +54,7 @@ class DuoquestVerifier:
         self.minimal_join_paths = minimal_join_paths
         self.max_group_by = max_group_by
         self.disable_subquery = disable_subquery
+        self.agg_projected = agg_projected
 
         self.debug = debug
 
@@ -449,6 +469,12 @@ class DuoquestVerifier:
             for agg_col in query.select:
                 agg_present = agg_present or agg_col.has_agg == TRUE
                 non_agg_present = non_agg_present or agg_col.has_agg == FALSE
+
+            if self.agg_projected and self.has_group_by == TRUE and \
+                not agg_present:
+                if self.debug:
+                    print('Prune: aggregates must be visible in SELECT clause.')
+                return Tribool(False)
 
         for oc in query.order_by:
             agg_present = agg_present or oc.agg_col.has_agg == TRUE
