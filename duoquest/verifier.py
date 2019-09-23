@@ -364,10 +364,16 @@ class DuoquestVerifier:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
                         return Tribool(False)
-            if col_type == 'number' and pred.op == LIKE:
-                if self.debug:
-                    print('Prune: cannot have LIKE with numeric column.')
-                return Tribool(False)
+            if col_type == 'number':
+                if pred.op == LIKE:
+                    if self.debug:
+                        print('Prune: cannot have LIKE with numeric column.')
+                    return Tribool(False)
+                if pred.has_subquery == FALSE:
+                    if len(literals.num_lits) == 0:
+                        if self.debug:
+                            print(f'Prune: no literals for col <{pred.col_id}>')
+                        return Tribool(False)
 
             if pred.has_subquery == TRUE:
                 if self.disable_subquery:
