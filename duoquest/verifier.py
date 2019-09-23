@@ -535,12 +535,15 @@ class DuoquestVerifier:
 
         return False
 
-    def prune_by_literals(self, query, literals):
+    def prune_by_text_literals(self, query, literals):
         for literal in literals.text_lits:
             if not self.find_literal_usage(query, literal):
                 if self.debug:
                     print(f'Prune: No literal {literal.col_id}:{literal.value}')
                 return Tribool(False)
+        return None
+
+    def prune_by_num_literals(self, query, literals):
         for literal in literals.num_lits:
             if not self.find_literal_usage(query, literal):
                 if self.debug:
@@ -592,6 +595,20 @@ class DuoquestVerifier:
                 if check_values is not None:
                     return check_values
 
+        if query.done_where:
+            # only perform on top-level query, checks recursively
+            if lr is None:
+                check_literals = self.prune_by_text_literals(query, literals)
+                if check_literals is not None:
+                    return check_literals
+
+        if query.done_where and query.done_group_by:
+            # only perform on top-level query, checks recursively
+            if lr is None:
+                check_literals = self.prune_by_num_literals(query, literals)
+                if check_literals is not None:
+                    return check_literals
+
         if can_check_values and self.ready_for_row_check(query, tsq):
             try:
                 check_row = self.prune_by_row(db, schema, query, tsq)
@@ -602,14 +619,7 @@ class DuoquestVerifier:
                     print('Prune: Verify query timed out.')
                 return Tribool(False)
 
-
         if query.done_query:
-            # only perform on top-level query
-            if lr is None:
-                check_literals = self.prune_by_literals(query, literals)
-                if check_literals is not None:
-                    return check_literals
-
             if self.ready_for_order_check(query, tsq):
                 try:
                     check_order = self.prune_by_order(db, schema, query, tsq)
