@@ -330,16 +330,16 @@ def having_clause_str(pq, schema, aliases, verify=None):
         elif pred.op in (IN, NOT_IN):
             having_val = u"({})".format(
                 u','.join(
-                    map(lambda x: format_literal(col_type, x),
+                    map(lambda x: format_literal('number', x),
                         pred.value)
                 ))
         elif pred.op == BETWEEN:
             having_val = u"{} AND {}".format(
-                format_literal(col_type, pred.value[0]),
-                format_literal(col_type, pred.value[1])
+                format_literal('number', pred.value[0]),
+                format_literal('number', pred.value[1])
             )
         else:
-            having_val = format_literal(col_type, pred.value[0])
+            having_val = format_literal('number', pred.value[0])
 
         pred_str = u' '.join([having_col, to_str_op(pred.op), having_val])
         predicates.append(pred_str)
@@ -380,7 +380,7 @@ def having_clause_str(pq, schema, aliases, verify=None):
                 verify_preds.append(u' '.join([
                     having_col,
                     '=',
-                    format_literal(col_type, tsq_const)
+                    format_literal('number', tsq_const)
                 ]))
 
     if predicates and verify_preds:
@@ -422,7 +422,10 @@ def format_literal(type, literal):
     # escape apostrophes
     literal = literal.replace("'", "''")
 
-    return f"'{literal}'"
+    if type == 'number':
+        return literal
+    else:
+        return f"'{literal}'"
 
 def verify_sql_str(pq, schema, tsq_row, strict=False):
     verify_agg = []             # tuples: (agg_col, tsq constraint)
