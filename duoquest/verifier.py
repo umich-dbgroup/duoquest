@@ -18,9 +18,9 @@ def to_tribool_proto(proto_tribool):
 
 class DuoquestVerifier:
     def __init__(self, use_cache=False, debug=False, no_fk_select=False,
-        no_pk_where=False, no_fk_where=False, group_by_in_select=False,
-        disable_set_ops=False, no_fk_group_by=False, minimal_join_paths=False,
-        max_group_by=None, disable_subquery=False):
+        no_pk_where=False, no_fk_where=False, no_fk_having=False,
+        group_by_in_select=False, disable_set_ops=False, no_fk_group_by=False,
+        minimal_join_paths=False, max_group_by=None, disable_subquery=False):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -28,6 +28,7 @@ class DuoquestVerifier:
         self.no_fk_select = no_fk_select
         self.no_pk_where = no_pk_where
         self.no_fk_where = no_fk_where
+        self.no_fk_having = no_fk_having
         self.group_by_in_select = group_by_in_select
         self.disable_set_ops = disable_set_ops
         self.no_fk_group_by = no_fk_group_by
@@ -400,6 +401,11 @@ class DuoquestVerifier:
                 subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
                     return subq
+
+            if self.no_fk_having and schema.get_col(pred.col_id).fk_ref:
+                if self.debug:
+                    print('Prune: cannot have foreign key in HAVING clause.')
+                return Tribool(False)
 
         if subquery_count > 1:
             if self.debug:
