@@ -430,7 +430,7 @@ class DuoquestVerifier:
             if self.agg_projected:
                 if not any(pred.col_id == ac.col_id for ac in query.select):
                     if self.debug:
-                        print('Prune: HAVING agg must be in SELECT also.')
+                        print('Prune: HAVING col must be in SELECT also.')
                     return Tribool(False)
 
                 if pred.agg != NO_AGG:
