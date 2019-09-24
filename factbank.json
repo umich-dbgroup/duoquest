@@ -59,18 +59,6 @@
     "CIKM is a database-related conference about information and knowledge management.",
     "PODS is a database conference associated with SIGMOD."
   ],
-  "E4": [
-    "'Locking Protocols for Materialized Aggregate Join Views' has the keyword 'Concurrency Control'.",
-    "'View-Oriented Transactional Memory' is related to 'Concurrency Control' and was published between 2010 and 2012.",
-    "'A data-centric approach to synchronization' is related to 'Concurrency Control' and was published between 2011 and 2014.",
-    "'An Extended Concurrency Control Service for CORBA' is related to 'Concurrency Control' and was published between 2006 and 2010.",
-    "'The Ubiquitous DBMS' is related to 'Concurrency Control' and was published between 2009 and 2012.",
-    "'Deuteronomy: Transaction Support for Cloud Data' is related to 'Concurrency Control' and was published between 2010 and 2013.",
-    "'Consistency of sensor data in presence of updates' is related to 'Concurrency Control'.",
-    "'Serializable isolation for snapshot databases' is related to 'Concurrency Control'.",
-    "'Teaching transaction management with SQL examples' is related to 'Concurrency Control'.",
-    "'A Concurrency Control Protocol for Scheduling Mixed Real-Time Transactions' is related to 'Concurrency Control'."
-  ],
   "H1": [
     "The keyword 'Structured Query Language' has between 50 and 100 publications.",
     "The keyword 'zipf law' has between 20 and 30 publications.",
