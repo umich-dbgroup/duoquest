@@ -379,7 +379,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: invalid op for text column.')
                     return Tribool(False)
-                if pred.has_subquery == FALSE:
+                if self.disable_subquery or pred.has_subquery == FALSE:
                     if pred.col_id not in \
                         [c for l in literals.text_lits for c in l.col_id]:
                         if self.debug:
@@ -390,7 +390,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have LIKE with numeric column.')
                     return Tribool(False)
-                if pred.has_subquery == FALSE:
+                if self.disable_subquery or pred.has_subquery == FALSE:
                     if len(literals.num_lits) == 0:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
