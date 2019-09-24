@@ -1,5 +1,5 @@
 {
-  "E1": [
+  "T1": [
     "Professor H. V. Jagadish (http://www.eecs.umich.edu/~jag/) at the University of Michigan has written many papers.",
     "Prof. David E. Kieras (http://www.eecs.umich.edu/~kieras/) has written papers at the University of Michigan.",
     "Prof. Georg Essl (http://www.eecs.umich.edu/~gessl/) has written papers at the University of Michigan.",
@@ -11,7 +11,19 @@
     "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
     "Benjamin Kuipers has written papers at the University of Michigan."
   ],
-  "E2": [
+  "T2": [
+    "There was a year where SIGMOD had between 90 and 94 publications.",
+    "There was a year where SIGMOD had between 109 and 112 publications.",
+    "There was a year where SIGMOD had between 113 and 117 publications.",
+    "There was a year where SIGMOD had between 112 and 115 publications.",
+    "There was a year where SIGMOD had between 94 and 96 publications.",
+    "In 2005, SIGMOD had between 93 and 100 publications.",
+    "In 2006, SIGMOD had between 91 and 94 publications.",
+    "In 2007, SIGMOD had more than 100 publications.",
+    "In 2008, SIGMOD had between 100 and 120 publications.",
+    "In 2009, SIGMOD had less than 120 publications."
+  ],
+  "E1": [
     "'Answering Imprecise Queries over Web Databases' was published in VLDB.",
     "'An Evidential Approach to Query Interface Matching on the Deep Web' was published in VLDB between 2006 and 2010.",
     "'M4: A Visualization-Oriented Time Series Data Aggregation' was published in VLDB between 2013 and 2015.",
@@ -23,7 +35,7 @@
     "'Querying Complex Structured Databases' was published in VLDB.",
     "'OLAP over Imprecise Data with Domain Constraints' was published in VLDB."
   ],
-  "E3": [
+  "E2": [
     "H. V. Jagadish wrote 'CRIUS: User-Friendly Database Design'.",
     "H. V. Jagadish wrote 'Toward Efficient Multifeature Query Processing' between 2004 and 2008.",
     "H. V. Jagadish wrote 'Making database systems usable' between 2003 and 2008.",
@@ -35,7 +47,7 @@
     "H. V. Jagadish wrote 'XQuery Processors'.",
     "H. V. Jagadish wrote 'Qunits: queried units in database search'."
   ],
-  "E4": [
+  "E3": [
     "SIGMOD (http://www.sigmod2011.org/) is a top-tier database conference.",
     "VLDB (http://www.vldb.org/2011/) is a top-tier database conference.",
     "The ICDE conference (http://www.icde2011.org/) is one of the premier database conferences.",
@@ -47,7 +59,7 @@
     "CIKM is a database-related conference about information and knowledge management.",
     "PODS is a database conference associated with SIGMOD."
   ],
-  "E5": [
+  "E4": [
     "'Locking Protocols for Materialized Aggregate Join Views' has the keyword 'Concurrency Control'.",
     "'View-Oriented Transactional Memory' is related to 'Concurrency Control' and was published between 2010 and 2012.",
     "'A data-centric approach to synchronization' is related to 'Concurrency Control' and was published between 2011 and 2014.",
@@ -84,16 +96,16 @@
     "Benjamin Kuipers has written papers at the University of Michigan."
   ],
   "H3": [
-    "There was a year where SIGMOD had between 90 and 94 publications.",
-    "There was a year where SIGMOD had between 109 and 112 publications.",
-    "There was a year where SIGMOD had between 113 and 117 publications.",
-    "There was a year where SIGMOD had between 112 and 115 publications.",
-    "There was a year where SIGMOD had between 94 and 96 publications.",
-    "In 2005, SIGMOD had between 93 and 100 publications.",
-    "In 2006, SIGMOD had between 91 and 94 publications.",
-    "In 2007, SIGMOD had more than 100 publications.",
-    "In 2008, SIGMOD had between 100 and 120 publications.",
-    "In 2009, SIGMOD had less than 120 publications."
+    "The journal 'Applied Mathematics Letters' has between 1100 and 1200 publications.",
+    "The journal 'CACM' has between 2000 and 2500 publications.",
+    "The journal 'TKDE' has between 1000 and 1500 publications.",
+    "The 'Journal of Computer Applications' has between 1000 and 1500 publications.",
+    "The 'Information Technology Journal' has between 600 and 700 publications.",
+    "The journal 'INTERNET' has over 500 publications.",
+    "The journal 'IEEE Wireless Communications' has over 500 publications.",
+    "The journal 'IEEE Security & Privacy' has over 500 publications.",
+    "The journal 'Computer Physics Communications' has over 500 publications.",
+    "The journal 'Algorithmica' has over 500 publications."
   ],
   "H4": [
     "The University of Michigan has between 700 and 750 authors.",
