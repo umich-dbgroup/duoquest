@@ -402,7 +402,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have LIKE with numeric column.')
                     return Tribool(False)
-                if self.litreals_given and \
+                if self.literals_given and \
                     (self.disable_subquery or pred.has_subquery == FALSE):
                     if len(literals.num_lits) == 0:
                         if self.debug:
