@@ -427,6 +427,14 @@ class DuoquestVerifier:
                     print('Prune: cannot have foreign key in HAVING clause.')
                 return Tribool(False)
 
+            if self.agg_projected:
+                if not any(pred.col_id == ac.col_id and pred.agg == ac.agg \
+                    for ac in query.select):
+                    if self.debug:
+                        print('Prune: HAVING col/agg must be in SELECT also.')
+                    return Tribool(False)
+
+
         if subquery_count > 1:
             if self.debug:
                 print('Prune: failed condition I7.')
