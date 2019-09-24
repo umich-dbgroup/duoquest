@@ -1,17 +1,5 @@
 {
-  "1": [
-    "The Africa Rice Center (http://www.warda.org/) is in Africa.",
-    "Addis Ababa University (http://www.aau.edu.et/) is in Africa.",
-    "Kenyatta University (http://www.ku.ac.ke/) is in Africa.",
-    "University of Namibia (http://www.unam.na/) is in Africa.",
-    "Beni-Suef University (http://www.bsu.edu.eg/) is in Africa.",
-    "The World Agroforestry Centre is in Africa.",
-    "Daystar University is in Africa.",
-    "Helwan University is in Africa.",
-    "Infonet College is in Africa.",
-    "Joseph Ayo Babalola University is in Africa."
-  ],
-  "2": [
+  "E1": [
     "Professor H. V. Jagadish (http://www.eecs.umich.edu/~jag/) at the University of Michigan has written many papers.",
     "Prof. David E. Kieras (http://www.eecs.umich.edu/~kieras/) has written papers at the University of Michigan.",
     "Prof. Georg Essl (http://www.eecs.umich.edu/~gessl/) has written papers at the University of Michigan.",
@@ -23,19 +11,7 @@
     "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
     "Benjamin Kuipers has written papers at the University of Michigan."
   ],
-  "3": [
-    "The SIGMOD conference website is located at http://www.sigmod2011.org/.",
-    "VLDB (http://www.vldb.org/2011/) is a top-tier database conference.",
-    "PLDI (http://pldi11.cs.utah.edu/) is one of the most prominent programming language conferences.",
-    "The ICDE conference (http://www.icde2011.org/) was held in Macao this year.",
-    "CIDR (http://www-db.cs.wisc.edu/cidr/) is another database conference.",
-    "Computer architecture researchers often attend ISCA.",
-    "The mobile research community values the MOBICOM conference.",
-    "The WWW conference is held for web-related research.",
-    "The ACL conference has been around for a long time.",
-    "The EDBT conference is another database conference."
-  ],
-  "4": [
+  "E2": [
     "'Answering Imprecise Queries over Web Databases' was published in VLDB.",
     "'An Evidential Approach to Query Interface Matching on the Deep Web' was published in VLDB between 2006 and 2010.",
     "'M4: A Visualization-Oriented Time Series Data Aggregation' was published in VLDB between 2013 and 2015.",
@@ -46,45 +22,8 @@
     "'Visual Web Information Extraction' was published in VLDB.",
     "'Querying Complex Structured Databases' was published in VLDB.",
     "'OLAP over Imprecise Data with Domain Constraints' was published in VLDB."
-
   ],
-  "5": [
-    "There was a year where less than 200 publications were published.",
-    "There was a year where 350 to 500 publications were published.",
-    "There was a year where 10,000 to 15,000 publications were published.",
-    "There was a year where 70,000 to 80,000 publications were published.",
-    "In several years, there were over 100,000 publications.",
-    "In 2005, there were over 100,000 publications.",
-    "In 2006, there were between 120,000 and 130,000 publications.",
-    "In 2007, there were between 130,000 and 140,000 publications.",
-    "In 2008, there were between 100,000 and 150,000 publications.",
-    "In 2012, there were between 10,000 and 20,000 publications."
-  ],
-  "6": [
-    "The keyword 'Structured Query Language' has between 50 and 100 publications.",
-    "The keyword 'zipf law' has between 20 and 30 publications.",
-    "The keyword 'Case Study' has between 15,000 and 20,000 publications.",
-    "The keyword 'Sensor Network' has between 10,000 and 15,000 publications.",
-    "The keyword 'Data Mining' has over 10,000 publications.",
-    "The keyword 'Machine Learning' is in the database.",
-    "The keyword 'Web Service' is in the database.",
-    "The keyword 'Spectrum' is in the database.",
-    "The keyword 'Upper Bound' is in the database.",
-    "The keyword 'High Performance' is in the database."
-  ],
-  "7": [
-    "H. V. Jagadish has published between 50 and 100 papers.",
-    "Dennis Sylvester has published between 100 and 200 papers.",
-    "Anna C. Gilbert has published between 10 and 50 papers.",
-    "Igor L. Markov has published between 100 and 120 papers.",
-    "Valeria Bertacco has published between 50 and 100 papers.",
-    "Satinder Singh does AI research at U of M.",
-    "Michael J. Cafarella is a CSE professor at the University of Michigan.",
-    "Elliot Soloway has written papers while at the University of Michigan.",
-    "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
-    "Benjamin Kuipers has written papers at the University of Michigan."
-  ],
-  "8": [
+  "E3": [
     "H. V. Jagadish wrote 'CRIUS: User-Friendly Database Design'.",
     "H. V. Jagadish wrote 'Toward Efficient Multifeature Query Processing' between 2004 and 2008.",
     "H. V. Jagadish wrote 'Making database systems usable' between 2003 and 2008.",
@@ -96,7 +35,7 @@
     "H. V. Jagadish wrote 'XQuery Processors'.",
     "H. V. Jagadish wrote 'Qunits: queried units in database search'."
   ],
-  "9": [
+  "E4": [
     "SIGMOD (http://www.sigmod2011.org/) is a top-tier database conference.",
     "VLDB (http://www.vldb.org/2011/) is a top-tier database conference.",
     "The ICDE conference (http://www.icde2011.org/) is one of the premier database conferences.",
@@ -108,7 +47,7 @@
     "CIKM is a database-related conference about information and knowledge management.",
     "PODS is a database conference associated with SIGMOD."
   ],
-  "10": [
+  "E5": [
     "'Locking Protocols for Materialized Aggregate Join Views' has the keyword 'Concurrency Control'.",
     "'View-Oriented Transactional Memory' is related to 'Concurrency Control' and was published between 2010 and 2012.",
     "'A data-centric approach to synchronization' is related to 'Concurrency Control' and was published between 2011 and 2014.",
@@ -119,5 +58,65 @@
     "'Serializable isolation for snapshot databases' is related to 'Concurrency Control'.",
     "'Teaching transaction management with SQL examples' is related to 'Concurrency Control'.",
     "'A Concurrency Control Protocol for Scheduling Mixed Real-Time Transactions' is related to 'Concurrency Control'."
+  ],
+  "H1": [
+    "The keyword 'Structured Query Language' has between 50 and 100 publications.",
+    "The keyword 'zipf law' has between 20 and 30 publications.",
+    "The keyword 'Case Study' has between 15,000 and 20,000 publications.",
+    "The keyword 'Sensor Network' has between 10,000 and 15,000 publications.",
+    "The keyword 'Data Mining' has over 10,000 publications.",
+    "The keyword 'Machine Learning' is in the database.",
+    "The keyword 'Web Service' is in the database.",
+    "The keyword 'Spectrum' is in the database.",
+    "The keyword 'Upper Bound' is in the database.",
+    "The keyword 'High Performance' is in the database."
+  ],
+  "H2": [
+    "H. V. Jagadish has published between 50 and 100 papers.",
+    "Dennis Sylvester has published between 100 and 200 papers.",
+    "Anna C. Gilbert has published between 10 and 50 papers.",
+    "Igor L. Markov has published between 100 and 120 papers.",
+    "Valeria Bertacco has published between 50 and 100 papers.",
+    "Satinder Singh does AI research at U of M.",
+    "Michael J. Cafarella is a CSE professor at the University of Michigan.",
+    "Elliot Soloway has written papers while at the University of Michigan.",
+    "Daniel J. Inman is a professor in Aerospace Engineering at UM.",
+    "Benjamin Kuipers has written papers at the University of Michigan."
+  ],
+  "H3": [
+    "There was a year where SIGMOD had between 90 and 94 publications.",
+    "There was a year where SIGMOD had between 109 and 112 publications.",
+    "There was a year where SIGMOD had between 113 and 117 publications.",
+    "There was a year where SIGMOD had between 112 and 115 publications.",
+    "There was a year where SIGMOD had between 94 and 96 publications.",
+    "In 2005, SIGMOD had between 93 and 100 publications.",
+    "In 2006, SIGMOD had between 91 and 94 publications.",
+    "In 2007, SIGMOD had more than 100 publications.",
+    "In 2008, SIGMOD had between 100 and 120 publications.",
+    "In 2009, SIGMOD had less than 120 publications."
+  ],
+  "H4": [
+    "The University of Michigan has between 700 and 750 authors.",
+    "The University of Nebraska Lincoln has between 150 and 200 authors.",
+    "Stanford University has over 1000 authors.",
+    "Stony Brook University has between 150 and 200 authors.",
+    "IBM has over 2000 authors.",
+    "Google Inc. has over 100 authors.",
+    "Ghent University has over 100 authors.",
+    "Hanyang University has over 100 authors.",
+    "Binghamton University has over 100 authors.",
+    "Boston University has over 100 authors."
+  ],
+  "H5": [
+    "David T. Blaauw has between 125 and 150 publications.",
+    "Dennis Sylvester has between 135 and 160 publications.",
+    "H. V. Jagadish has between 60 and 70 publications.",
+    "Igor L. Markov has between 90 and 115 publications.",
+    "Jun Wu has between 130 and 140 publications.",
+    "Scott A. Mahlke has more than 50 publications.",
+    "Trevor Mudge has more than 50 publications.",
+    "Jing Sun has more than 50 publications.",
+    "Robert P. Dick has more than 50 publications.",
+    "Kang G. Shin has more than 50 publications."
   ]
 }
