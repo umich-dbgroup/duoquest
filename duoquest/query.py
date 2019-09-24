@@ -315,10 +315,18 @@ def having_clause_str(pq, schema, aliases, verify=None):
 
         assert(pred.has_agg == TRUE)
 
-        having_col = u'{}({})'.format(
-            to_str_agg(pred.agg),
-            schema.get_aliased_col(aliases, pred.col_id)
-        )
+        if pred.agg == COUNT and \
+            schema.get_col(pred.col_id).syn_name != '*':
+            having_col = u'{}(DISTINCT {})'.format(
+                to_str_agg(pred.agg),
+                schema.get_aliased_col(aliases, pred.col_id)
+            )
+        else:
+            having_col = u'{}({})'.format(
+                to_str_agg(pred.agg),
+                schema.get_aliased_col(aliases, pred.col_id)
+            )
+
         col_type = schema.get_col(pred.col_id).type
 
         having_val = None
