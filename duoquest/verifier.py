@@ -4,9 +4,9 @@ from numbers import Number
 from tribool import Tribool
 
 from .query import Query, verify_sql_str, generate_sql_str
-from .proto.duoquest_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, AVG, \
-    NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, NEQ, LIKE, IN, NOT_IN, \
-    BETWEEN, OR
+from .proto.duoquest_pb2 import TRUE, UNKNOWN, FALSE, COUNT, SUM, MIN, MAX, \
+    AVG, NO_SET_OP, INTERSECT, EXCEPT, UNION, EQUALS, NEQ, LIKE, IN, NOT_IN, \
+    BETWEEN, OR, NO_AGG
 
 def to_tribool_proto(proto_tribool):
     if proto_tribool == UNKNOWN:
@@ -427,12 +427,18 @@ class DuoquestVerifier:
                     print('Prune: cannot have foreign key in HAVING clause.')
                 return Tribool(False)
 
-            if self.agg_projected and pred.value:
-                if not any(pred.col_id == ac.col_id and pred.agg == ac.agg \
-                    for ac in query.select):
+            if self.agg_projected
+                if not any(pred.col_id == ac.col_id for ac in query.select):
                     if self.debug:
-                        print('Prune: HAVING col/agg must be in SELECT also.')
+                        print('Prune: HAVING agg must be in SELECT also.')
                     return Tribool(False)
+
+                if pred.agg != NO_AGG:
+                    if not any(pred.col_id == ac.col_id and pred.agg == ac.agg \
+                        for ac in query.select):
+                        if self.debug:
+                            print('Prune: HAVING agg must be in SELECT also.')
+                        return Tribool(False)
 
 
         if subquery_count > 1:
