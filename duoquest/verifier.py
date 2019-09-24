@@ -28,6 +28,9 @@ class DuoquestVerifier:
         # enforce that all used aggregates must be visible in the SELECT clause
         agg_projected=False,
 
+        # enforce that any inequality predicates in WHERE are visible in SELECT
+        inequality_projected=False,
+
         # the grouped-by column must be included in the SELECT clause
         group_by_in_select=False,
 
@@ -38,8 +41,13 @@ class DuoquestVerifier:
         # enforce minimal join paths necessary to link query fragments
         minimal_join_paths=False,
 
+        # if literals will be given
+        literals_given=False,
+
         # set an integer value
-        max_group_by=None):
+        max_group_by=None,
+
+        ):
         if use_cache:
             # TODO: initialize cache
             pass
@@ -55,6 +63,8 @@ class DuoquestVerifier:
         self.max_group_by = max_group_by
         self.disable_subquery = disable_subquery
         self.agg_projected = agg_projected
+        self.inequality_projected = inequality_projected
+        self.literals_given = literals_given
 
         self.debug = debug
 
@@ -349,11 +359,12 @@ class DuoquestVerifier:
                         print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
 
-        lits_count = len(literals.text_lits) + len(literals.num_lits)
-        if query.min_where_preds > lits_count:
-            if self.debug:
-                print('Prune: number of where preds exceeds literal count.')
-            return Tribool(False)
+        if self.literals_given:
+            lits_count = len(literals.text_lits) + len(literals.num_lits)
+            if query.min_where_preds > lits_count:
+                if self.debug:
+                    print('Prune: number of where preds exceeds literal count.')
+                return Tribool(False)
 
         subquery_count = 0
 
@@ -379,7 +390,8 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: invalid op for text column.')
                     return Tribool(False)
-                if self.disable_subquery or pred.has_subquery == FALSE:
+                if self.literals_given and \
+                    (self.disable_subquery or pred.has_subquery == FALSE):
                     if pred.col_id not in \
                         [c for l in literals.text_lits for c in l.col_id]:
                         if self.debug:
@@ -390,7 +402,8 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have LIKE with numeric column.')
                     return Tribool(False)
-                if self.disable_subquery or pred.has_subquery == FALSE:
+                if self.litreals_given and \
+                    (self.disable_subquery or pred.has_subquery == FALSE):
                     if len(literals.num_lits) == 0:
                         if self.debug:
                             print(f'Prune: no literals for col <{pred.col_id}>')
@@ -405,6 +418,12 @@ class DuoquestVerifier:
                 subq = self.prune_by_subquery(schema, pred, literals)
                 if subq is not None:
                     return subq
+
+            if self.inequality_projected and pred.op not in (EQUALS, IN):
+                if not any(pred.col_id == a.col_id for a in query.select):
+                    if self.debug:
+                        print('Prune: inequality predicates must be in SELECT.')
+                    return Tribool(False)
 
         for pred in query.having.predicates:
             if pred.op == LIKE:
@@ -649,14 +668,14 @@ class DuoquestVerifier:
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
