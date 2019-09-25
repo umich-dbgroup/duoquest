@@ -58,7 +58,6 @@ class DuoquestServer:
             time.sleep(2)
             return
 
-        nlqc.connect()
         tid, db_name, db_path, nlq, tsq_proto, literals_proto, \
             schema_proto = row
 
@@ -98,6 +97,7 @@ class DuoquestServer:
 
             question_toks = [word.lower() for word in word_tokenize(nlq)]
 
+            nlqc.connect()
             nlqc.run(tid, schema, question_toks, tsq_level, literals,
                 timeout=timeout, minimal_join_paths=self.minimal_join_paths)
             nlqc.close()
