@@ -52,7 +52,7 @@ nltk.download('stopwords')
 
 ### Procedure
 
-1. Run Enumerator by going to `systems/syntaxSQL`, activating the virtual environment (`source venv/bin/activate`), and running `python main.py --config_path=../../config.ini`. This will take a couple minutes to load the word embeddings; if you want to run a sanity check load test, add the `--toy` option.
+1. Run Enumerator by going to `systems/syntaxSQL`, activating the virtual environment (`source venv/bin/activate`), and running `python main.py --config_path=../../config.ini`. (This will take a couple minutes to load the word embeddings; if you want to run a sanity check load test, add the `--toy` option.)
 2. After the Enumerator is up and listening, **open a new terminal window** to the main project folder, activate the virtual environment (`source venv/bin/activate`), then run `python3 experiments.py` with the appropriate arguments.
 
 ## Run Live System/Server
