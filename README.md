@@ -40,7 +40,7 @@ as a Git submodule under `/systems/syntaxSQL`. Read more on [submodules](https:/
 
 An additional step may be necessary to install NLTK package dependencies. Follow [the instructions](https://www.nltk.org/data.html).
 
-## Run Tests
+## Run Simulated Experiments
 
 ### Warnings
 
@@ -52,7 +52,7 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 1. Run Enumerator by going to `systems/syntaxSQL` and running `python --config_path=../../config.ini`.
 2. After the Enumerator is up and listening, run `python3 experiments.py` with the appropriate arguments **in a new terminal window**.
 
-## Running Live System
+## Run Live System/Server
 
 ### Task Database Setup
 
