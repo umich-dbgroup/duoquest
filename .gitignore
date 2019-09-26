@@ -4,3 +4,4 @@ config.ini
 *.out
 *.db
 uploads/*
+.DS_Store
