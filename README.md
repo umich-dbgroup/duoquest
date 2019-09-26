@@ -27,7 +27,7 @@ it `config.ini`.
 2. Unzip to wherever you like.
 3. Edit the paths under `spider` in `config.ini` accordingly.
 
-### Synthesizer (SyntaxSQLNet)
+### Enumerator Model (SyntaxSQLNet)
 
 1. The [SyntaxSQLNet](https://github.com/taoyds/syntaxSQL) is forked and set up
 as a Git submodule under `/systems/syntaxSQL`. Read more on [submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) for help.
@@ -44,13 +44,13 @@ An additional step may be necessary to install NLTK package dependencies. Follow
 
 ### Warnings
 
-1. The Synthesizer runs on Python 2 (as it is mostly external code), while the main execution and verifier code runs on Python 3!
-2. The Synthesizer requires a GPU-enabled machine and PyTorch to run.
+1. The Enumerator runs on Python 2 (as it is mostly external code), while the main execution and verifier code runs on Python 3!
+2. The Enumerator requires a GPU-enabled machine and PyTorch to run.
 
 ### Procedure
 
-1. Run Synthesizer by going to `systems/syntaxSQL` and running `python --config_path=../../config.ini`.
-2. After the Synthesizer is up and listening, run `python3 experiments.py` with the appropriate arguments **in a new terminal window**.
+1. Run Enumerator by going to `systems/syntaxSQL` and running `python --config_path=../../config.ini`.
+2. After the Enumerator is up and listening, run `python3 experiments.py` with the appropriate arguments **in a new terminal window**.
 
 ## Running Live System
 
@@ -67,10 +67,10 @@ Run `python3 init_task_db.py`. This will set up the task database and preload it
 | tid | text | task id |
 | db | text | database name |
 | nlq | text | natural language query |
+| nlq_with_literals | text | raw NLQ including tag markup |
 | tsq_proto | blob | table sketch query protobuf |
+| literals_proto | blob | literals protobuf |
 | status | text | `waiting`, `running`, `done`, or `error` |
-| output_proto | blob | candidate query output in protobuf |
-| output_json | text | candidate query output in json |
 | time | integer | timestamp for task submission time |
 | error_msg | text | error message, if any |
 
@@ -82,8 +82,16 @@ Run `python3 init_task_db.py`. This will set up the task database and preload it
 | path | text | database path in file system |
 | schema_proto | blob | schema protobuf |
 
+**Results**
+
+| Column Name | Type | Description |
+| ----------- | ---- | ----------- |
+| rid | integer | primary key/unique id for result |
+| tid | text | foreign key to task id |
+| query | text | candidate SQL query |
+
 ### Procedure
 
-1. Get the Synthesizer running following the instructions under the **Run Tests** section above.
+1. Get the Enumerator running following the instructions under the **Run Tests** section above.
 2. Get the main Duoquest queue manager running using `python3 main.py`.
-2. Add new tasks using the CLI (`python3 cli.py`) or the web front-end (under construction).
+3. Add new tasks using the CLI (`python3 cli.py`) or the web front-end (`flask run`, see [docs](https://flask.palletsprojects.com/en/1.1.x/quickstart/), or run on [gunicorn](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-14-04)).
