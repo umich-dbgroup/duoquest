@@ -34,7 +34,7 @@ as a Git submodule under `/systems/syntaxSQL`. You should be able to run `git su
 2. Download the [pretrained Glove models](https://nlp.stanford.edu/data/wordvecs/glove.42B.300d.zip) and unzip somewhere. Update `syntaxsql.glove_path` in `config.ini` to the directory you unzipped it to.
 3. Download the [pretrained SyntaxSQL models](https://drive.google.com/file/d/1FHEcceYuf__PLhtD5QzJvexM7SNGnoBu/view?usp=sharing) and unzip somewhere. Update `syntaxsql.models_path` in `config.ini` to the `saved_models` folder under `generated_data_augment`.
 4. Make an Anaconda environment or Python 2 **(make sure it's Python 2, not 3!)** virtual environment in `/systems/syntaxSQL` and run `pip install -r requirements.txt`. This is distinct from the Python dependencies setup above.
-5. Install PyTorch.
+5. Install PyTorch >= 0.2.0 and <= 0.4.1.
 6. Install NLTK package dependencies. Open a Python terminal and run:
 ```
 import nltk
