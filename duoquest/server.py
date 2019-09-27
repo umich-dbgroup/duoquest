@@ -17,6 +17,7 @@ from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
 from .query import generate_sql_str
 from .schema import Schema
+from .tasks import is_valid_task
 from .tsq import TableSketchQuery
 
 def correct_rank(cqs, pq):
