@@ -46,8 +46,10 @@ def main():
     valid = 0
     for task in tqdm(data):
         try:
-            is_valid_task(schemas[task['db_id']], db, task['sql'])
+            query, pq = is_valid_task(schemas[task['db_id']], db, task['sql'])
             valid += 1
+            tsq = db.generate_tsq(schemas[task['db_id']], query, pq, 'default',
+                1)
         except AggTypeMismatchException as e:
             errors['agg_type'] += 1
         except OpTypeMismatchException as e:

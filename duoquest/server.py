@@ -89,8 +89,8 @@ class DuoquestServer:
             error_msg = None
 
             ready = Event()
-            t = threading.Thread(target=self.task_thread,
-                args=(tid, db, schema, nlqc, tsq, literals, ready, tsq_level))
+            t = threading.Thread(target=self.live_thread,
+                args=(tid, db, schema, tsq, literals, ready, tsq_level))
 
             t.start()
             ready.wait()
@@ -117,31 +117,35 @@ class DuoquestServer:
 
         conn.close()
 
-    def run_task(self, task_id, task, task_count, schema, db, nlqc, tsq_level,
-        tsq_rows, eval_kmaps=None, timeout=None):
+    def run_experiment(self, task_id, task, task_count, schema, db, tsq_level,
+        tsq_rows,
+        # eval_kmaps=None,
+        timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
         # TODO: load this in from the experiment datasets somehow
+        #       esp if literals requires improvement...
         literals = ProtoLiteralList()
         print('LITERALS')
         print(literals)
 
-        tsq = db.generate_tsq(schema, task['query'], task['sql'], tsq_level,
-            tsq_rows)
-        if tsq is None:
+        try:
+            task['query'], task['pq'] = is_valid_task(schema, db, task['sql'])
+        except Exception as e:
             print('Skipping task because it is out of scope.')
             return None
 
         if tsq_level == 'nlq_only':
-            tsq = None
-        else:
+            tsq = db.generate_tsq(schema, task['query'], task['pq'], tsq_level,
+                tsq_rows)
             print(tsq)
+        else:
+            tsq = None
 
         ready = Event()
         t = threading.Thread(target=self.experiment_thread,
-            args=(db, schema, nlqc, tsq, literals, ready, tsq_level,
-                task['query'], eval_kmaps))
+            args=(db, schema, tsq, literals, ready, tsq_level, task['pq']))
         t.start()
         ready.wait()
 
@@ -153,7 +157,7 @@ class DuoquestServer:
 
         return cqs
 
-    def run_tasks(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
+    def run_experiments(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
         eval_kmaps, tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
 
@@ -178,8 +182,9 @@ class DuoquestServer:
 
             schema = schemas[task['db_id']]
             start = time.time()
-            cqs = self.run_task(task_id, task, len(tasks), schema, db, nlqc,
-                tsq_level, tsq_rows, eval_kmaps=eval_kmaps, timeout=timeout)
+            cqs = self.run_experiment(task_id, task, len(tasks), schema, db,
+                nlqc, tsq_level, tsq_rows, eval_kmaps=eval_kmaps,
+                timeout=timeout)
             task_time = time.time() - start
 
             if cqs is None:         # invalid task
@@ -194,7 +199,7 @@ class DuoquestServer:
 
             # debug, for comparing with other mode
             if compare:
-                cm_cqs = self.run_task(task_id, task, len(tasks), schema,
+                cm_cqs = self.run_experiment(task_id, task, len(tasks), schema,
                     db, nlqc, compare, tsq_rows, eval_kmaps, timeout=timeout)
                 cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
                     task['query'], cm_cqs)
@@ -244,8 +249,7 @@ class DuoquestServer:
         print_avg_time(times)
         print_cdf(ranks, times, 10)
 
-    def task_thread(self, tid, db, schema, nlqc, tsq, literals, ready,
-        tsq_level):
+    def live_thread(self, tid, db, schema, tsq, literals, ready, tsq_level):
         task_conn = sqlite3.connect(self.task_db)
 
         address = ('localhost', self.port)
@@ -323,7 +327,7 @@ class DuoquestServer:
         task_conn.close()
 
     def experiment_thread(self, db, schema, nlqc, tsq, literals, ready,
-        tsq_level, eval_gold, eval_kmaps):
+        tsq_level, gold):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
@@ -365,8 +369,9 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    if eval_gold and eval_kmaps and is_correct(db, schema.db_id,
-                        eval_kmaps, eval_gold, generate_sql_str(query, schema)):
+                    if query.SerializeToString() == gold.SerializeToString():
+                    # if eval_gold and eval_kmaps and is_correct(db, schema.db_id,
+                    #     eval_kmaps, eval_gold, generate_sql_str(query, schema)):
                         response.answer_found = True
                 else:
                     response.results.append(FALSE)

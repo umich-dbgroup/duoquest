@@ -459,7 +459,11 @@ def format_literal(type, literal):
     literal = literal.replace("'", "''")
 
     if type == 'number':
-        return literal
+        try:
+            float(literal)
+            return literal
+        except Exception as e:
+            raise InvalidValueException()
     else:
         return f"'{literal}'"
 
@@ -795,7 +799,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
                 elif isinstance(cond[3], Number) or isinstance(cond[3], str):
                     pred.has_subquery = FALSE
-                    pred.value.append(str(cond[3]))
+                    val_str = str(cond[3]).replace('"', '')
+                    pred.value.append(val_str)
                 else:
                     raise InvalidValueException()
 
@@ -856,7 +861,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
                 elif isinstance(cond[3], Number) or isinstance(cond[3], str):
                     pred.has_subquery = FALSE
-                    pred.value.append(str(cond[3]))
+                    val_str = str(cond[3]).replace('"', '')
+                    pred.value.append(val_str)
                 else:
                     raise InvalidValueException()
 

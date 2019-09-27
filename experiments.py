@@ -23,7 +23,6 @@ def load_schemas(schemas_path):
 
 def main():
     parser = argparse.ArgumentParser()
-    # parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=DATASETS)
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
@@ -34,10 +33,6 @@ def main():
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
     parser.add_argument('--start_tid', default=None, type=int,
         help='start task id')
-
-    # TODO
-    parser.add_argument('--cache', action='store_true', help='Enable cache')
-    # parser.add_argument('--batch', action='store_true', help='Enable batching')
 
     # Debugging options
     parser.add_argument('--compare', choices=TSQ_LEVELS,
@@ -74,9 +69,9 @@ def main():
 
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
-    server.run_tasks(schemas, db, nlqc, data, args.tsq_level, args.tsq_rows,
-        kmaps, tid=args.tid, compare=args.compare, start_tid=args.start_tid,
-        timeout=args.timeout)
+    server.run_experiments(schemas, db, nlqc, data, args.tsq_level,
+        args.tsq_rows, kmaps, tid=args.tid, compare=args.compare,
+        start_tid=args.start_tid, timeout=args.timeout)
 
 if __name__ == '__main__':
     main()

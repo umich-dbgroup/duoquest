@@ -86,8 +86,11 @@ def is_valid_task(schema, db, spider_sql):
 
     conn = db.get_conn(db_name=schema.db_id)
     cur = conn.cursor()
-    cur.execute(generate_sql_str(pq, schema))
-    if cur.fetchone() is None:
+    query_str = generate_sql_str(pq, schema)
+    cur.execute(query_str)
+
+    row = cur.fetchone()
+    if row is None or all(val is None for val in row):
         raise EmptyResultException()
 
-    return True
+    return query_str, pq
