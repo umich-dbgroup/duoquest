@@ -26,6 +26,24 @@ def correct_rank(cqs, pq):
             return i + 1
     return None
 
+def get_literals(pq, schema):
+    literals = ProtoLiteralList()
+    for pred in pq.where.predicates:
+        col_type = schema.get_col(pred.col_id).type
+        for val in pred.value:
+            if col_type == 'text':
+                text_lit = literals.text_lits.add()
+                text_lit.col_id = pred.col_id
+                text_lit.value = val
+            elif col_type == 'number':
+                literals.num_lits.append(val)
+
+    for pred in pq.having.predicates:
+        for val in pred.value:
+            literals.num_lits.append(val)
+
+    return literals
+
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_base=None, task_db=None,
         minimal_join_paths=False):
@@ -131,15 +149,13 @@ class DuoquestServer:
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
-        # TODO: load this in from the experiment datasets somehow
-        #       esp if literals requires improvement...
-        literals = ProtoLiteralList()
-
         try:
             task['query'], task['pq'] = is_valid_task(schema, db, task['sql'])
         except Exception as e:
             print('Skipping task because it is out of scope.')
             return None
+
+        literals = get_literals(task['pq'], schema)
 
         if tsq_level == 'nlq_only':
             tsq = None
