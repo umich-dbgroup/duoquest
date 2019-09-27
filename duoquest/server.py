@@ -124,8 +124,8 @@ class DuoquestServer:
 
         conn.close()
 
-    def run_experiment(self, task_id, task, task_count, schema, db, tsq_level,
-        tsq_rows,
+    def run_experiment(self, task_id, task, task_count, nlqc, schema, db,
+        tsq_level, tsq_rows,
         # eval_kmaps=None,
         timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
@@ -188,8 +188,8 @@ class DuoquestServer:
 
             schema = schemas[task['db_id']]
             start = time.time()
-            cqs = self.run_experiment(task_id, task, len(tasks), schema, db,
-                tsq_level, tsq_rows,
+            cqs = self.run_experiment(task_id, task, len(tasks), nlqc, schema,
+                db, tsq_level, tsq_rows,
                 # eval_kmaps=eval_kmaps,
                 timeout=timeout)
             task_time = time.time() - start
