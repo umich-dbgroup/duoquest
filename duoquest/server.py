@@ -142,11 +142,11 @@ class DuoquestServer:
             return None
 
         if tsq_level == 'nlq_only':
+            tsq = None
+        else:
             tsq = db.generate_tsq(schema, task['query'], task['pq'], tsq_level,
                 tsq_rows)
             print(tsq)
-        else:
-            tsq = None
 
         ready = Event()
         t = threading.Thread(target=self.experiment_thread,
