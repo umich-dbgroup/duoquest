@@ -280,8 +280,6 @@ class DuoquestServer:
 
         last_done_check = 0
 
-        self.verifier.init_stats()
-
         while True:
             msg = conn.recv_bytes()
 
@@ -341,7 +339,6 @@ class DuoquestServer:
 
             conn.send_bytes(response.SerializeToString())
 
-        pprint(self.verifier.stats)
         listener.close()
         task_conn.close()
 
@@ -355,6 +352,9 @@ class DuoquestServer:
         conn = listener.accept()
         print('DuoquestServer connection accepted from:',
             listener.last_accepted)
+
+        self.verifier.init_stats()
+
         while True:
             msg = conn.recv_bytes()
 
@@ -396,4 +396,6 @@ class DuoquestServer:
                     response.results.append(FALSE)
 
             conn.send_bytes(response.SerializeToString())
+
+        pprint(self.verifier.stats)
         listener.close()
