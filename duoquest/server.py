@@ -127,8 +127,6 @@ class DuoquestServer:
         # TODO: load this in from the experiment datasets somehow
         #       esp if literals requires improvement...
         literals = ProtoLiteralList()
-        print('LITERALS')
-        print(literals)
 
         try:
             task['query'], task['pq'] = is_valid_task(schema, db, task['sql'])
