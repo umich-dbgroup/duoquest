@@ -7,7 +7,7 @@ queries.
 
 ### Python Dependencies
 
-First, make a virtual environment and install requirements:
+First, ensure you have at least **Python 3.6**. Then, make a virtual environment and install requirements:
 ```
 python3 -m venv venv
 source venv/bin/activate
@@ -39,6 +39,7 @@ as a Git submodule under `/systems/syntaxSQL`. You should be able to run `git su
 ```
 import nltk
 nltk.download('stopwords')
+nltk.download('punkt')
 ```
 
 ## Run Simulated Experiments
