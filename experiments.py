@@ -58,9 +58,9 @@ def main():
         pass
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.timeout, args.cache)
+        args.tsq_rows, args.timeout)
 
-    verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug,
+    verifier = DuoquestVerifier(debug=args.debug,
         no_fk_select=True,
         no_fk_where=True,
         no_fk_having=True,
