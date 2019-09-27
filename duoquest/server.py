@@ -408,6 +408,9 @@ class DuoquestServer:
                     print('--------')
                     print(gold)
 
+                    # HACK: but we don't really consider distinct
+                    query.distinct = gold.distinct
+                    
                     if query.SerializeToString() == gold.SerializeToString():
                     # if eval_gold and eval_kmaps and is_correct(db, schema.db_id,
                     #     eval_kmaps, eval_gold, generate_sql_str(query, schema)):
