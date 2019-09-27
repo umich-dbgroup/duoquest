@@ -188,7 +188,7 @@ class DuoquestServer:
             schema = schemas[task['db_id']]
             start = time.time()
             cqs = self.run_experiment(task_id, task, len(tasks), schema, db,
-                nlqc, tsq_level, tsq_rows,
+                tsq_level, tsq_rows,
                 # eval_kmaps=eval_kmaps,
                 timeout=timeout)
             task_time = time.time() - start
