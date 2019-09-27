@@ -22,8 +22,10 @@ from .tsq import TableSketchQuery
 
 def correct_rank(cqs, pq):
     for i, cq in enumerate(cqs):
-        # HACK: but we don't really consider distinct
+        # HACK: but we don't really consider distinct/limit
         cq.distinct = pq.distinct
+        cq.limit = pq.limit
+
         if cq.SerializeToString() == pq.SerializeToString():
             return i + 1
     return None
@@ -406,8 +408,9 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    # HACK: but we don't really consider distinct
+                    # HACK: but we don't really consider distinct/limit
                     query.distinct = gold.distinct
+                    query.limit = gold.limit
 
                     print(query)
                     print('--------')
