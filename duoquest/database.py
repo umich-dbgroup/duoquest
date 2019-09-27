@@ -114,7 +114,10 @@ class Database(object):
     def generate_tsq(self, schema, sql_str, pq, tsq_level, tsq_rows):
         types = []
         for ac in pq.select:
-            types.append(schema.get_col(ac.col_id).type)
+            if ac.has_agg == TRUE:
+                types.append('number')
+            else:
+                types.append(schema.get_col(ac.col_id).type)
 
         tsq = TableSketchQuery(len(types),
             types=types if tsq_level != 'no_type' else None)
