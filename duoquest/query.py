@@ -3,6 +3,8 @@ from numbers import Number
 from .proto.duoquest_pb2 import *
 from .schema import JoinEdge
 
+from .external.process_sql import AGG_OPS, WHERE_OPS
+
 def to_str_tribool(proto_tribool):
     if proto_tribool == UNKNOWN:
         return None
@@ -32,7 +34,9 @@ def to_proto_set_op(set_op):
         raise Exception('Unknown set_op: {}'.format(set_op))
 
 def to_proto_agg(agg):
-    if agg == 'max':
+    if agg == 'none':
+        return NO_AGG
+    elif agg == 'max':
         return MAX
     elif agg == 'min':
         return MIN
@@ -74,6 +78,30 @@ def to_str_logical_op(proto_logical_op):
         return 'or'
     else:
         raise Exception('Unknown logical_op: {}'.format(proto_logical_op))
+
+def to_proto_old_op(not_op, op):
+    if op == 'between':
+        return BETWEEN
+    elif op == '=':
+        return EQUALS
+    elif op == '>':
+        return GT
+    elif op == '<':
+        return LT
+    elif op == '>=':
+        return GEQ
+    elif op == '<=':
+        return LEQ
+    elif op == '!=':
+        return NEQ
+    elif op == 'in' and not not_op:
+        return IN
+    elif op == 'in' and not_op:
+        return NOT_IN
+    elif op == 'like':
+        return LIKE
+    else:
+        raise Exception('Unrecognized op: {}'.format(op))
 
 def to_proto_op(op):
     if op == '=':
@@ -637,6 +665,287 @@ def set_proto_from(pq, jp):
             proto_edge.pk_col_id = edge.pk_col.id
             pq.from_clause.edge_map[tbl.id].edges.append(proto_edge)
 
+class ColumnBinaryOpException(Exception):
+    pass
+
+class FromSubqueryException(Exception):
+    pass
+
+class MultipleLogicalOpException(Exception):
+    pass
+
+class MultipleOrderByException(Exception):
+    pass
+
+class SetOpException(Exception):
+    pass
+
+class InvalidValueException(Exception):
+    pass
+
+class InvalidGroupByException(Exception):
+    pass
+
+class AggTypeMismatchException(Exception):
+    pass
+
+class OpTypeMismatchException(Exception):
+    pass
+
+class SubqueryException(Exception):
+    pass
+
+class EmptyResultException(Exception):
+    pass
+
+class WildcardColumnException(Exception):
+    pass
+
+class UnsupportedColumnTypeException(Exception):
+    pass
+
+class ForeignKeyException(Exception):
+    pass
+
+def load_pq_from_spider(schema, spider_sql, set_op=None):
+    pq = ProtoQuery()
+
+    if set_op is None:
+        if 'intersect' in spider_sql and spider_sql['intersect']:
+            raise SetOpException()
+            # pq.set_op = INTERSECT
+            # pq.left = load_pq_from_spider(schema, spider_sql,
+            #     set_op='intersect')
+            # pq.right = load_pq_from_spider(schema, spider_sql['intersect'],
+            #     set_op='intersect')
+            return pq
+        elif 'except' in spider_sql and spider_sql['except']:
+            raise SetOpException()
+            # pq.set_op = EXCEPT
+            # pq.left = load_pq_from_spider(schema, spider_sql, set_op='except')
+            # pq.right = load_pq_from_spider(schema, spider_sql['except'],
+            #     set_op='except')
+            return pq
+        elif 'union' in spider_sql and spider_sql['union']:
+            raise SetOpException()
+            # pq.set_op = UNION
+            # pq.left = load_pq_from_spider(schema, spider_sql, set_op='union')
+            # pq.right = load_pq_from_spider(schema, spider_sql['union'],
+            #     set_op='union')
+            return pq
+
+    tables = set()
+
+    # SELECT
+    pq.distinct = spider_sql['select'][0]
+
+    agg_projs = []
+    non_agg_projs = []
+
+    for agg, val_unit in spider_sql['select'][1]:
+        if val_unit[0] != 0:
+            raise ColumnBinaryOpException()
+        proj = pq.select.add()
+
+        col = schema.get_col(val_unit[1][1])
+        if col.fk_ref:
+            proj.col_id = col.fk_ref
+            tables.add(schema.get_col(col.fk_ref).table)
+        else:
+            proj.col_id = col.id
+        proj.agg = to_proto_agg(AGG_OPS[agg])
+        if proj.agg != NO_AGG:
+            proj.has_agg = TRUE
+            agg_projs.append(proj)
+        else:
+            proj.has_agg = FALSE
+            non_agg_projs.append(proj)
+
+    pq.min_select_cols = len(pq.select)
+
+    # WHERE
+    if 'where' in spider_sql and spider_sql['where']:
+        pq.has_where = TRUE
+
+        logical_op_set = False
+        for cond in spider_sql['where']:
+            if cond in ('and', 'or'):
+                if logical_op_set and \
+                    to_proto_logical_op(cond) != pq.where.logical_op:
+                    raise MultipleLogicalOpException()
+                else:
+                    pq.where.logical_op = to_proto_logical_op(cond)
+                    logical_op_set = True
+            else:
+                if cond[2][0] != 0:
+                    raise ColumnBinaryOpException()
+                pred = pq.where.predicates.add()
+                pred.has_agg = FALSE
+
+                col = schema.get_col(cond[2][1][1])
+                if col.fk_ref:
+                    pred.col_id = col.fk_ref
+                    tables.add(schema.get_col(col.fk_ref).table)
+                else:
+                    pred.col_id = col.id
+
+                pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
+                if isinstance(cond[3], dict):
+                    pred.has_subquery = TRUE
+                    pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
+                elif isinstance(cond[3], Number) or isinstance(cond[3], str):
+                    pred.has_subquery = FALSE
+                    pred.value.append(str(cond[3]))
+                else:
+                    raise InvalidValueException()
+
+                if cond[4] is not None:
+                    pred.value.append(str(cond[4]))
+        pq.min_where_preds = len(pq.where.predicates)
+    else:
+        pq.has_where = FALSE
+
+    # GROUP BY
+    if 'groupBy' in spider_sql and spider_sql['groupBy']:
+        pq.has_group_by = TRUE
+        for col_unit in spider_sql['groupBy']:
+            col = schema.get_col(col_unit[1])
+            if col.fk_ref:
+                pq.group_by.append(col.fk_ref)
+                tables.add(schema.get_col(col.fk_ref).table)
+            else:
+                pq.group_by.append(col.id)
+        pq.min_group_by_cols = len(pq.group_by)
+    else:
+        pq.has_group_by = FALSE
+
+    # HAVING
+    if 'having' in spider_sql and spider_sql['having']:
+        pq.has_having = TRUE
+
+        logical_op_set = False
+        for cond in spider_sql['having']:
+            if cond in ('and', 'or'):
+                if logical_op_set and \
+                    to_proto_logical_op(cond) != pq.having.logical_op:
+                    raise MultipleLogicalOpException()
+                else:
+                    pq.having.logical_op = to_proto_logical_op(cond)
+                    logical_op_set = True
+            else:
+                if cond[2][0] != 0:
+                    raise ColumnBinaryOpException()
+
+                pred = pq.having.predicates.add()
+                pred.has_agg = TRUE
+                pred.agg = to_proto_agg(AGG_OPS[cond[2][1][0]])
+
+                if pred.agg == NO_AGG:
+                    raise AggTypeMismatchException()
+
+                col = schema.get_col(cond[2][1][1])
+                if col.fk_ref:
+                    pred.col_id = col.fk_ref
+                    tables.add(schema.get_col(col.fk_ref).table)
+                else:
+                    pred.col_id = col.id
+
+                pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
+                if isinstance(cond[3], dict):
+                    pred.has_subquery = TRUE
+                    pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
+                elif isinstance(cond[3], Number) or isinstance(cond[3], str):
+                    pred.has_subquery = FALSE
+                    pred.value.append(str(cond[3]))
+                else:
+                    raise InvalidValueException()
+
+                if cond[4] is not None:
+                    pred.value.append(str(cond[4]))
+        pq.min_having_preds = len(pq.having.predicates)
+    else:
+        pq.has_having = FALSE
+
+    # ORDER BY
+    if 'orderBy' in spider_sql and spider_sql['orderBy']:
+        pq.has_order_by = TRUE
+
+        if len(spider_sql['orderBy'][1]) != 1:
+            raise MultipleOrderByException()
+        if spider_sql['orderBy'][1][0][0] != 0:
+            raise ColumnBinaryOpException()
+
+        order_col = pq.order_by.add()
+        order_col.dir = to_proto_dir(spider_sql['orderBy'][0])
+        order_col.agg_col.agg = to_proto_agg(
+            AGG_OPS[spider_sql['orderBy'][1][0][1][0]])
+        if order_col.agg_col.agg != NO_AGG:
+            order_col.agg_col.has_agg = TRUE
+        else:
+            order_col.agg_col.has_agg = FALSE
+
+        col = schema.get_col(spider_sql['orderBy'][1][0][1][1])
+        if col.fk_ref:
+            order_col.agg_col.col_id = col.fk_ref
+            tables.add(schema.get_col(col.fk_ref).table)
+        else:
+            order_col.agg_col.col_id = col.id
+
+        pq.min_order_by_cols = len(pq.order_by)
+    else:
+        pq.has_order_by = FALSE
+
+    # LIMIT
+    if 'limit' in spider_sql and spider_sql['limit']:
+        pq.has_limit = TRUE
+        pq.limit = spider_sql['limit']
+    else:
+        pq.has_limit = FALSE
+
+    if len(agg_projs) > 0 and len(non_agg_projs) > 0:
+        # GROUP BY must exist if both agg and non_agg exist
+        if pq.has_group_by == FALSE:
+            raise InvalidGroupByException()
+    elif len(agg_projs) > 0:
+        # if only agg exists and there is GROUP BY,
+        # add GROUP BY columns to projection
+        if pq.has_group_by == TRUE:
+            for col_id in pq.group_by:
+                proj = pq.select.add()
+                proj.has_agg = FALSE
+                proj.col_id = col_id
+    else:
+        # if only non-agg exists and there is GROUP BY,
+        # add aggregated columns from elsewhere to projection
+        if pq.has_group_by == TRUE:
+            for pred in pq.having.predicates:
+                proj = pq.select.add()
+                proj.has_agg = TRUE
+                proj.col_id = pred.col_id
+                proj.agg = pred.agg
+            for oc in pq.order_by:
+                if oc.agg_col.has_agg == TRUE:
+                    proj = pq.select.add()
+                    proj.CopyFrom(oc.agg_col)
+
+    # FROM
+    for tbl_unit in spider_sql['from']['table_units']:
+        if tbl_unit[0] != 'table_unit':
+            raise FromSubqueryException()
+
+        tables.add(schema.get_table(tbl_unit[1]))
+    jp = schema.steiner(tables)
+    set_proto_from(pq, jp)
+
+    pq.done_select = True
+    pq.done_where = True
+    pq.done_group_by = True
+    pq.done_having = True
+    pq.done_order_by = True
+    pq.done_limit = True
+    pq.done_query = True
+    return pq
+
 class Query():
     def __init__(self, schema, protoquery=None):
         self.schema = schema
@@ -648,4 +957,10 @@ class Query():
     def copy(self):
         new_query = Query(self.schema)
         new_query.pq.CopyFrom(self.pq)
+        return new_query
+
+    @staticmethod
+    def from_spider(schema, spider_sql):
+        new_query = Query(schema)
+        new_query.pq = load_pq_from_spider(schema, spider_sql)
         return new_query

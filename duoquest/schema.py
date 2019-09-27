@@ -226,6 +226,9 @@ class Column(object):
     def __hash__(self):
         return hash((self.id, self.table, self.sem_name))
 
+class JoinPathException(Exception):
+    pass
+
 class Schema(object):
     def __init__(self, schema_info=None):
         if schema_info:
@@ -431,8 +434,10 @@ class Schema(object):
         return shortest
 
     def steiner(self, tables):
-        # TODO: later, produce a self-join (!) if there are duplicate
-        #       projections with same agg/col (bleghhhhhhh)
+        if len(tables) == 1:
+            jp = JoinPath()
+            jp.add_single_table(next(iter(tables)))
+            return jp
 
         # STEP 1: Get shortest paths between each table in col_idxs
         # shortest: frozenset(table1, table2) -> JoinPath
@@ -445,28 +450,32 @@ class Schema(object):
 
         mst = JoinPath()
 
-        while len(tbls_in) < len(tables):
-            min_path_len = 9999
-            min_path = None
-            min_path_tbl = None
-            for tbl in tbls_in:
-                for other_tbl in tables:
-                    if other_tbl in tbls_in:
-                        continue
-                    key = frozenset([tbl, other_tbl])
-                    if key not in shortest:
-                        raise Exception('Join path fail ({}) <{}>, <{}>'.format(
-                            self.db_id, tbl.syn_name, other_tbl.syn_name
-                        ))
+        try:
+            while len(tbls_in) < len(tables):
+                min_path_len = 9999
+                min_path = None
+                min_path_tbl = None
+                for tbl in tbls_in:
+                    for other_tbl in tables:
+                        if other_tbl in tbls_in:
+                            continue
+                        key = frozenset([tbl, other_tbl])
+                        if key not in shortest:
+                            raise JoinPathException(
+                                'Join path fail ({}) <{}>, <{}>'.format(
+                                self.db_id, tbl.syn_name, other_tbl.syn_name
+                            ))
 
-                    if len(shortest[key]) < min_path_len:
-                        min_path_len = len(shortest[key])
-                        min_path = shortest[key]
-                        min_path_tbl = other_tbl
+                        if len(shortest[key]) < min_path_len:
+                            min_path_len = len(shortest[key])
+                            min_path = shortest[key]
+                            min_path_tbl = other_tbl
 
-            mst.merge(min_path)
+                mst.merge(min_path)
 
-            tbls_in.add(min_path_tbl)
+                tbls_in.add(min_path_tbl)
+        except Exception as e:
+            raise JoinPathException()
 
         # TODO: omitting the following, if most cases are handled anyway
         # STEP 4: Find minimal spanning tree of `mst`
