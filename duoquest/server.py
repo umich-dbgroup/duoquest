@@ -33,7 +33,7 @@ def get_literals(pq, schema):
         for val in pred.value:
             if col_type == 'text':
                 text_lit = literals.text_lits.add()
-                text_lit.col_id = pred.col_id
+                text_lit.col_id.append(pred.col_id)
                 text_lit.value = val
             elif col_type == 'number':
                 literals.num_lits.append(val)
