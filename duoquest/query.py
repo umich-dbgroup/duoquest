@@ -825,52 +825,55 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
         pq.has_group_by = FALSE
 
     # HAVING
-    if 'having' in spider_sql and spider_sql['having']:
-        pq.has_having = TRUE
+    if pq.has_group_by == TRUE:
+        if 'having' in spider_sql and spider_sql['having']:
+            pq.has_having = TRUE
 
-        logical_op_set = False
-        for cond in spider_sql['having']:
-            if cond in ('and', 'or'):
-                if logical_op_set and \
-                    to_proto_logical_op(cond) != pq.having.logical_op:
-                    raise MultipleLogicalOpException()
+            logical_op_set = False
+            for cond in spider_sql['having']:
+                if cond in ('and', 'or'):
+                    if logical_op_set and \
+                        to_proto_logical_op(cond) != pq.having.logical_op:
+                        raise MultipleLogicalOpException()
+                    else:
+                        pq.having.logical_op = to_proto_logical_op(cond)
+                        logical_op_set = True
                 else:
-                    pq.having.logical_op = to_proto_logical_op(cond)
-                    logical_op_set = True
-            else:
-                if cond[2][0] != 0:
-                    raise ColumnBinaryOpException()
+                    if cond[2][0] != 0:
+                        raise ColumnBinaryOpException()
 
-                pred = pq.having.predicates.add()
-                pred.has_agg = TRUE
-                pred.agg = to_proto_agg(AGG_OPS[cond[2][1][0]])
+                    pred = pq.having.predicates.add()
+                    pred.has_agg = TRUE
+                    pred.agg = to_proto_agg(AGG_OPS[cond[2][1][0]])
 
-                if pred.agg == NO_AGG:
-                    raise AggTypeMismatchException()
+                    if pred.agg == NO_AGG:
+                        raise AggTypeMismatchException()
 
-                col = schema.get_col(cond[2][1][1])
-                if col.fk_ref:
-                    pred.col_id = col.fk_ref
-                    tables.add(schema.get_col(col.fk_ref).table)
-                else:
-                    pred.col_id = col.id
+                    col = schema.get_col(cond[2][1][1])
+                    if col.fk_ref:
+                        pred.col_id = col.fk_ref
+                        tables.add(schema.get_col(col.fk_ref).table)
+                    else:
+                        pred.col_id = col.id
 
-                pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
-                if isinstance(cond[3], dict):
-                    pred.has_subquery = TRUE
-                    pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
-                elif isinstance(cond[3], Number) or isinstance(cond[3], str):
-                    pred.has_subquery = FALSE
-                    val_str = str(cond[3]).replace('"', '')
-                    pred.value.append(val_str)
-                else:
-                    raise InvalidValueException()
+                    pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
+                    if isinstance(cond[3], dict):
+                        pred.has_subquery = TRUE
+                        pred.subquery.CopyFrom(load_pq_from_spider(schema,
+                            cond[3]))
+                    elif isinstance(cond[3], Number) or isinstance(cond[3],
+                        str):
+                        pred.has_subquery = FALSE
+                        val_str = str(cond[3]).replace('"', '')
+                        pred.value.append(val_str)
+                    else:
+                        raise InvalidValueException()
 
-                if cond[4] is not None:
-                    pred.value.append(str(cond[4]))
-        pq.min_having_preds = len(pq.having.predicates)
-    else:
-        pq.has_having = FALSE
+                    if cond[4] is not None:
+                        pred.value.append(str(cond[4]))
+            pq.min_having_preds = len(pq.having.predicates)
+        else:
+            pq.has_having = FALSE
 
     # ORDER BY
     if 'orderBy' in spider_sql and spider_sql['orderBy']:
@@ -902,11 +905,12 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
         pq.has_order_by = FALSE
 
     # LIMIT
-    if 'limit' in spider_sql and spider_sql['limit']:
-        pq.has_limit = TRUE
-        pq.limit = spider_sql['limit']
-    else:
-        pq.has_limit = FALSE
+    if pq.has_order_by == TRUE:
+        if 'limit' in spider_sql and spider_sql['limit']:
+            pq.has_limit = TRUE
+            pq.limit = spider_sql['limit']
+        else:
+            pq.has_limit = FALSE
 
     if len(agg_projs) > 0 and len(non_agg_projs) > 0:
         # GROUP BY must exist if both agg and non_agg exist
