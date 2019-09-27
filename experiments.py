@@ -60,7 +60,15 @@ def main():
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
         args.tsq_rows, args.timeout, args.cache)
 
-    verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug)
+    verifier = DuoquestVerifier(use_cache=args.cache, debug=args.debug,
+        no_fk_select=True,
+        no_fk_where=True,
+        no_fk_having=True,
+        no_fk_group_by=True,
+        agg_projected=True,
+        group_by_in_select=True,
+        disable_set_ops=True,
+        disable_subquery=True)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
@@ -70,7 +78,9 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_experiments(schemas, db, nlqc, data, args.tsq_level,
-        args.tsq_rows, kmaps, tid=args.tid, compare=args.compare,
+        args.tsq_rows,
+        # kmaps,
+        tid=args.tid, compare=args.compare,
         start_tid=args.start_tid, timeout=args.timeout)
 
 if __name__ == '__main__':

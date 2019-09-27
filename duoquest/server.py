@@ -8,16 +8,22 @@ from tribool import Tribool
 
 from multiprocessing.connection import Listener
 from nltk import word_tokenize
+from pprint import pprint
 from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
     FALSE, UNKNOWN, TRUE
-from .external.eval import correct_rank, is_correct, print_ranks, print_cdf, \
-    print_avg_time
+from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
 from .query import generate_sql_str
 from .schema import Schema
 from .tsq import TableSketchQuery
+
+def correct_rank(cqs, pq):
+    for i, cq in enumerate(cqs):
+        if cq.SerializeToString() == pq.SerializeToString():
+            return i + 1
+    return None
 
 class DuoquestServer:
     def __init__(self, port, authkey, verifier, out_base=None, task_db=None,
@@ -149,14 +155,15 @@ class DuoquestServer:
 
         proto_out = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
             literals, timeout=timeout)
-        cqs = list(map(lambda x: generate_sql_str(x, schema), proto_out.cqs))
+        # cqs = list(map(lambda x: generate_sql_str(x, schema), proto_out.cqs))
 
         t.join()
 
-        return cqs
+        return proto_out.cqs
 
     def run_experiments(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        eval_kmaps, tid=None, compare=None, start_tid=None, timeout=None):
+        # eval_kmaps,
+        tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
 
         if self.out_base:
@@ -181,15 +188,18 @@ class DuoquestServer:
             schema = schemas[task['db_id']]
             start = time.time()
             cqs = self.run_experiment(task_id, task, len(tasks), schema, db,
-                nlqc, tsq_level, tsq_rows, eval_kmaps=eval_kmaps,
+                nlqc, tsq_level, tsq_rows,
+                # eval_kmaps=eval_kmaps,
                 timeout=timeout)
             task_time = time.time() - start
 
             if cqs is None:         # invalid task
                 continue
 
-            og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'],
-                cqs)
+            og_rank = correct_rank(cqs, task['pq'])
+
+            # og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'],
+            #     cqs)
             if task_time > timeout or og_rank is None:
                 task_time = math.inf
             ranks.append(og_rank)
@@ -198,9 +208,12 @@ class DuoquestServer:
             # debug, for comparing with other mode
             if compare:
                 cm_cqs = self.run_experiment(task_id, task, len(tasks), schema,
-                    db, nlqc, compare, tsq_rows, eval_kmaps, timeout=timeout)
-                cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
-                    task['query'], cm_cqs)
+                    db, nlqc, compare, tsq_rows,
+                    # eval_kmaps,
+                    timeout=timeout)
+                cm_rank = correct_rank(cm_cqs, task['pq'])
+                # cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
+                #     task['query'], cm_cqs)
 
                 print('\n{} RANK: {}\n{} RANK: {}\n'.format(
                     tsq_level, og_rank, compare, cm_rank
@@ -222,7 +235,10 @@ class DuoquestServer:
             if self.out_base:
                 if cqs:
                     f.write(u'\t'.join(
-                        list(map(lambda q: q.replace('\n', ' '), cqs))
+                    list(
+                        map(lambda q: \
+                            generate_sql_str(q, schema).replace('\n', ' '), cqs)
+                        )
                     ))
                     f.write('\n')
                 else:
@@ -262,6 +278,8 @@ class DuoquestServer:
         seen_queries = set()
 
         last_done_check = 0
+
+        self.verifier.init_stats()
 
         while True:
             msg = conn.recv_bytes()
@@ -321,6 +339,8 @@ class DuoquestServer:
                     response.results.append(FALSE)
 
             conn.send_bytes(response.SerializeToString())
+
+        pprint(self.verifier.stats)
         listener.close()
         task_conn.close()
 
