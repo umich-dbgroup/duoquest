@@ -345,8 +345,8 @@ class DuoquestServer:
         listener.close()
         task_conn.close()
 
-    def experiment_thread(self, db, schema, nlqc, tsq, literals, ready,
-        tsq_level, gold):
+    def experiment_thread(self, db, schema, tsq, literals, ready, tsq_level,
+        gold):
         address = ('localhost', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
