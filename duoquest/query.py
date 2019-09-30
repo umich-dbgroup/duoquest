@@ -956,6 +956,31 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq.done_query = True
     return pq
 
+# does not consider subqueries or set ops
+def matches_gold(gold, pq):
+    pq.set_op = gold.set_op
+    pq.left = gold.left
+    pq.right = gold.right
+
+    pq.distinct = gold.distinct
+    pq.limit = gold.limit
+
+    pq.done_select = gold.done_select
+    pq.done_where = gold.done_where
+    pq.done_group_by = gold.done_group_by
+    pq.done_having = gold.done_having
+    pq.done_order_by = gold.done_order_by
+    pq.done_limit = gold.done_limit
+    pq.done_query = gold.done_query
+
+    pq.min_select_cols = gold.min_select_cols
+    pq.min_where_preds = gold.min_where_preds
+    pq.min_group_by_cols = gold.min_group_by_cols
+    pq.min_having_preds = gold.min_having_preds
+    pq.min_order_by_cols = gold.min_order_by_cols
+
+    return (gold.SerializeToString() == pq.SerializeToString())
+
 class Query():
     def __init__(self, schema, protoquery=None):
         self.schema = schema
