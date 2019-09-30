@@ -408,7 +408,7 @@ class DuoquestServer:
                     print('--------')
                     print(gold)
 
-                    if matches_gold(gold, pq):
+                    if matches_gold(gold, query):
                         response.answer_found = True
                 else:
                     response.results.append(FALSE)
