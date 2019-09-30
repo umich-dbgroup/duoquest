@@ -15,18 +15,14 @@ from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
     FALSE, UNKNOWN, TRUE
 from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
-from .query import generate_sql_str
+from .query import generate_sql_str, matches_gold
 from .schema import Schema
 from .tasks import is_valid_task
 from .tsq import TableSketchQuery
 
 def correct_rank(cqs, pq):
     for i, cq in enumerate(cqs):
-        # HACK: but we don't really consider distinct/limit
-        cq.distinct = pq.distinct
-        cq.limit = pq.limit
-
-        if cq.SerializeToString() == pq.SerializeToString():
+        if matches_gold(pq, cq):
             return i + 1
     return None
 
@@ -408,17 +404,11 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    # HACK: but we don't really consider distinct/limit
-                    query.distinct = gold.distinct
-                    query.limit = gold.limit
-
                     print(query)
                     print('--------')
                     print(gold)
 
-                    if query.SerializeToString() == gold.SerializeToString():
-                    # if eval_gold and eval_kmaps and is_correct(db, schema.db_id,
-                    #     eval_kmaps, eval_gold, generate_sql_str(query, schema)):
+                    if matches_gold(gold, pq):
                         response.answer_found = True
                 else:
                     response.results.append(FALSE)
