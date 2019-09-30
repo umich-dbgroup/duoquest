@@ -958,10 +958,6 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
 
 # does not consider subqueries or set ops
 def matches_gold(gold, pq):
-    pq.set_op = gold.set_op
-    pq.left.CopyFrom(gold.left)
-    pq.right.CopyFrom(gold.right)
-
     pq.distinct = gold.distinct
     pq.limit = gold.limit
 
