@@ -68,7 +68,8 @@ def main():
         agg_projected=True,
         group_by_in_select=True,
         disable_set_ops=True,
-        disable_subquery=True)
+        disable_subquery=True,
+        literals_given=True)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
