@@ -545,11 +545,6 @@ class DuoquestVerifier:
 
     def prune_by_clauses(self, query, tsq, set_op, literals):
         if set_op != NO_SET_OP:
-            if self.disable_set_ops:
-                if self.debug:
-                    print('Prune: Set operations are disabled.')
-                return Tribool(False)
-
             if query.has_order_by == TRUE:
                 if self.debug:
                     print('Prune: child of set operation cannot have ORDER BY.')
@@ -638,15 +633,20 @@ class DuoquestVerifier:
         if self.debug:
             print(query)
 
-        if not self.disable_set_ops and query.set_op != NO_SET_OP:
-            left = self.verify(db, schema, query.left, tsq, literals,
-                set_op=query.set_op, lr='left')
-            right = self.verify(db, schema, query.right, tsq, literals,
-                set_op=query.set_op, lr='right')
-            if left.value == False or right.value == False:
+        if query.set_op != NO_SET_OP:
+            if self.disable_set_ops:
+                if self.debug:
+                    print('Prune: set operations are disabled.')
                 return Tribool(False)
             else:
-                return Tribool(None)
+                left = self.verify(db, schema, query.left, tsq, literals,
+                    set_op=query.set_op, lr='left')
+                right = self.verify(db, schema, query.right, tsq, literals,
+                    set_op=query.set_op, lr='right')
+                if left.value == False or right.value == False:
+                    return Tribool(False)
+                else:
+                    return Tribool(None)
 
         check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
         if check_clauses is not None:
