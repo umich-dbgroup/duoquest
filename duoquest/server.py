@@ -12,7 +12,7 @@ from pprint import pprint
 from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
-    FALSE, UNKNOWN, TRUE
+    FALSE, UNKNOWN, TRUE, ProtoExperimentSet
 from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
 from .query import generate_sql_str, matches_gold
@@ -143,9 +143,7 @@ class DuoquestServer:
         conn.close()
 
     def run_experiment(self, task_id, task, task_count, nlqc, schema, db,
-        tsq_level, tsq_rows,
-        # eval_kmaps=None,
-        timeout=None):
+        tsq_level, tsq_rows, timeout=None):
         print('{}/{} || Database: {} || NLQ: {}'.format(task_id, task_count,
             task['db_id'], task['question_toks']))
 
@@ -172,28 +170,28 @@ class DuoquestServer:
 
         proto_out = nlqc.run(task_id, schema, task['question_toks'], tsq_level,
             literals, timeout=timeout)
-        # cqs = list(map(lambda x: generate_sql_str(x, schema), proto_out.cqs))
 
         t.join()
 
         return proto_out.cqs
 
     def run_experiments(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
-        # eval_kmaps,
         tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
 
-        if self.out_base:
-            out_path = f'{self.out_base}.sqls'
-            gold_path = f'{self.out_base}.gold'
-            time_path = f'{self.out_base}.times'
-
-            f = open(out_path, 'w+')
-            gold_f = open(gold_path, 'w+')
-            time_f = open(time_path, 'w+')
+        # if self.out_base:
+        #     out_path = f'{self.out_base}.exp'
+        #     gold_path = f'{self.out_base}.gold'
+        #     time_path = f'{self.out_base}.times'
+        #
+        #     f = open(out_path, 'w+')
+        #     gold_f = open(gold_path, 'w+')
+        #     time_f = open(time_path, 'w+')
 
         ranks = []
         times = []
+
+        exp_set = ProtoExperimentSet()
 
         for i, task in enumerate(tasks):
             task_id = i+1
@@ -205,9 +203,7 @@ class DuoquestServer:
             schema = schemas[task['db_id']]
             start = time.time()
             cqs = self.run_experiment(task_id, task, len(tasks), nlqc, schema,
-                db, tsq_level, tsq_rows,
-                # eval_kmaps=eval_kmaps,
-                timeout=timeout)
+                db, tsq_level, tsq_rows, timeout=timeout)
             task_time = time.time() - start
 
             if cqs is None:         # invalid task
@@ -215,8 +211,6 @@ class DuoquestServer:
 
             og_rank = correct_rank(cqs, task['pq'])
 
-            # og_rank = correct_rank(db, task['db_id'], eval_kmaps, task['query'],
-            #     cqs)
             if task_time > timeout or og_rank is None:
                 task_time = math.inf
             ranks.append(og_rank)
@@ -225,12 +219,8 @@ class DuoquestServer:
             # debug, for comparing with other mode
             if compare:
                 cm_cqs = self.run_experiment(task_id, task, len(tasks), schema,
-                    db, nlqc, compare, tsq_rows,
-                    # eval_kmaps,
-                    timeout=timeout)
+                    db, nlqc, compare, tsq_rows, timeout=timeout)
                 cm_rank = correct_rank(cm_cqs, task['pq'])
-                # cm_rank = correct_rank(db, task['db_id'], eval_kmaps,
-                #     task['query'], cm_cqs)
 
                 print('\n{} RANK: {}\n{} RANK: {}\n'.format(
                     tsq_level, og_rank, compare, cm_rank
@@ -249,32 +239,48 @@ class DuoquestServer:
             else:
                 print('RANK: {}'.format(og_rank))
 
-            if self.out_base:
-                if cqs:
-                    f.write(u'\t'.join(
-                    list(
-                        map(lambda q: \
-                            generate_sql_str(q, schema).replace('\n', ' '), cqs)
-                        )
-                    ))
-                    f.write('\n')
-                else:
-                    f.write('SELECT A FROM B\n')  # failure
+            exp = exp_set.exps.add()
 
-                gold_f.write(task['query'].replace('\t', ' '))
-                gold_f.write(f"\t{task['db_id']}")
-                gold_f.write('\n')
+            if cqs:
+                for cq in cqs:
+                    pq = exp.cqs.add()
+                    pq.CopyFrom(cq)
 
-                print(f'TIME: {task_time:.2f}s\n')
-                time_f.write(f'{task_time:.2f}')
-                time_f.write('\n')
+            exp.gold.CopyFrom(task['pq'])
 
-        if self.out_base:
-            f.close()
-            gold_f.close()
-            time_f.close()
+            exp.time = task_time
+
+            # if self.out_base:
+            #     if cqs:
+            #         f.write(u'\t'.join(
+            #         list(
+            #             map(lambda q: \
+            #                 generate_sql_str(q, schema).replace('\n', ' '), cqs)
+            #             )
+            #         ))
+            #         f.write('\n')
+            #     else:
+            #         f.write('SELECT A FROM B\n')  # failure
+
+                # gold_f.write(task['query'].replace('\t', ' '))
+                # gold_f.write(f"\t{task['db_id']}")
+                # gold_f.write('\n')
+                #
+                # print(f'TIME: {task_time:.2f}s\n')
+                # time_f.write(f'{task_time:.2f}')
+                # time_f.write('\n')
+
+        # if self.out_base:
+            # f.close()
+            # gold_f.close()
+            # time_f.close()
 
         nlqc.close()
+
+        if self.out_base:
+            out_path = f'{self.out_base}.exp'
+            with open(out_path, 'wb') as f:
+                f.write(exp_set.SerializeToString())
 
         print_ranks(ranks)
         print_avg_time(times)

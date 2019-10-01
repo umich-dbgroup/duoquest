@@ -31,6 +31,16 @@ message ProtoResult {
   bool answer_found = 2;
 }
 
+message ProtoExperiment {
+  ProtoQuery gold = 1;
+  repeated ProtoQuery cqs = 2;
+  float time = 3;
+}
+
+message ProtoExperimentSet {
+  repeated ProtoExperiment exps = 1;
+}
+
 //------------------
 // SCHEMA
 //------------------
