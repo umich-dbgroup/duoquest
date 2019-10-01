@@ -650,19 +650,19 @@ class DuoquestVerifier:
 
         check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
         if check_clauses is not None:
-            if self.stats:
+            if hasattr(self, 'stats'):
                 self.stats['clauses'] += 1
             return check_clauses
 
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
-            if self.stats:
+            if hasattr(self, 'stats'):
                 self.stats['num_cols'] += 1
             return check_num_cols
 
         check_semantics = self.prune_by_semantics(schema, query, literals)
         if check_semantics is not None:
-            if self.stats:
+            if hasattr(self, 'stats'):
                 self.stats['semantics'] += 1
             return check_semantics
 
@@ -675,7 +675,7 @@ class DuoquestVerifier:
             check_types = self.prune_select_col_types(db, schema, aggcol, tsq,
                 i)
             if check_types is not None:
-                if self.stats:
+                if hasattr(self, 'stats'):
                     self.stats['types'] += 1
                 return check_types
 
@@ -683,7 +683,7 @@ class DuoquestVerifier:
                 check_values = self.prune_select_col_values(db, schema, aggcol,
                     tsq, i)
                 if check_values is not None:
-                    if self.stats:
+                    if hasattr(self, 'stats'):
                         self.stats['select_vals'] += 1
                     return check_values
 
@@ -705,7 +705,7 @@ class DuoquestVerifier:
             try:
                 check_row = self.prune_by_row(db, schema, query, tsq)
                 if check_row is not None:
-                    if self.stats:
+                    if hasattr(self, 'stats'):
                         self.stats['row'] += 1
                     return check_row
             except Exception as e:
@@ -718,7 +718,7 @@ class DuoquestVerifier:
                 try:
                     check_order = self.prune_by_order(db, schema, query, tsq)
                     if check_order is not None:
-                        if self.stats:
+                        if hasattr(self, 'stats'):
                             self.stats['order'] += 1
                         return check_order
                 except Exception as e:
