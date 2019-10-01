@@ -54,7 +54,24 @@ def print_cdf(ranks, times, n=None):
     if n is not None:
         times = map(lambda x: x[1],
             filter(lambda x: x[0] is not None and x[0] <= n, zip(ranks, times)))
+    else:
+        times = map(lambda x: x[1],
+            filter(lambda x: x[0] is not None, zip(ranks, times)))
+    for i, time in enumerate(sorted(filter(lambda t: t != math.inf, times))):
+        print(i, time)
 
     cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / length * 100):.2f})',
             enumerate(sorted(filter(lambda t: t != math.inf, times))))
     print(f"CDF (n={n}):\n(0,0) {' '.join(cdf)}")
+
+def eval_duoquest(exp_set, n=None):
+    ranks = []
+    times = []
+    for exp in exp_set.exps:
+        rank = correct_rank(exp.cqs, exp.gold)
+        ranks.append(rank)
+        times.append(exp.time)
+
+    print_ranks(ranks)
+    print_avg_time(times)
+    print_cdf(ranks, times)

@@ -2,65 +2,40 @@ import argparse
 import configparser
 import json
 
-from duoquest.database import Database
+# from duoquest.database import Database
 from duoquest.files import results_path
-from duoquest.external.eval import build_foreign_key_map_from_json, \
-    eval_duoquest
+from duoquest.eval import eval_duoquest
+from duoquest.proto.duoquest_pb2 import ProtoExperimentSet
 from duoquest.vars import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('system', choices=['syntaxsql'])
     parser.add_argument('dataset', choices=DATASETS)
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
     parser.add_argument('--timeout', type=int, default=15)
-    parser.add_argument('--n', default=10, type=int,
+    parser.add_argument('--n', default=None, type=int,
         help='n to constrain CDF')
-
-    # TODO
-    parser.add_argument('--cache', action='store_true', help='Enable cache')
-
-    parser.add_argument('--etype', choices=['all', 'exec', 'match'],
-        default='match')
-    parser.add_argument('--no_print', action='store_true')
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    if args.dataset == 'spider':
-        db_dir = config['spider'][f'{args.mode}_db_path']
-        table = config['spider'][f'{args.mode}_tables_path']
-    elif args.dataset == 'wikisql':
-        # TODO
-        pass
+    # if args.dataset == 'spider':
+    #     db_dir = config['spider'][f'{args.mode}_db_path']
+    #     table = config['spider'][f'{args.mode}_tables_path']
+    # elif args.dataset == 'wikisql':
+    #     # TODO
+    #     pass
 
-    db = Database(db_dir, args.dataset)
+    # db = Database(db_dir, args.dataset)
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.timeout, args.cache)
+        args.tsq_rows, args.timeout)
 
-    tables_data = json.load(open(table))
-    kmaps = build_foreign_key_map_from_json(tables_data)
-    tables = {}
-    for t in tables_data:
-        tables[t['db_id']] = t
+    exp_set = ProtoExperimentSet()
+    with open(f'{out_base}.exp', 'rb') as f:
+        exp_set.ParseFromString(f.read())
 
-    pred_path = f'{out_base}.sqls'
-    gold_path = f'{out_base}.gold'
-    times_path = f'{out_base}.times'
-
-    with open(pred_path) as f:
-        preds = [l.strip().split('\t') \
-            for l in f.readlines() if len(l.strip()) > 0]
-
-    with open(gold_path) as f:
-        golds = [l.strip().split('\t') \
-            for l in f.readlines() if len(l.strip()) > 0]
-
-    with open(times_path) as f:
-        times = [float(l.strip()) for l in f.readlines()]
-
-    eval_duoquest(db, kmaps, golds, preds, times, args.n)
+    eval_duoquest(exp_set, n=args.n)

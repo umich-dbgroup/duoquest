@@ -197,8 +197,10 @@ class DuoquestServer:
 
             og_rank = correct_rank(cqs, task['pq'])
 
-            if task_time > timeout or og_rank is None:
+            if og_rank is None:
                 task_time = math.inf
+            elif task_time > timeout:
+                task_time = timeout
             ranks.append(og_rank)
             times.append(task_time)
 

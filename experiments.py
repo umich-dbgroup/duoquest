@@ -27,7 +27,7 @@ def main():
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
-    parser.add_argument('--timeout', default=15, type=int,
+    parser.add_argument('--timeout', default=20, type=int,
         help='Timeout if search does not terminate')
 
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
