@@ -583,46 +583,6 @@ def correct_rank(db, db_name, kmaps, g_str, p_strs, enforce_select_order=False):
 
     return rank
 
-def print_ranks(ranks):
-    n_vals_to_check = [1, 10, 100, 1000]
-
-    for n_val in n_vals_to_check:
-        result = sum(1 for r in ranks if r is not None and r <= n_val)
-        print(f'Top {n_val} Accuracy: {result}/{len(ranks)}' +
-            f' ({(result/len(ranks)*100):.2f}%)')
-    print(f'MRR: {mrr(ranks)}')
-
-def print_cdf(ranks, times, n=None):
-    length = len(times)
-
-    if n is not None:
-        times = map(lambda x: x[1],
-            filter(lambda x: x[0] is not None and x[0] <= n, zip(ranks, times)))
-
-    cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / length * 100):.2f})',
-            enumerate(sorted(filter(lambda t: t != math.inf, times))))
-    print(f"CDF (n={n}):\n(0,0) {' '.join(cdf)}")
-
-def print_avg_time(times):
-    avg_time = sum(t for t in times if t != math.inf) / len(times)
-    print(f'Avg Time: {avg_time:.2f}s')
-
-def eval_duoquest(db, kmaps, golds, preds, times, n):
-    assert(len(golds) == len(preds))
-    assert(len(preds) == len(times))
-
-    ranks = []
-    for i, gold in enumerate(golds):
-        g_str, db_name = gold
-        p_strs = preds[i]
-
-        rank = correct_rank(db, db_name, kmaps, g_str, p_strs)
-        ranks.append(rank)
-
-    print_ranks(ranks)
-    print_avg_time(times)
-    print_cdf(ranks, times, n)
-
 def evaluate(n, gold, predict, db_dir, etype, kmaps, tables, dataset, no_print=False):
     with open(gold) as f:
         glist = [l.strip().split('\t') for l in f.readlines() if len(l.strip()) > 0]
@@ -1003,14 +963,6 @@ def rebuild_sql_col(valid_col_units, sql, kmap):
     sql['union'] = rebuild_sql_col(valid_col_units, sql['union'], kmap)
 
     return sql
-
-def mrr(ranks):
-    cum = 0
-    for rank in ranks:
-        if rank is None:
-            continue
-        cum += (1 / rank)
-    return cum / len(ranks)
 
 def build_foreign_key_map(entry):
     cols_orig = entry["column_names_original"]

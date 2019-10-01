@@ -13,18 +13,13 @@ from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
     FALSE, UNKNOWN, TRUE, ProtoExperimentSet
-from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
-from .query import generate_sql_str, matches_gold
+from .eval import correct_rank, matches_gold, print_ranks, print_cdf, \
+    print_avg_time
+from .query import generate_sql_str
 from .schema import Schema
 from .tasks import is_valid_task
 from .tsq import TableSketchQuery
-
-def correct_rank(cqs, pq):
-    for i, cq in enumerate(cqs):
-        if matches_gold(pq, cq):
-            return i + 1
-    return None
 
 def get_literals(pq, schema):
     literals = ProtoLiteralList()
