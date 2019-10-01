@@ -179,15 +179,6 @@ class DuoquestServer:
         tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
 
-        # if self.out_base:
-        #     out_path = f'{self.out_base}.exp'
-        #     gold_path = f'{self.out_base}.gold'
-        #     time_path = f'{self.out_base}.times'
-        #
-        #     f = open(out_path, 'w+')
-        #     gold_f = open(gold_path, 'w+')
-        #     time_f = open(time_path, 'w+')
-
         ranks = []
         times = []
 
@@ -250,37 +241,15 @@ class DuoquestServer:
 
             exp.time = task_time
 
-            # if self.out_base:
-            #     if cqs:
-            #         f.write(u'\t'.join(
-            #         list(
-            #             map(lambda q: \
-            #                 generate_sql_str(q, schema).replace('\n', ' '), cqs)
-            #             )
-            #         ))
-            #         f.write('\n')
-            #     else:
-            #         f.write('SELECT A FROM B\n')  # failure
-
-                # gold_f.write(task['query'].replace('\t', ' '))
-                # gold_f.write(f"\t{task['db_id']}")
-                # gold_f.write('\n')
-                #
-                # print(f'TIME: {task_time:.2f}s\n')
-                # time_f.write(f'{task_time:.2f}')
-                # time_f.write('\n')
-
-        # if self.out_base:
-            # f.close()
-            # gold_f.close()
-            # time_f.close()
-
         nlqc.close()
 
-        if self.out_base:
-            out_path = f'{self.out_base}.exp'
-            with open(out_path, 'wb') as f:
-                f.write(exp_set.SerializeToString())
+        if tid or start_tid:
+            print('Not saving .exp output because of tid/start_tid option.')
+        else:
+            if self.out_base:
+                out_path = f'{self.out_base}.exp'
+                with open(out_path, 'wb') as f:
+                    f.write(exp_set.SerializeToString())
 
         print_ranks(ranks)
         print_avg_time(times)
