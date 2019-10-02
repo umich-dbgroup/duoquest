@@ -225,7 +225,8 @@ class DuoquestServer:
                         print()
                         raise Exception('Rank is lower than compare!')
             else:
-                print('RANK: {}'.format(og_rank))
+                print(f'RANK: {og_rank}')
+                print(f'TIME: {task_time}')
 
             exp = exp_set.exps.add()
 
