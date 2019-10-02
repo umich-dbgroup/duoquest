@@ -1,6 +1,6 @@
 import math
 
-from .proto.duoquest_pb2 import TRUE, FALSE
+from .proto.duoquest_pb2 import TRUE, FALSE, ProtoQuery, OR, IN, EQUALS
 
 # does not consider subqueries or set ops
 def matches_gold(gold, pq):
@@ -21,7 +21,34 @@ def matches_gold(gold, pq):
     pq.min_having_preds = gold.min_having_preds
     pq.min_order_by_cols = gold.min_order_by_cols
 
-    return (str(gold) == str(pq))
+    # check alternate formulation of query for multiple equality predicates
+    if gold.where.logical_op == OR:
+        transformed = ProtoQuery()
+        transformed.CopyFrom(gold)
+
+        equal_preds = {}   # col_id -> [Predicates]
+
+        for pred in transformed.where.predicates:
+            if pred.op == EQUALS:
+                if pred.col_id not in equal_preds:
+                    equal_preds[pred.col_id] = []
+                equal_preds[pred.col_id].append(pred)
+
+        for col_id, preds in equal_preds.items():
+            if len(preds) > 1:
+                new_pred = transformed.where.predicates.add()
+                new_pred.col_id = col_id
+                new_pred.op = IN
+                new_pred.has_subquery = FALSE
+                new_pred.has_agg = FALSE
+
+                for pred in preds:
+                    new_pred.value.extend(pred.value)
+                    transformed.where.predicates.remove(pred)
+
+        return (str(gold) == str(pq)) or (str(transformed) == str(pq))
+    else:
+        return (str(gold) == str(pq))
 
 def correct_rank(cqs, pq):
     for i, cq in enumerate(cqs):
