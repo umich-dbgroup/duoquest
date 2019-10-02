@@ -53,15 +53,15 @@ def print_cdf(ranks, times, n=None):
 
     if n is not None:
         times = map(lambda x: x[1],
-            filter(lambda x: x[0] is not None and x[0] <= n, zip(ranks, times)))
+            filter(lambda x: x[0] is not None and x[0] <= n \
+                and x[1] != math.inf, zip(ranks, times)))
     else:
         times = map(lambda x: x[1],
-            filter(lambda x: x[0] is not None, zip(ranks, times)))
-    for i, time in enumerate(sorted(filter(lambda t: t != math.inf, times))):
-        print(i, time)
+            filter(lambda x: x[0] is not None and x[1] != math.inf,
+                zip(ranks, times)))
 
     cdf = map(lambda t: f'({t[1]:.2f},{((t[0]+1) / length * 100):.2f})',
-            enumerate(sorted(filter(lambda t: t != math.inf, times))))
+            enumerate(sorted(times)))
     print(f"CDF (n={n}):\n(0,0) {' '.join(cdf)}")
 
 def eval_duoquest(exp_set, n=None):
