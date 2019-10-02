@@ -1,6 +1,6 @@
 import math
 
-from .proto.duoquest_pb2 import TRUE, FALSE, ProtoQuery, OR, IN, EQUALS
+from .proto.duoquest_pb2 import TRUE, FALSE, ProtoQuery, AND, OR, IN, EQUALS
 
 # does not consider subqueries or set ops
 def matches_gold(gold, pq):
@@ -36,6 +36,7 @@ def matches_gold(gold, pq):
 
         for col_id, preds in equal_preds.items():
             if len(preds) > 1:
+                transformed.where.logical_op = AND
                 new_pred = transformed.where.predicates.add()
                 new_pred.col_id = col_id
                 new_pred.op = IN
