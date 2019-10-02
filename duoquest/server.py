@@ -377,10 +377,6 @@ class DuoquestServer:
                 elif result.value:
                     response.results.append(TRUE)
 
-                    print(query)
-                    print('--------')
-                    print(gold)
-
                     if matches_gold(gold, query):
                         response.answer_found = True
                 else:
