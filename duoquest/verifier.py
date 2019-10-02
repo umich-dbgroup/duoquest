@@ -379,7 +379,7 @@ class DuoquestVerifier:
 
         subquery_count = 0
 
-        for pred in query.where.predicates:
+        for i, pred in enumerate(query.where.predicates):
             if pred.col_id == 0:
                 if self.debug:
                     print('Prune: cannot have * in WHERE clause.')
@@ -434,6 +434,14 @@ class DuoquestVerifier:
                 if not any(pred.col_id == a.col_id for a in query.select):
                     if self.debug:
                         print('Prune: inequality predicates must be in SELECT.')
+                    return Tribool(False)
+
+            for j in range(i+1, len(query.where.predicates)):
+                pred2 = query.where.predicates[j]
+                if pred.col_id == pred2.col_id and pred.op == EQUALS \
+                    and pred2.op == EQUALS:
+                    if self.debug:
+                        print('Prune: only one equality permitted per column.')
                     return Tribool(False)
 
         for pred in query.having.predicates:
