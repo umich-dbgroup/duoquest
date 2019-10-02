@@ -36,7 +36,7 @@ def mrr(ranks):
     return cum / len(ranks)
 
 def print_ranks(ranks):
-    n_vals_to_check = [1, 10, 100, 1000]
+    n_vals_to_check = [1, 5, 10, 100, 1000]
 
     for n_val in n_vals_to_check:
         result = sum(1 for r in ranks if r is not None and r <= n_val)
