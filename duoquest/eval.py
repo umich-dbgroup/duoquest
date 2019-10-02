@@ -19,7 +19,7 @@ def matches_gold(gold, pq):
     pq.min_having_preds = gold.min_having_preds
     pq.min_order_by_cols = gold.min_order_by_cols
 
-    return (gold.SerializeToString() == pq.SerializeToString())
+    return (str(gold) == str(pq))
 
 def correct_rank(cqs, pq):
     for i, cq in enumerate(cqs):
