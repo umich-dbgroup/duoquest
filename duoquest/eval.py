@@ -1,5 +1,7 @@
 import math
 
+from .proto.duoquest_pb2 import TRUE, FALSE
+
 # does not consider subqueries or set ops
 def matches_gold(gold, pq):
     pq.distinct = gold.distinct
@@ -44,6 +46,12 @@ def print_ranks(ranks):
             f' ({(result/len(ranks)*100):.2f}%)')
     print(f'MRR: {mrr(ranks)}')
 
+def print_ranks_by_level(ranks_by_level, n=10):
+    for level, ranks in ranks_by_level.items():
+        result = sum(1 for r in ranks if r is not None and r <= n)
+        print(f'{level} Top-{n} Accuracy: {result}/{len(ranks)}' +
+            f' ({(result/len(ranks)*100):.2f}%)')
+
 def print_avg_time(times):
     avg_time = sum(t for t in times if t != math.inf) / len(times)
     print(f'Avg Time: {avg_time:.2f}s')
@@ -64,14 +72,31 @@ def print_cdf(ranks, times, n=None):
             enumerate(sorted(times)))
     print(f"CDF (n={n}):\n(0,0) {' '.join(cdf)}")
 
+def detect_level(gold):
+    if gold.has_group_by == TRUE:
+        return 'hard'
+    elif gold.has_where == TRUE:
+        return 'medium'
+    else:
+        return 'easy'
+
 def eval_duoquest(exp_set, n=None):
     ranks = []
     times = []
+
+    ranks_by_level = {
+        'easy': [],
+        'medium': [],
+        'hard': []
+    }
     for exp in exp_set.exps:
         rank = correct_rank(exp.cqs, exp.gold)
         ranks.append(rank)
         times.append(exp.time)
 
+        ranks_by_level[detect_level(exp.gold)].append(rank)
+
     print_ranks(ranks)
+    print_ranks_by_level(ranks_by_level, n=10)
     print_avg_time(times)
     print_cdf(ranks, times)
