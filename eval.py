@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
-    parser.add_argument('--timeout', type=int, default=15)
+    parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--n', default=None, type=int,
         help='n to constrain CDF')
     args = parser.parse_args()
