@@ -251,7 +251,7 @@ class DuoquestServer:
 
         print_ranks(ranks)
         print_avg_time(times)
-        print_cdf(ranks, times, 10)
+        print_cdf(ranks, times)
 
     def live_thread(self, tid, db, schema, tsq, literals, ready, tsq_level):
         task_conn = sqlite3.connect(self.task_db)
