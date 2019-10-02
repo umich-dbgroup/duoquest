@@ -66,7 +66,6 @@ def main():
         no_fk_having=True,
         no_fk_group_by=True,
         agg_projected=True,
-        group_by_in_select=True,
         disable_set_ops=True,
         disable_subquery=True,
         literals_given=True)
