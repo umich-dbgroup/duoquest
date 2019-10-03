@@ -711,6 +711,9 @@ class UnsupportedColumnTypeException(Exception):
 class ForeignKeyException(Exception):
     pass
 
+class ColumnTypeMismatchException(Exception):
+    pass
+
 def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq = ProtoQuery()
 
