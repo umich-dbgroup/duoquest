@@ -145,6 +145,7 @@ class DuoquestServer:
         try:
             task['query'], task['pq'] = is_valid_task(schema, db, task['sql'])
         except Exception as e:
+            traceback.print_exc()
             print('Skipping task because it is out of scope.')
             return None
 
