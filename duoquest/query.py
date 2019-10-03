@@ -757,6 +757,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
             tables.add(schema.get_col(col.fk_ref).table)
         else:
             proj.col_id = col.id
+            if col.id != 0:
+                tables.add(col.table)
         proj.agg = to_proto_agg(AGG_OPS[agg])
         if proj.agg != NO_AGG:
             proj.has_agg = TRUE
@@ -792,6 +794,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     tables.add(schema.get_col(col.fk_ref).table)
                 else:
                     pred.col_id = col.id
+                    tables.add(col.table)
 
                 pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
                 if isinstance(cond[3], dict):
@@ -820,6 +823,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                 tables.add(schema.get_col(col.fk_ref).table)
             else:
                 pq.group_by.append(col.id)
+                tables.add(col.table)
         pq.min_group_by_cols = len(pq.group_by)
     else:
         pq.has_group_by = FALSE
@@ -855,6 +859,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                         tables.add(schema.get_col(col.fk_ref).table)
                     else:
                         pred.col_id = col.id
+                        tables.add(col.table)
 
                     pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
                     if isinstance(cond[3], dict):
@@ -899,6 +904,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
             tables.add(schema.get_col(col.fk_ref).table)
         else:
             order_col.agg_col.col_id = col.id
+            tables.add(col.table)
 
         pq.min_order_by_cols = len(pq.order_by)
     else:
