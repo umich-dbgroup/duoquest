@@ -711,7 +711,7 @@ class UnsupportedColumnTypeException(Exception):
 class ForeignKeyException(Exception):
     pass
 
-class SelfJoinException(Exception):
+class InconsistentPredicateException(Exception):
     pass
 
 def load_pq_from_spider(schema, spider_sql, set_op=None):
@@ -773,6 +773,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq.min_select_cols = len(pq.select)
 
     # WHERE
+    equality_cols = set()
+
     if 'where' in spider_sql and spider_sql['where']:
         pq.has_where = TRUE
 
@@ -800,6 +802,12 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     tables.add(col.table)
 
                 pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
+
+                if pred.op == EQUALS:
+                    if pred.col_id in equality_cols:
+                        raise InconsistentPredicateException()
+                    equality_cols.add(pred.col_id)
+
                 if isinstance(cond[3], dict):
                     pred.has_subquery = TRUE
                     pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
@@ -952,10 +960,6 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
     for tbl_unit in spider_sql['from']['table_units']:
         if tbl_unit[0] != 'table_unit':
             raise FromSubqueryException()
-
-        if tbl_unit[1] in self_join_check:
-            raise SelfJoinException()
-        self_join_check.add(tbl_unit[1])
 
         tables.add(schema.get_table(tbl_unit[1]))
 
