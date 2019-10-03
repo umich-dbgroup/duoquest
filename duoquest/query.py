@@ -945,15 +945,20 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
         # if only non-agg exists and there is GROUP BY,
         # add aggregated columns from elsewhere to projection
         if pq.has_group_by == TRUE:
+            added = False
             for pred in pq.having.predicates:
                 proj = pq.select.add()
                 proj.has_agg = TRUE
                 proj.col_id = pred.col_id
                 proj.agg = pred.agg
+                added = True
             for oc in pq.order_by:
                 if oc.agg_col.has_agg == TRUE:
                     proj = pq.select.add()
                     proj.CopyFrom(oc.agg_col)
+                    added = True
+            if not added:
+                raise InvalidGroupByException()
 
     # FROM
     self_join_check = set()
