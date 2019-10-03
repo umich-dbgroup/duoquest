@@ -439,18 +439,18 @@ class Schema(object):
             jp.add_single_table(next(iter(tables)))
             return jp
 
-        # STEP 1: Get shortest paths between each table in col_idxs
-        # shortest: frozenset(table1, table2) -> JoinPath
-        # TODO: extend to get multiple shortest paths per pair if needed
-        shortest = self.get_shortest_paths(tables)
-
-        # STEPS 2-3: Get MST of shortest, replace shortest paths with join edges
-        # TODO: extend to get multiple MSTs if needed
-        tbls_in = set([next(iter(tables))])
-
-        mst = JoinPath()
-
         try:
+            # STEP 1: Get shortest paths between each table in col_idxs
+            # shortest: frozenset(table1, table2) -> JoinPath
+            # TODO: extend to get multiple shortest paths per pair if needed
+            shortest = self.get_shortest_paths(tables)
+
+            # STEPS 2-3: Get MST of shortest, replace shortest paths with join edges
+            # TODO: extend to get multiple MSTs if needed
+            tbls_in = set([next(iter(tables))])
+
+            mst = JoinPath()
+
             while len(tbls_in) < len(tables):
                 min_path_len = 9999
                 min_path = None
