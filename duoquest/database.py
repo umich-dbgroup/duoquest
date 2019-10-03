@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import traceback
 
 from .proto.duoquest_pb2 import *
 from .tsq import TableSketchQuery
@@ -58,21 +59,27 @@ class Database(object):
         if col.syn_name == '*':
             return False
 
-        q = '''SELECT 1 FROM "{}" WHERE CAST("{}" AS FLOAT) >= ?
-               AND CAST("{}" AS FLOAT) <= ? LIMIT 1'''.format(
-            col.table.syn_name, col.syn_name, col.syn_name
+        q = 'SELECT MIN("{}"), MAX("{}") FROM "{}"'.format(
+            col.syn_name, col.syn_name, col.table.syn_name
         )
-
-        cur.execute(q, (range_val[0], range_val[1]))
+        cur.execute(q)
 
         valid = False
-        if cur.fetchone():
-            valid = True
+        row = cur.fetchone()
+        try:
+            if row:
+                col_min = float(row[0])
+                col_max = float(row[1])
 
-        cur.close()
-        conn.close()
+                if max(col_min, range_val[0]) <= min(col_max, range_val[1]):
+                    valid = True
+        except Exception as e:
+            traceback.print_exc()
+        finally:
+            cur.close()
+            conn.close()
 
-        return valid
+            return valid
 
     def has_exact(self, schema, col_id, value):
         conn = self.get_conn(db_name=schema.db_id)
