@@ -36,7 +36,7 @@ def main():
         'group_by': 0,
         'wildcard': 0,
         'col_type': 0,
-        'col_type_mismatch': 0
+        'self_join': 0
         'foreign_key': 0,
         'col_binary_op': 0,
         'logical_op': 0,
@@ -88,8 +88,8 @@ def main():
             errors['join_path'] += 1
         except InvalidValueException as e:
             errors['value'] += 1
-        except ColumnTypeMismatchException as e:
-            errors['col_type_mismatch'] += 1
+        except SelfJoinException as e:
+            errors['self_join'] += 1
 
     print(f'VALID: {valid}')
     for level, num in tasks_by_level.items():

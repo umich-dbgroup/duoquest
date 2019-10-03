@@ -100,9 +100,4 @@ def is_valid_task(schema, db, spider_sql):
     if row is None or all(val is None for val in row):
         raise EmptyResultException()
 
-    for i, val in enumerate(row):
-        col_type = schema.get_col(pq.select[i].col_id).type
-        if col_type == 'number' and not is_number(val):
-            raise ColumnTypeMismatchException()
-
     return query_str, pq

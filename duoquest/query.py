@@ -711,7 +711,7 @@ class UnsupportedColumnTypeException(Exception):
 class ForeignKeyException(Exception):
     pass
 
-class ColumnTypeMismatchException(Exception):
+class SelfJoinException(Exception):
     pass
 
 def load_pq_from_spider(schema, spider_sql, set_op=None):
@@ -948,11 +948,17 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     proj.CopyFrom(oc.agg_col)
 
     # FROM
+    self_join_check = set()
     for tbl_unit in spider_sql['from']['table_units']:
         if tbl_unit[0] != 'table_unit':
             raise FromSubqueryException()
 
+        if tbl_unit[1] in self_join_check:
+            raise SelfJoinException()
+        self_join_check.add(tbl_unit[1])
+
         tables.add(schema.get_table(tbl_unit[1]))
+
     jp = schema.steiner(tables)
     set_proto_from(pq, jp)
 
