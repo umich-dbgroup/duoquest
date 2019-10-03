@@ -5,41 +5,6 @@ from .proto.duoquest_pb2 import TRUE, FALSE, ProtoQuery, AND, OR, IN, EQUALS
 # Warning: does not consider subqueries or set ops,
 # only handles limited task scope
 def matches_gold(gold, pq):
-    pq.distinct = gold.distinct
-    pq.limit = gold.limit
-
-    pq.done_select = gold.done_select
-    pq.done_where = gold.done_where
-    pq.done_group_by = gold.done_group_by
-    pq.done_having = gold.done_having
-    pq.done_order_by = gold.done_order_by
-    pq.done_limit = gold.done_limit
-    pq.done_query = gold.done_query
-
-    pq.min_select_cols = gold.min_select_cols
-    pq.min_where_preds = gold.min_where_preds
-    pq.min_group_by_cols = gold.min_group_by_cols
-    pq.min_having_preds = gold.min_having_preds
-    pq.min_order_by_cols = gold.min_order_by_cols
-
-    # sort WHERE predicates if more than 1
-    if len(gold.where.predicates) > 1 and len(pq.where.predicates) > 1:
-        sorted_gold = sorted(gold.where.predicates,
-            key=lambda p: (p.col_id, p.op, p.value))
-
-        del gold.where.predicates[:]
-        for i, pred in enumerate(sorted_gold):
-            new_gold = gold.where.predicates.add()
-            new_gold.CopyFrom(pred)
-
-        sorted_pq = sorted(pq.where.predicates,
-            key=lambda p: (p.col_id, p.op, p.value))
-
-        del pq.where.predicates[:]
-        for i, pred in enumerate(sorted_pq):
-            new_pq = pq.where.predicates.add()
-            new_pq.CopyFrom(pred)
-
     # check alternate formulation of query for multiple equality predicates
     if gold.where.logical_op == OR:
         transformed = ProtoQuery()
@@ -66,9 +31,114 @@ def matches_gold(gold, pq):
                     new_pred.value.extend(pred.value)
                     transformed.where.predicates.remove(pred)
 
-        return (str(gold) == str(pq)) or (str(transformed) == str(pq))
-    else:
-        return (str(gold) == str(pq))
+        return matches_gold_helper(gold, pq) or \
+            matches_gold_helper(transformed, pq)
+
+    return matches_gold_helper(gold, pq)
+
+def matches_gold_helper(gold, pq):
+    # check HAS criteria
+    if pq.has_where != pq.has_where or pq.has_group_by != gold.has_group_by \
+        or pq.has_having != gold.has_having or pq.has_limit != gold.limit:
+        return False
+
+    # FROM: just check set of contained tables
+    pq_tables = set(pq.from_clause.edge_map.keys())
+    gold_tables = set(gold.from_clause.edge_map.keys())
+
+    if pq_tables != gold_tables:
+        return False
+
+    # SELECT: ordering is enforced
+    if str(pq.select) != str(gold.select):
+        return False
+
+    # WHERE: just check logical op and set of predicates
+    pq_preds = set(map(lambda p: str(p), pq.where.predicates))
+    gold_preds = set(map(lambda p: str(p), gold.where.predicates))
+    if pq.where.logical_op != gold.where.logical_op or pq_preds != gold_preds:
+        return False
+
+    # GROUP BY: just check set of columns
+    if set(pq.group_by) != set(gold.group_by):
+        return False
+
+    # HAVING: similar to where
+    pq_preds = set(map(lambda p: str(p), pq.having.predicates))
+    gold_preds = set(map(lambda p: str(p), gold.having.predicates))
+    if pq.having.logical_op != gold.having.logical_op or pq_preds != gold_preds:
+        return False
+
+    # ORDER BY: ordering is enforced
+    if str(pq.order_by) != str(gold.order_by):
+        return False
+
+    return True
+
+    # pq.distinct = gold.distinct
+    # pq.limit = gold.limit
+    #
+    # pq.done_select = gold.done_select
+    # pq.done_where = gold.done_where
+    # pq.done_group_by = gold.done_group_by
+    # pq.done_having = gold.done_having
+    # pq.done_order_by = gold.done_order_by
+    # pq.done_limit = gold.done_limit
+    # pq.done_query = gold.done_query
+    #
+    # pq.min_select_cols = gold.min_select_cols
+    # pq.min_where_preds = gold.min_where_preds
+    # pq.min_group_by_cols = gold.min_group_by_cols
+    # pq.min_having_preds = gold.min_having_preds
+    # pq.min_order_by_cols = gold.min_order_by_cols
+    #
+    # # sort WHERE predicates if more than 1
+    # if len(gold.where.predicates) > 1 and len(pq.where.predicates) > 1:
+    #     sorted_gold = sorted(gold.where.predicates,
+    #         key=lambda p: (p.col_id, p.op, p.value))
+    #
+    #     del gold.where.predicates[:]
+    #     for i, pred in enumerate(sorted_gold):
+    #         new_gold = gold.where.predicates.add()
+    #         new_gold.CopyFrom(pred)
+    #
+    #     sorted_pq = sorted(pq.where.predicates,
+    #         key=lambda p: (p.col_id, p.op, p.value))
+    #
+    #     del pq.where.predicates[:]
+    #     for i, pred in enumerate(sorted_pq):
+    #         new_pq = pq.where.predicates.add()
+    #         new_pq.CopyFrom(pred)
+
+    # check alternate formulation of query for multiple equality predicates
+    # if gold.where.logical_op == OR:
+    #     transformed = ProtoQuery()
+    #     transformed.CopyFrom(gold)
+    #
+    #     equal_preds = {}   # col_id -> [Predicates]
+    #
+    #     for pred in transformed.where.predicates:
+    #         if pred.op == EQUALS:
+    #             if pred.col_id not in equal_preds:
+    #                 equal_preds[pred.col_id] = []
+    #             equal_preds[pred.col_id].append(pred)
+    #
+    #     for col_id, preds in equal_preds.items():
+    #         if len(preds) > 1:
+    #             transformed.where.logical_op = AND
+    #             new_pred = transformed.where.predicates.add()
+    #             new_pred.col_id = col_id
+    #             new_pred.op = IN
+    #             new_pred.has_subquery = FALSE
+    #             new_pred.has_agg = FALSE
+    #
+    #             for pred in preds:
+    #                 new_pred.value.extend(pred.value)
+    #                 transformed.where.predicates.remove(pred)
+    #
+    #     return (str(gold) == str(pq)) or (str(transformed) == str(pq))
+    # else:
+    #     return (str(gold) == str(pq))
 
 def correct_rank(cqs, pq):
     for i, cq in enumerate(cqs):
