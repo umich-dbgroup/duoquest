@@ -2,7 +2,8 @@ import math
 
 from .proto.duoquest_pb2 import TRUE, FALSE, ProtoQuery, AND, OR, IN, EQUALS
 
-# does not consider subqueries or set ops
+# Warning: does not consider subqueries or set ops,
+# only handles limited task scope
 def matches_gold(gold, pq):
     pq.distinct = gold.distinct
     pq.limit = gold.limit
@@ -20,6 +21,24 @@ def matches_gold(gold, pq):
     pq.min_group_by_cols = gold.min_group_by_cols
     pq.min_having_preds = gold.min_having_preds
     pq.min_order_by_cols = gold.min_order_by_cols
+
+    # sort WHERE predicates if more than 1
+    if len(gold.where.predicates) > 1 and len(pq.where.predicates) > 1:
+        sorted_gold = sorted(gold.where.predicates,
+            key=lambda p: (p.col_id, p.op, p.value))
+
+        del gold.where.predicates[:]
+        for i, pred in enumerate(sorted_gold):
+            new_gold = gold.where.predicates.add()
+            new_gold.CopyFrom(pred)
+
+        sorted_pq = sorted(pq.where.predicates,
+            key=lambda p: (p.col_id, p.op, p.value))
+
+        del pq.where.predicates[:]
+        for i, pred in enumerate(sorted_pq):
+            new_pq = pq.where.predicates.add()
+            new_pq.CopyFrom(pred)
 
     # check alternate formulation of query for multiple equality predicates
     if gold.where.logical_op == OR:
