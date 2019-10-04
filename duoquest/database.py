@@ -126,8 +126,7 @@ class Database(object):
             else:
                 types.append(schema.get_col(ac.col_id).type)
 
-        tsq = TableSketchQuery(len(types),
-            types=types if tsq_level != 'no_type' else None)
+        tsq = TableSketchQuery(len(types), types=types)
 
         # perform C1
         tsq.order = (pq.has_order_by == TRUE)
@@ -163,7 +162,7 @@ class Database(object):
 
         if tsq is not None:
             # don't retrieve values for no_values or no_type
-            if tsq_level in ('no_values', 'no_type'):
+            if tsq_level in ('no_values'):
                 tsq.values = []
 
         return tsq
