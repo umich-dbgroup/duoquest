@@ -78,8 +78,6 @@ class DuoquestVerifier:
         self.disable_col_types = disable_col_types
         self.disable_col_val = disable_col_val
         self.disable_early_row = disable_early_row
-        self.disable_literals = disable_literals
-        self.disable_order = disable_order
 
         self.debug = debug
 
@@ -715,14 +713,14 @@ class DuoquestVerifier:
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if not self.disable_literals and self.literals_given and lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if not self.disable_literals and self.literals_given and lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
@@ -742,8 +740,7 @@ class DuoquestVerifier:
                 return Tribool(False)
 
         if query.done_query:
-            if not self.disable_order and \
-                self.ready_for_order_check(query, tsq):
+            if self.ready_for_order_check(query, tsq):
                 try:
                     check_order = self.prune_by_order(db, schema, query, tsq)
                     if check_order is not None:
