@@ -47,6 +47,11 @@ class DuoquestVerifier:
         # set an integer value
         max_group_by=None,
 
+        disable_clauses=False,
+        disable_semantics=False,
+        disable_col_types=False,
+        disable_col_val=False,
+        disable_early_row=False,
         ):
         if use_cache:
             # TODO: initialize cache
@@ -65,6 +70,16 @@ class DuoquestVerifier:
         self.agg_projected = agg_projected
         self.inequality_projected = inequality_projected
         self.literals_given = literals_given
+
+
+        # disabling features in verifier
+        self.disable_clauses = disable_clauses
+        self.disable_semantics = disable_semantics
+        self.disable_col_types = disable_col_types
+        self.disable_col_val = disable_col_val
+        self.disable_early_row = disable_early_row
+        self.disable_literals = disable_literals
+        self.disable_order = disable_order
 
         self.debug = debug
 
@@ -656,23 +671,25 @@ class DuoquestVerifier:
                 else:
                     return Tribool(None)
 
-        check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
-        if check_clauses is not None:
-            if hasattr(self, 'stats'):
-                self.stats['clauses'] += 1
-            return check_clauses
-
         check_num_cols = self.prune_by_num_cols(query, tsq)
         if check_num_cols is not None:
             if hasattr(self, 'stats'):
                 self.stats['num_cols'] += 1
             return check_num_cols
 
-        check_semantics = self.prune_by_semantics(schema, query, literals)
-        if check_semantics is not None:
-            if hasattr(self, 'stats'):
-                self.stats['semantics'] += 1
-            return check_semantics
+        if not self.disable_clauses:
+            check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
+            if check_clauses is not None:
+                if hasattr(self, 'stats'):
+                    self.stats['clauses'] += 1
+                return check_clauses
+
+        if not self.disable_semantics:
+            check_semantics = self.prune_by_semantics(schema, query, literals)
+            if check_semantics is not None:
+                if hasattr(self, 'stats'):
+                    self.stats['semantics'] += 1
+                return check_semantics
 
         # if not child of UNION or right child of EXCEPT, can check values
         can_check_values = tsq.values and \
@@ -680,14 +697,15 @@ class DuoquestVerifier:
             not (set_op == EXCEPT and lr == 'right')
 
         for i, aggcol in enumerate(query.select):
-            check_types = self.prune_select_col_types(db, schema, aggcol, tsq,
-                i)
-            if check_types is not None:
-                if hasattr(self, 'stats'):
-                    self.stats['types'] += 1
-                return check_types
+            if not self.disable_col_types:
+                check_types = self.prune_select_col_types(db, schema, aggcol,
+                    tsq, i)
+                if check_types is not None:
+                    if hasattr(self, 'stats'):
+                        self.stats['types'] += 1
+                    return check_types
 
-            if can_check_values:
+            if not self.disable_col_val and can_check_values:
                 check_values = self.prune_select_col_values(db, schema, aggcol,
                     tsq, i)
                 if check_values is not None:
@@ -697,19 +715,21 @@ class DuoquestVerifier:
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
-        if can_check_values and self.ready_for_row_check(query, tsq):
+        should_early_check = (not self.disable_early_row or query.done_query)
+        if should_early_check and can_check_values and \
+            self.ready_for_row_check(query, tsq):
             try:
                 check_row = self.prune_by_row(db, schema, query, tsq)
                 if check_row is not None:
@@ -722,7 +742,8 @@ class DuoquestVerifier:
                 return Tribool(False)
 
         if query.done_query:
-            if self.ready_for_order_check(query, tsq):
+            if not self.disable_order and \
+                self.ready_for_order_check(query, tsq):
                 try:
                     check_order = self.prune_by_order(db, schema, query, tsq)
                     if check_order is not None:

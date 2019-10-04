@@ -34,6 +34,13 @@ def main():
     parser.add_argument('--start_tid', default=None, type=int,
         help='start task id')
 
+    # Disable pieces of the debugger
+    parser.add_argument('--disable_clauses', action='store_true')
+    parser.add_argument('--disable_semantics', action='store_true')
+    parser.add_argument('--disable_col_types', action='store_true')
+    parser.add_argument('--disable_col_val', action='store_true')
+    parser.add_argument('--disable_early_row', action='store_true')
+
     # Debugging options
     parser.add_argument('--compare', choices=TSQ_LEVELS,
         help='Compare results against this level')
@@ -58,7 +65,9 @@ def main():
         pass
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.timeout)
+        args.tsq_rows, args.timeout, args.disable_clauses,
+        args.disable_semantics, args.disable_col_types, args.disable_col_val,
+        args.disable_early_row)
 
     verifier = DuoquestVerifier(debug=args.debug,
         no_fk_select=True,
@@ -68,7 +77,12 @@ def main():
         agg_projected=True,
         disable_set_ops=True,
         disable_subquery=True,
-        literals_given=True)
+        literals_given=True,
+        disable_clauses=args.disable_clauses,
+        disable_semantics=args.disable_semantics,
+        disable_col_types=args.disable_col_types,
+        disable_col_val=args.disable_col_val,
+        disable_early_row=args.disable_early_row)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
@@ -78,9 +92,7 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_experiments(schemas, db, nlqc, data, args.tsq_level,
-        args.tsq_rows,
-        # kmaps,
-        tid=args.tid, compare=args.compare,
+        args.tsq_rows, tid=args.tid, compare=args.compare,
         start_tid=args.start_tid, timeout=args.timeout)
 
 if __name__ == '__main__':
