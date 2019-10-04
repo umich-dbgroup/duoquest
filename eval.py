@@ -29,15 +29,6 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    # if args.dataset == 'spider':
-    #     db_dir = config['spider'][f'{args.mode}_db_path']
-    #     table = config['spider'][f'{args.mode}_tables_path']
-    # elif args.dataset == 'wikisql':
-    #     # TODO
-    #     pass
-
-    # db = Database(db_dir, args.dataset)
-
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
         args.tsq_rows, args.timeout, args.disable_clauses,
         args.disable_semantics, args.disable_col_types, args.disable_col_val,
