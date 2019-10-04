@@ -34,7 +34,7 @@ def main():
     parser.add_argument('--start_tid', default=None, type=int,
         help='start task id')
 
-    # Disable pieces of the debugger
+    # Disable pieces of the system
     parser.add_argument('--disable_clauses', action='store_true')
     parser.add_argument('--disable_semantics', action='store_true')
     parser.add_argument('--disable_col_types', action='store_true')

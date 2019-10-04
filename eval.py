@@ -17,6 +17,13 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--n', default=None, type=int,
         help='n to constrain CDF')
+
+    parser.add_argument('--disable_clauses', action='store_true')
+    parser.add_argument('--disable_semantics', action='store_true')
+    parser.add_argument('--disable_col_types', action='store_true')
+    parser.add_argument('--disable_col_val', action='store_true')
+    parser.add_argument('--disable_early_row', action='store_true')
+
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -32,7 +39,9 @@ if __name__ == '__main__':
     # db = Database(db_dir, args.dataset)
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.timeout)
+        args.tsq_rows, args.timeout, args.disable_clauses,
+        args.disable_semantics, args.disable_col_types, args.disable_col_val,
+        args.disable_early_row)
 
     exp_set = ProtoExperimentSet()
     with open(f'{out_base}.exp', 'rb') as f:
