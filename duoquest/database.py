@@ -1,4 +1,5 @@
 import os
+import random
 import sqlite3
 import traceback
 
@@ -109,16 +110,8 @@ class Database(object):
     # C1. User will always correctly specify presence of ORDER BY + LIMIT.
     # C2. If ORDER BY present, at least 2 rows will be generated
     #     to allow for ordering enforcement.
-    #
-    # TSQ levels
-    # ----------
-    #             non-aggs |  agg  | types | semantics | clauses | order
-    # 'default':    exact  | range |   Y   |     Y     |    Y    |   Y
-    # 'no_range':   exact  |   N   |   Y   |     Y     |    Y    |   Y
-    # 'no_values':    N    |   N   |   Y   |     Y     |    Y    |   N
-    # 'no_duoquest':  N    |   N   |   N   |     N     |    N    |   N
 
-    def generate_tsq(self, schema, sql_str, pq, tsq_level, tsq_rows):
+    def generate_tsq(self, tid, schema, sql_str, pq, tsq_level, tsq_rows):
         types = []
         for ac in pq.select:
             if ac.has_agg == TRUE:
@@ -161,8 +154,14 @@ class Database(object):
         conn.close()
 
         if tsq is not None:
-            # don't retrieve values for no_values or no_type
-            if tsq_level in ('no_values'):
+            if tsq.level == 'partial':
+                if len(tsq.values) > 0:
+                    random.seed(tid)
+                    clear_col = random.randint(0, tsq.num_cols-1)
+                    for row in tsq.values:
+                        row[clear_col] = None
+
+            if tsq_level == 'minimal':
                 tsq.values = []
 
         return tsq

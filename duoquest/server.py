@@ -154,8 +154,8 @@ class DuoquestServer:
         if tsq_level == 'nlq_only':
             tsq = None
         else:
-            tsq = db.generate_tsq(schema, task['query'], task['pq'], tsq_level,
-                tsq_rows)
+            tsq = db.generate_tsq(task_id, schema, task['query'], task['pq'],
+                tsq_level, tsq_rows)
             print(tsq)
 
         ready = Event()
