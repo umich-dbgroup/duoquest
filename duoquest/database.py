@@ -155,7 +155,8 @@ class Database(object):
 
         if tsq is not None:
             if tsq_level == 'partial':
-                if len(tsq.values) > 0:
+                # only do partial if > 1 column
+                if len(tsq.values) > 0 and tsq.num_cols > 1:
                     random.seed(tid)
                     clear_col = random.randint(0, tsq.num_cols-1)
                     for row in tsq.values:
