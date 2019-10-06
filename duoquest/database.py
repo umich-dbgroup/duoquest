@@ -144,7 +144,7 @@ class Database(object):
             for i, val in enumerate(row):
                 if pq.select[i].has_agg == FALSE:  # non-agg case, get exact
                     value_row.append(val)
-                elif tsq_level in ('default', 'chain'):
+                elif tsq_level in ('default', 'chain', 'partial'):
                     value_row.append([val*0.5, val*1.5])
                 else:                         # otherwise keep empty
                     value_row.append(None)
