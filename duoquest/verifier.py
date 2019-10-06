@@ -247,6 +247,9 @@ class DuoquestVerifier:
 
     def row_result_matches(self, db_row, tsq_row):
         for pos, val in enumerate(tsq_row):
+            if val is None:
+                continue
+
             if isinstance(val, list):     # range constraint
                 if float(db_row[pos]) < val[0] or float(db_row[pos]) > val[1]:
                     return False
