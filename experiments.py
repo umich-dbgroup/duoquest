@@ -40,6 +40,7 @@ def main():
     parser.add_argument('--disable_col_types', action='store_true')
     parser.add_argument('--disable_col_val', action='store_true')
     parser.add_argument('--disable_early_row', action='store_true')
+    parser.add_argument('--disable_literals', action='store_true')
 
     # Debugging options
     parser.add_argument('--compare', choices=TSQ_LEVELS,
@@ -67,7 +68,7 @@ def main():
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
         args.tsq_rows, args.timeout, args.disable_clauses,
         args.disable_semantics, args.disable_col_types, args.disable_col_val,
-        args.disable_early_row)
+        args.disable_early_row, args.disable_literals)
 
     verifier = DuoquestVerifier(debug=args.debug,
         no_fk_select=True,
@@ -82,6 +83,7 @@ def main():
         disable_semantics=args.disable_semantics,
         disable_col_types=args.disable_col_types,
         disable_col_val=args.disable_col_val,
+        disable_literals=args.disable_literals,
         disable_early_row=args.disable_early_row)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)

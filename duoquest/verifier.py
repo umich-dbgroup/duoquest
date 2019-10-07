@@ -52,6 +52,7 @@ class DuoquestVerifier:
         disable_col_types=False,
         disable_col_val=False,
         disable_early_row=False,
+        disable_literals=False
         ):
         if use_cache:
             # TODO: initialize cache
@@ -78,6 +79,7 @@ class DuoquestVerifier:
         self.disable_col_types = disable_col_types
         self.disable_col_val = disable_col_val
         self.disable_early_row = disable_early_row
+        self.disable_literals = disable_literals
 
         self.debug = debug
 
@@ -716,14 +718,14 @@ class DuoquestVerifier:
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
