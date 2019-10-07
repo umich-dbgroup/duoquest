@@ -49,10 +49,7 @@ class DuoquestVerifier:
 
         disable_clauses=False,
         disable_semantics=False,
-        disable_col_types=False,
-        disable_col_val=False,
-        disable_early_row=False,
-        disable_literals=False
+        disable_column=False
         ):
         if use_cache:
             # TODO: initialize cache
@@ -76,10 +73,7 @@ class DuoquestVerifier:
         # disabling features in verifier
         self.disable_clauses = disable_clauses
         self.disable_semantics = disable_semantics
-        self.disable_col_types = disable_col_types
-        self.disable_col_val = disable_col_val
-        self.disable_early_row = disable_early_row
-        self.disable_literals = disable_literals
+        self.disable_column = disable_column
 
         self.debug = debug
 
@@ -674,12 +668,6 @@ class DuoquestVerifier:
                 else:
                     return Tribool(None)
 
-        check_num_cols = self.prune_by_num_cols(query, tsq)
-        if check_num_cols is not None:
-            if hasattr(self, 'stats'):
-                self.stats['num_cols'] += 1
-            return check_num_cols
-
         if not self.disable_clauses:
             check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
             if check_clauses is not None:
@@ -699,8 +687,14 @@ class DuoquestVerifier:
             set_op != UNION and \
             not (set_op == EXCEPT and lr == 'right')
 
-        for i, aggcol in enumerate(query.select):
-            if not self.disable_col_types:
+        if not self.disable_column:
+            check_num_cols = self.prune_by_num_cols(query, tsq)
+            if check_num_cols is not None:
+                if hasattr(self, 'stats'):
+                    self.stats['num_cols'] += 1
+                return check_num_cols
+
+            for i, aggcol in enumerate(query.select):
                 check_types = self.prune_select_col_types(db, schema, aggcol,
                     tsq, i)
                 if check_types is not None:
@@ -708,31 +702,29 @@ class DuoquestVerifier:
                         self.stats['types'] += 1
                     return check_types
 
-            if not self.disable_col_val and can_check_values:
-                check_values = self.prune_select_col_values(db, schema, aggcol,
-                    tsq, i)
-                if check_values is not None:
-                    if hasattr(self, 'stats'):
-                        self.stats['select_vals'] += 1
-                    return check_values
+                if can_check_values:
+                    check_values = self.prune_select_col_values(db, schema,
+                        aggcol, tsq, i)
+                    if check_values is not None:
+                        if hasattr(self, 'stats'):
+                            self.stats['select_vals'] += 1
+                        return check_values
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if not self.disable_literals and self.literals_given and lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if not self.disable_literals and self.literals_given and lr is None:
+            if self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
-        should_early_check = (not self.disable_early_row or query.done_query)
-        if should_early_check and can_check_values and \
-            self.ready_for_row_check(query, tsq):
+        if can_check_values and self.ready_for_row_check(query, tsq):
             try:
                 check_row = self.prune_by_row(db, schema, query, tsq)
                 if check_row is not None:
