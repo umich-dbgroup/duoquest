@@ -77,7 +77,7 @@ def main():
         literals_given=True,
         disable_clauses=args.disable_clauses,
         disable_semantics=args.disable_semantics,
-        disable_column=args.disable_col_types)
+        disable_column=args.disable_column)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
