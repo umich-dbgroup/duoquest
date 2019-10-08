@@ -21,6 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--disable_clauses', action='store_true')
     parser.add_argument('--disable_semantics', action='store_true')
     parser.add_argument('--disable_column', action='store_true')
+    parser.add_argument('--disable_literals', action='store_true')
 
     args = parser.parse_args()
 
@@ -29,7 +30,7 @@ if __name__ == '__main__':
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
         args.tsq_rows, args.timeout, args.disable_clauses,
-        args.disable_semantics, args.disable_column)
+        args.disable_semantics, args.disable_column, args.disable_literals)
 
     exp_set = ProtoExperimentSet()
     with open(f'{out_base}.exp', 'rb') as f:

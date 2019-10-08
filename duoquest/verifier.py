@@ -49,7 +49,8 @@ class DuoquestVerifier:
 
         disable_clauses=False,
         disable_semantics=False,
-        disable_column=False
+        disable_column=False,
+        disable_literals=False
         ):
         if use_cache:
             # TODO: initialize cache
@@ -74,6 +75,7 @@ class DuoquestVerifier:
         self.disable_clauses = disable_clauses
         self.disable_semantics = disable_semantics
         self.disable_column = disable_column
+        self.disable_literals = disable_literals
 
         self.debug = debug
 
@@ -382,7 +384,7 @@ class DuoquestVerifier:
                         print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
 
-        if self.literals_given:
+        if self.literals_given and not self.disable_literals:
             lits_count = len(literals.text_lits) + len(literals.num_lits)
             if query.min_where_preds > lits_count:
                 if self.debug:
@@ -413,7 +415,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: invalid op for text column.')
                     return Tribool(False)
-                if self.literals_given and \
+                if not self.disable_literals and self.literals_given and \
                     (self.disable_subquery or pred.has_subquery == FALSE):
                     if pred.col_id not in \
                         [c for l in literals.text_lits for c in l.col_id]:
@@ -425,7 +427,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have LIKE with numeric column.')
                     return Tribool(False)
-                if self.literals_given and \
+                if not self.disable_literals and self.literals_given and \
                     (self.disable_subquery or pred.has_subquery == FALSE):
                     if len(literals.num_lits) == 0:
                         if self.debug:
@@ -574,7 +576,8 @@ class DuoquestVerifier:
                     print('Prune: child of set operation cannot have LIMIT.')
                 return Tribool(False)
         else:
-            if query.has_where == FALSE and literals.text_lits:
+            if not self.disable_literals and query.has_where == FALSE \
+                and literals.text_lits:
                 if self.debug:
                     print('Prune: text literal requires WHERE clause.')
                 return Tribool(False)
@@ -712,14 +715,14 @@ class DuoquestVerifier:
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
