@@ -52,11 +52,17 @@ def main():
         'hard': 0
     }
     dbs = set()
+
+    num_preds_acc = 0
+    by_op = {}
+
     for task in tqdm(data):
         try:
             query, pq = is_valid_task(schemas[task['db_id']], db, task['sql'])
             dbs.add(task['db_id'])
-            tasks_by_level[detect_level(pq)] += 1
+            level = detect_level(pq)
+            tasks_by_level[level] += 1
+
             valid += 1
             tsq = db.generate_tsq(schemas[task['db_id']], query, pq, 'default',
                 1)
