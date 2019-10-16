@@ -27,12 +27,18 @@ def main():
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
     parser.add_argument('--tsq_rows', type=int, default=1)
-    parser.add_argument('--timeout', default=15, type=int,
+    parser.add_argument('--timeout', default=DEFAULT_TIMEOUT, type=int,
         help='Timeout if search does not terminate')
 
     parser.add_argument('--tid', default=None, type=int, help='debug task id')
     parser.add_argument('--start_tid', default=None, type=int,
         help='start task id')
+
+    # Disable pieces of the system
+    parser.add_argument('--disable_clauses', action='store_true')
+    parser.add_argument('--disable_semantics', action='store_true')
+    parser.add_argument('--disable_column', action='store_true')
+    parser.add_argument('--disable_literals', action='store_true')
 
     # Debugging options
     parser.add_argument('--compare', choices=TSQ_LEVELS,
@@ -58,7 +64,8 @@ def main():
         pass
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
-        args.tsq_rows, args.timeout)
+        args.tsq_rows, args.timeout, args.disable_clauses,
+        args.disable_semantics, args.disable_column, args.disable_literals)
 
     verifier = DuoquestVerifier(debug=args.debug,
         no_fk_select=True,
@@ -66,10 +73,13 @@ def main():
         no_fk_having=True,
         no_fk_group_by=True,
         agg_projected=True,
-        group_by_in_select=True,
         disable_set_ops=True,
         disable_subquery=True,
-        literals_given=True)
+        literals_given=True,
+        disable_clauses=args.disable_clauses,
+        disable_semantics=args.disable_semantics,
+        disable_column=args.disable_column,
+        disable_literals=args.disable_literals)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier, out_base)
 
@@ -79,9 +89,7 @@ def main():
     nlqc = NLQClient(int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_experiments(schemas, db, nlqc, data, args.tsq_level,
-        args.tsq_rows,
-        # kmaps,
-        tid=args.tid, compare=args.compare,
+        args.tsq_rows, tid=args.tid, compare=args.compare,
         start_tid=args.start_tid, timeout=args.timeout)
 
 if __name__ == '__main__':

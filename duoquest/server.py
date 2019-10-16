@@ -13,18 +13,13 @@ from threading import Event, Thread
 
 from .proto.duoquest_pb2 import ProtoLiteralList, ProtoQueryList, ProtoResult, \
     FALSE, UNKNOWN, TRUE, ProtoExperimentSet
-from .external.eval import print_ranks, print_cdf, print_avg_time
 from .database import Database
-from .query import generate_sql_str, matches_gold
+from .eval import correct_rank, matches_gold, print_ranks, print_cdf, \
+    print_avg_time
+from .query import generate_sql_str
 from .schema import Schema
 from .tasks import is_valid_task
 from .tsq import TableSketchQuery
-
-def correct_rank(cqs, pq):
-    for i, cq in enumerate(cqs):
-        if matches_gold(pq, cq):
-            return i + 1
-    return None
 
 def get_literals(pq, schema):
     literals = ProtoLiteralList()
@@ -150,6 +145,7 @@ class DuoquestServer:
         try:
             task['query'], task['pq'] = is_valid_task(schema, db, task['sql'])
         except Exception as e:
+            traceback.print_exc()
             print('Skipping task because it is out of scope.')
             return None
 
@@ -158,8 +154,8 @@ class DuoquestServer:
         if tsq_level == 'nlq_only':
             tsq = None
         else:
-            tsq = db.generate_tsq(schema, task['query'], task['pq'], tsq_level,
-                tsq_rows)
+            tsq = db.generate_tsq(task_id, schema, task['query'], task['pq'],
+                tsq_level, tsq_rows)
             print(tsq)
 
         ready = Event()
@@ -178,15 +174,6 @@ class DuoquestServer:
     def run_experiments(self, schemas, db, nlqc, tasks, tsq_level, tsq_rows,
         tid=None, compare=None, start_tid=None, timeout=None):
         nlqc.connect()
-
-        # if self.out_base:
-        #     out_path = f'{self.out_base}.exp'
-        #     gold_path = f'{self.out_base}.gold'
-        #     time_path = f'{self.out_base}.times'
-        #
-        #     f = open(out_path, 'w+')
-        #     gold_f = open(gold_path, 'w+')
-        #     time_f = open(time_path, 'w+')
 
         ranks = []
         times = []
@@ -211,8 +198,10 @@ class DuoquestServer:
 
             og_rank = correct_rank(cqs, task['pq'])
 
-            if task_time > timeout or og_rank is None:
+            if og_rank is None:
                 task_time = math.inf
+            elif task_time > timeout:
+                task_time = timeout
             ranks.append(og_rank)
             times.append(task_time)
 
@@ -237,7 +226,8 @@ class DuoquestServer:
                         print()
                         raise Exception('Rank is lower than compare!')
             else:
-                print('RANK: {}'.format(og_rank))
+                print(f'RANK: {og_rank}')
+                print(f'TIME: {task_time}')
 
             exp = exp_set.exps.add()
 
@@ -250,41 +240,19 @@ class DuoquestServer:
 
             exp.time = task_time
 
-            # if self.out_base:
-            #     if cqs:
-            #         f.write(u'\t'.join(
-            #         list(
-            #             map(lambda q: \
-            #                 generate_sql_str(q, schema).replace('\n', ' '), cqs)
-            #             )
-            #         ))
-            #         f.write('\n')
-            #     else:
-            #         f.write('SELECT A FROM B\n')  # failure
-
-                # gold_f.write(task['query'].replace('\t', ' '))
-                # gold_f.write(f"\t{task['db_id']}")
-                # gold_f.write('\n')
-                #
-                # print(f'TIME: {task_time:.2f}s\n')
-                # time_f.write(f'{task_time:.2f}')
-                # time_f.write('\n')
-
-        # if self.out_base:
-            # f.close()
-            # gold_f.close()
-            # time_f.close()
-
         nlqc.close()
 
-        if self.out_base:
-            out_path = f'{self.out_base}.exp'
-            with open(out_path, 'wb') as f:
-                f.write(exp_set.SerializeToString())
+        if tid or start_tid:
+            print('Not saving .exp output because of tid/start_tid option.')
+        else:
+            if self.out_base:
+                out_path = f'{self.out_base}.exp'
+                with open(out_path, 'wb') as f:
+                    f.write(exp_set.SerializeToString())
 
         print_ranks(ranks)
         print_avg_time(times)
-        print_cdf(ranks, times, 10)
+        print_cdf(ranks, times)
 
     def live_thread(self, tid, db, schema, tsq, literals, ready, tsq_level):
         task_conn = sqlite3.connect(self.task_db)
@@ -409,10 +377,6 @@ class DuoquestServer:
                     response.results.append(UNKNOWN)
                 elif result.value:
                     response.results.append(TRUE)
-
-                    print(query)
-                    print('--------')
-                    print(gold)
 
                     if matches_gold(gold, query):
                         response.answer_found = True

@@ -711,6 +711,9 @@ class UnsupportedColumnTypeException(Exception):
 class ForeignKeyException(Exception):
     pass
 
+class InconsistentPredicateException(Exception):
+    pass
+
 def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq = ProtoQuery()
 
@@ -757,6 +760,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
             tables.add(schema.get_col(col.fk_ref).table)
         else:
             proj.col_id = col.id
+            if col.id != 0:
+                tables.add(col.table)
         proj.agg = to_proto_agg(AGG_OPS[agg])
         if proj.agg != NO_AGG:
             proj.has_agg = TRUE
@@ -768,6 +773,8 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq.min_select_cols = len(pq.select)
 
     # WHERE
+    equality_cols = set()
+
     if 'where' in spider_sql and spider_sql['where']:
         pq.has_where = TRUE
 
@@ -792,8 +799,15 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                     tables.add(schema.get_col(col.fk_ref).table)
                 else:
                     pred.col_id = col.id
+                    tables.add(col.table)
 
                 pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
+
+                if pred.op == EQUALS:
+                    if pred.col_id in equality_cols:
+                        raise InconsistentPredicateException()
+                    equality_cols.add(pred.col_id)
+
                 if isinstance(cond[3], dict):
                     pred.has_subquery = TRUE
                     pred.subquery.CopyFrom(load_pq_from_spider(schema, cond[3]))
@@ -820,6 +834,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                 tables.add(schema.get_col(col.fk_ref).table)
             else:
                 pq.group_by.append(col.id)
+                tables.add(col.table)
         pq.min_group_by_cols = len(pq.group_by)
     else:
         pq.has_group_by = FALSE
@@ -855,6 +870,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
                         tables.add(schema.get_col(col.fk_ref).table)
                     else:
                         pred.col_id = col.id
+                        tables.add(col.table)
 
                     pred.op = to_proto_old_op(cond[0], WHERE_OPS[cond[1]])
                     if isinstance(cond[3], dict):
@@ -899,6 +915,7 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
             tables.add(schema.get_col(col.fk_ref).table)
         else:
             order_col.agg_col.col_id = col.id
+            tables.add(col.table)
 
         pq.min_order_by_cols = len(pq.order_by)
     else:
@@ -928,22 +945,29 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
         # if only non-agg exists and there is GROUP BY,
         # add aggregated columns from elsewhere to projection
         if pq.has_group_by == TRUE:
+            added = False
             for pred in pq.having.predicates:
                 proj = pq.select.add()
                 proj.has_agg = TRUE
                 proj.col_id = pred.col_id
                 proj.agg = pred.agg
+                added = True
             for oc in pq.order_by:
                 if oc.agg_col.has_agg == TRUE:
                     proj = pq.select.add()
                     proj.CopyFrom(oc.agg_col)
+                    added = True
+            if not added:
+                raise InvalidGroupByException()
 
     # FROM
+    self_join_check = set()
     for tbl_unit in spider_sql['from']['table_units']:
         if tbl_unit[0] != 'table_unit':
             raise FromSubqueryException()
 
         tables.add(schema.get_table(tbl_unit[1]))
+
     jp = schema.steiner(tables)
     set_proto_from(pq, jp)
 
@@ -955,27 +979,6 @@ def load_pq_from_spider(schema, spider_sql, set_op=None):
     pq.done_limit = True
     pq.done_query = True
     return pq
-
-# does not consider subqueries or set ops
-def matches_gold(gold, pq):
-    pq.distinct = gold.distinct
-    pq.limit = gold.limit
-
-    pq.done_select = gold.done_select
-    pq.done_where = gold.done_where
-    pq.done_group_by = gold.done_group_by
-    pq.done_having = gold.done_having
-    pq.done_order_by = gold.done_order_by
-    pq.done_limit = gold.done_limit
-    pq.done_query = gold.done_query
-
-    pq.min_select_cols = gold.min_select_cols
-    pq.min_where_preds = gold.min_where_preds
-    pq.min_group_by_cols = gold.min_group_by_cols
-    pq.min_having_preds = gold.min_having_preds
-    pq.min_order_by_cols = gold.min_order_by_cols
-
-    return (gold.SerializeToString() == pq.SerializeToString())
 
 class Query():
     def __init__(self, schema, protoquery=None):

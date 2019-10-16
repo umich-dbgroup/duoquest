@@ -1,6 +1,13 @@
 from .proto.duoquest_pb2 import *
 from .query import *
 
+def is_number(val):
+    try:
+        float(val)
+        return True
+    except Exception as e:
+        return False
+
 def is_valid_task(schema, db, spider_sql):
     pq = load_pq_from_spider(schema, spider_sql)
 

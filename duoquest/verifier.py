@@ -47,6 +47,10 @@ class DuoquestVerifier:
         # set an integer value
         max_group_by=None,
 
+        disable_clauses=False,
+        disable_semantics=False,
+        disable_column=False,
+        disable_literals=False
         ):
         if use_cache:
             # TODO: initialize cache
@@ -65,6 +69,13 @@ class DuoquestVerifier:
         self.agg_projected = agg_projected
         self.inequality_projected = inequality_projected
         self.literals_given = literals_given
+
+
+        # disabling features in verifier
+        self.disable_clauses = disable_clauses
+        self.disable_semantics = disable_semantics
+        self.disable_column = disable_column
+        self.disable_literals = disable_literals
 
         self.debug = debug
 
@@ -234,6 +245,9 @@ class DuoquestVerifier:
 
     def row_result_matches(self, db_row, tsq_row):
         for pos, val in enumerate(tsq_row):
+            if val is None:
+                continue
+
             if isinstance(val, list):     # range constraint
                 if float(db_row[pos]) < val[0] or float(db_row[pos]) > val[1]:
                     return False
@@ -370,7 +384,7 @@ class DuoquestVerifier:
                         print('Prune: cannot have * without COUNT().')
                     return Tribool(False)
 
-        if self.literals_given:
+        if self.literals_given and not self.disable_literals:
             lits_count = len(literals.text_lits) + len(literals.num_lits)
             if query.min_where_preds > lits_count:
                 if self.debug:
@@ -379,7 +393,7 @@ class DuoquestVerifier:
 
         subquery_count = 0
 
-        for pred in query.where.predicates:
+        for i, pred in enumerate(query.where.predicates):
             if pred.col_id == 0:
                 if self.debug:
                     print('Prune: cannot have * in WHERE clause.')
@@ -401,7 +415,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: invalid op for text column.')
                     return Tribool(False)
-                if self.literals_given and \
+                if not self.disable_literals and self.literals_given and \
                     (self.disable_subquery or pred.has_subquery == FALSE):
                     if pred.col_id not in \
                         [c for l in literals.text_lits for c in l.col_id]:
@@ -413,7 +427,7 @@ class DuoquestVerifier:
                     if self.debug:
                         print('Prune: cannot have LIKE with numeric column.')
                     return Tribool(False)
-                if self.literals_given and \
+                if not self.disable_literals and self.literals_given and \
                     (self.disable_subquery or pred.has_subquery == FALSE):
                     if len(literals.num_lits) == 0:
                         if self.debug:
@@ -434,6 +448,14 @@ class DuoquestVerifier:
                 if not any(pred.col_id == a.col_id for a in query.select):
                     if self.debug:
                         print('Prune: inequality predicates must be in SELECT.')
+                    return Tribool(False)
+
+            for j in range(i+1, len(query.where.predicates)):
+                pred2 = query.where.predicates[j]
+                if pred.col_id == pred2.col_id and pred.op == EQUALS \
+                    and pred2.op == EQUALS:
+                    if self.debug:
+                        print('Prune: only one equality permitted per column.')
                     return Tribool(False)
 
         for pred in query.having.predicates:
@@ -554,7 +576,8 @@ class DuoquestVerifier:
                     print('Prune: child of set operation cannot have LIMIT.')
                 return Tribool(False)
         else:
-            if query.has_where == FALSE and literals.text_lits:
+            if not self.disable_literals and query.has_where == FALSE \
+                and literals.text_lits:
                 if self.debug:
                     print('Prune: text literal requires WHERE clause.')
                 return Tribool(False)
@@ -648,55 +671,58 @@ class DuoquestVerifier:
                 else:
                     return Tribool(None)
 
-        check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
-        if check_clauses is not None:
-            if hasattr(self, 'stats'):
-                self.stats['clauses'] += 1
-            return check_clauses
+        if not self.disable_clauses:
+            check_clauses = self.prune_by_clauses(query, tsq, set_op, literals)
+            if check_clauses is not None:
+                if hasattr(self, 'stats'):
+                    self.stats['clauses'] += 1
+                return check_clauses
 
-        check_num_cols = self.prune_by_num_cols(query, tsq)
-        if check_num_cols is not None:
-            if hasattr(self, 'stats'):
-                self.stats['num_cols'] += 1
-            return check_num_cols
-
-        check_semantics = self.prune_by_semantics(schema, query, literals)
-        if check_semantics is not None:
-            if hasattr(self, 'stats'):
-                self.stats['semantics'] += 1
-            return check_semantics
+        if not self.disable_semantics:
+            check_semantics = self.prune_by_semantics(schema, query, literals)
+            if check_semantics is not None:
+                if hasattr(self, 'stats'):
+                    self.stats['semantics'] += 1
+                return check_semantics
 
         # if not child of UNION or right child of EXCEPT, can check values
         can_check_values = tsq.values and \
             set_op != UNION and \
             not (set_op == EXCEPT and lr == 'right')
 
-        for i, aggcol in enumerate(query.select):
-            check_types = self.prune_select_col_types(db, schema, aggcol, tsq,
-                i)
-            if check_types is not None:
+        if not self.disable_column:
+            check_num_cols = self.prune_by_num_cols(query, tsq)
+            if check_num_cols is not None:
                 if hasattr(self, 'stats'):
-                    self.stats['types'] += 1
-                return check_types
+                    self.stats['num_cols'] += 1
+                return check_num_cols
 
-            if can_check_values:
-                check_values = self.prune_select_col_values(db, schema, aggcol,
+            for i, aggcol in enumerate(query.select):
+                check_types = self.prune_select_col_types(db, schema, aggcol,
                     tsq, i)
-                if check_values is not None:
+                if check_types is not None:
                     if hasattr(self, 'stats'):
-                        self.stats['select_vals'] += 1
-                    return check_values
+                        self.stats['types'] += 1
+                    return check_types
+
+                if can_check_values:
+                    check_values = self.prune_select_col_values(db, schema,
+                        aggcol, tsq, i)
+                    if check_values is not None:
+                        if hasattr(self, 'stats'):
+                            self.stats['select_vals'] += 1
+                        return check_values
 
         if query.done_where:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_text_literals(query, literals)
                 if check_literals is not None:
                     return check_literals
 
         if query.done_where and query.done_having:
             # only perform on top-level query, checks recursively
-            if self.literals_given and lr is None:
+            if not self.disable_literals and self.literals_given and lr is None:
                 check_literals = self.prune_by_num_literals(query, literals)
                 if check_literals is not None:
                     return check_literals

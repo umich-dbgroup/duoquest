@@ -1,6 +1,18 @@
 import os
 
-def results_path(config, dataset, mode, tsq_level, tsq_rows, timeout):
+def results_path(config, dataset, mode, tsq_level, tsq_rows, timeout,
+    disable_clauses, disable_semantics, disable_column, disable_literals):
+
     basename = '_'.join([dataset, mode, tsq_level, f'r{tsq_rows}',
         f't{timeout}'])
+
+    if disable_clauses:
+        basename += '_dc'
+    if disable_semantics:
+        basename += '_ds'
+    if disable_column:
+        basename += '_dl'
+    if disable_literals:
+        basename += '_di'
+
     return os.path.join(config['duoquest']['results_dir'], f'{basename}')

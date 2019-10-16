@@ -8,6 +8,7 @@ from tqdm import tqdm
 from experiments import load_schemas
 
 from duoquest.database import Database
+from duoquest.eval import detect_level
 from duoquest.query import *
 from duoquest.schema import JoinPathException
 from duoquest.tasks import *
@@ -35,18 +36,33 @@ def main():
         'group_by': 0,
         'wildcard': 0,
         'col_type': 0,
+        'inconsistent_predicate': 0,
         'foreign_key': 0,
         'col_binary_op': 0,
         'logical_op': 0,
         'multi_order_by': 0,
         'set_op': 0,
         'join_path': 0,
-        'value': 0
+        'value': 0,
     }
     valid = 0
+    tasks_by_level = {
+        'easy': 0,
+        'medium': 0,
+        'hard': 0
+    }
+    dbs = set()
+
+    num_preds_acc = 0
+    by_op = {}
+
     for task in tqdm(data):
         try:
             query, pq = is_valid_task(schemas[task['db_id']], db, task['sql'])
+            dbs.add(task['db_id'])
+            level = detect_level(pq)
+            tasks_by_level[level] += 1
+
             valid += 1
             tsq = db.generate_tsq(schemas[task['db_id']], query, pq, 'default',
                 1)
@@ -78,8 +94,26 @@ def main():
             errors['join_path'] += 1
         except InvalidValueException as e:
             errors['value'] += 1
+        except InconsistentPredicateException as e:
+            errors['inconsistent_predicate'] += 1
 
     print(f'VALID: {valid}')
+    for level, num in tasks_by_level.items():
+        print(f' - {level}: {num}')
+
+    print(f'UNIQUE DATABASES: {len(dbs)}')
+
+    cum_tables = 0
+    cum_cols = 0
+    cum_fkpk = 0
+    for dbid in dbs:
+        cum_tables += len(schemas[dbid].tables)
+        cum_cols += len(schemas[dbid].columns) - 1
+        cum_fkpk += len(list(filter(lambda c: c.fk_ref, schemas[dbid].columns)))
+    print(f' - AVG TBLS: {cum_tables / len(dbs)}')
+    print(f' - AVG COLS: {cum_cols / len(dbs)}')
+    print(f' - AVG FKPK: {cum_fkpk / len(dbs)}')
+
     print('ERRORS')
     print('------')
     pprint(errors)
