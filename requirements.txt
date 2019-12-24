@@ -3,7 +3,7 @@ Flask==1.1.1
 itsdangerous==1.1.0
 Jinja2==2.10.1
 MarkupSafe==1.1.1
-nltk==3.4.3
+nltk==3.4.5
 protobuf==3.8.0
 psycopg2-binary==2.8.4
 redis==3.3.8
