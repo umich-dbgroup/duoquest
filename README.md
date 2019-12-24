@@ -121,11 +121,13 @@ The task database has the following schema:
 ```
 export DQ_VERSION=<version_number_here>
 ```
-2. Build data image.
+2. Download [Spider dataset](https://yale-lily.github.io/spider) and [mas_smallest.sqlite](https://drive.google.com/file/d/16z05ZD0Wsc3LYZ32semzIMuUWiIhZcQZ/view?usp=sharing) into `data/` folder.
+
+3. Build data container.
 ```
 docker build -t chrisjbaik/duoquest-data:$DQ_VERSION data/
 ```
-3. Load/build Enumerator image.
+4. Load/build Enumerator image.
 ```
 cd enum/syntaxSQL
 git submodule init        # only if submodule not initialized yet
@@ -133,15 +135,15 @@ git submodule update      # only if submodule not initialized yet
 docker build -t chrisjbaik/duoquest-enum:$DQ_VERSION .
 cd ../../
 ```
-4. Build task database image.
+5. Build task database image.
 ```
 docker build -t chrisjbaik/duoquest-task-db:$DQ_VERSION -f task_db/Dockerfile .
 ```
-5. Build web interface image.
+6. Build web interface image.
 ```
 docker build -t chrisjbaik/duoquest-web:$DQ_VERSION -f web/Dockerfile .
 ```
-6. Build main image.
+7. Build main image.
 ```
 docker build -t chrisjbaik/duoquest-main:$DQ_VERSION .
 ```
