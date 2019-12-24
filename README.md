@@ -3,64 +3,86 @@
 Dual-specification query synthesis with natural language and table sketch
 queries.
 
-## Setup
+## Quickstart
 
-### Python Dependencies
+**Dependencies**:
+- Docker 19.03+
+- NVIDIA GPU
+- [NVIDIA Docker](https://github.com/NVIDIA/nvidia-docker)
 
-First, ensure you have at least **Python 3.6**. Then, make a virtual environment and install requirements:
+**TODO**: Simplify this process with Docker compose - cannot do this until
+[issue](https://github.com/docker/compose/issues/6691) with GPUS is resolved.
+
+1. Set the variable correctly for the most recent version.
 ```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+export DQ_VERSION=0.1
 ```
-Activate this virtual environment with `source venv/bin/activate` whenever you
-are running the system.
-
-### Config
-
-Make a copy of the `config.ini.example` in the main repository folder and name
-it `config.ini`.
-
-### Spider Dataset
-
-1. Download the [Spider dataset](https://yale-lily.github.io/spider).
-2. Unzip to wherever you like.
-3. Edit the paths under `spider` in `config.ini` accordingly.
-
-### Enumerator Model (SyntaxSQLNet)
-
-1. The [SyntaxSQLNet](https://github.com/taoyds/syntaxSQL) is forked and set up
-as a Git submodule under `/systems/syntaxSQL`. You should be able to run `git submodule init` in the directory, then `git submodule update`. Read more on [submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) for help.
-2. Download the [pretrained Glove models](https://nlp.stanford.edu/data/wordvecs/glove.42B.300d.zip) and unzip somewhere. Update `syntaxsql.glove_path` in `config.ini` to the directory you unzipped it to.
-3. Download the [pretrained SyntaxSQL models](https://drive.google.com/file/d/1FHEcceYuf__PLhtD5QzJvexM7SNGnoBu/view?usp=sharing) and unzip somewhere. Update `syntaxsql.models_path` in `config.ini` to the `saved_models` folder under `generated_data_augment`.
-4. Make an Anaconda environment or Python 2 **(make sure it's Python 2, not 3!)** virtual environment in `/systems/syntaxSQL` and run `pip install -r requirements.txt`. This is distinct from the Python dependencies setup above.
-5. Install PyTorch >= 0.2.0 and <= 0.4.1.
-6. Install NLTK package dependencies. Open a Python terminal and run:
+2. Start the Docker network (`dq-net`).
 ```
-import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
+docker network create dq-net
+```
+3. Run the data container (`dq-data`).
+```
+docker run --rm -dit --name dq-data -v dq-vol:/home/data chrisjbaik/duoquest-data:$DQ_VERSION
+```
+4. Run the Enumerator (`dq-enum`) using one of the following instructions.
+```
+docker run --rm --gpus all -dit --name dq-enum --network dq-net -v dq-vol:/workspace/data chrisjbaik/duoquest-enum:$DQ_VERSION
+
+# Add `--toy` for fast-starting debugging mode with decreased performance
+docker run --rm --gpus all -dit --name dq-enum --network dq-net -v dq-vol:/workspace/data chrisjbaik/duoquest-enum:$DQ_VERSION --toy
+```
+5. Run the task database container (`dq-task-db`).
+```
+docker run --rm -dit --name dq-task-db --network dq-net chrisjbaik/duoquest-task-db:$DQ_VERSION
+```
+6. Run the autocomplete container (`dq-autocomplete`).
+```
+docker run --rm -dit --name dq-autocomplete --network dq-net redis
+```
+7. Run the web interface container (`dq-web`). Note the `-p` option, where the first port number indicates which port the web interface will run on the host machine. Also note the `WORKERS_PER_CORE` option, which determines how many workers will run for the web server (we set it to `0.1` because we have a 32-core server).
+```
+docker run --rm -dit -p 5000:80 -e WORKERS_PER_CORE="0.1" --name dq-web --network dq-net -v dq-vol:/home/data chrisjbaik/duoquest-web:$DQ_VERSION
+```
+8. Run the main container (`dq-main`). The `--timeout` flag indicates how many seconds each task will run before giving up.
+```
+docker run --rm -dit --name dq-main --network dq-net -v dq-vol:/home/data chrisjbaik/duoquest-main:$DQ_VERSION --timeout=60
 ```
 
-## Run Simulated Experiments
+## Simulation Experiments
 
-### Warnings
+### Run
 
-1. The Enumerator runs on Python 2 (as it is mostly external code), while the main execution and verifier code runs on Python 3!
-2. The Enumerator requires a GPU-enabled machine and PyTorch to run.
+Follow the instructions in steps 1-7 under **Quickstart** above. Instead of starting the `dq-main` container with the default entrypoint, we run simulation experiments using the following command:
 
-### Procedure
+```
+docker run --rm -dit --name dq-main --network dq-net -v dq-vol:/home/data --entrypoint="python" chrisjbaik/duoquest-main experiments.py spider dev default
+```
 
-1. Run Enumerator by going to `systems/syntaxSQL`, activating the virtual environment (`source venv/bin/activate`), and running `python main.py --config_path=../../config.ini`. (This will take a couple minutes to load the word embeddings; if you want to run a sanity check load test, add the `--toy` option.)
-2. After the Enumerator is up and listening, **open a new terminal window** to the main project folder, activate the virtual environment (`source venv/bin/activate`), then run `python3 experiments.py` with the appropriate arguments.
+The last 3 arguments indicate the dataset, subset of dataset, and type of evaluation (`default`, `partial`, `minimal`, `nlq_only`, `tsq_only`, `chain`), respectively.
 
-## Run Live System/Server
+If `dq-main` is already running, shut down and remove that container using `docker stop` and `docker rm` if needed to ensure this container can run.
 
-### Task Database Setup
+If you want to view the experiment progress in real-time, use the following:
 
-First, make sure there is a running instance of [Redis](https://redis.io) on your machine.
+```
+docker logs -f dq-main
+```
 
-Run `python3 init_task_db.py`. This will set up the task database and preload it with information from the Spider database. It will also prepopulate the autocomplete database which uses redis. The task database has the following schema:
+The results will automatically be saved in a `results` folder within the shared volume `dq-vol`.
+
+### Result Summary/Analysis
+
+The following container can be executed to generate a viewable result summary/analysis after running a simulation experiment:
+```
+docker run --rm -it --name dq-eval --network dq-net -v dq-vol:/home/data --entrypoint="python" chrisjbaik/duoquest-main eval.py spider dev default
+```
+
+Note that all arguments (including any additional arguments unmentioned above, like `--timeout`) must **exactly match** the arguments executed when running the `dq-main` container for running the experiment!
+
+## Task Database Schema
+
+The task database has the following schema:
 
 **Tasks**
 
@@ -92,8 +114,34 @@ Run `python3 init_task_db.py`. This will set up the task database and preload it
 | tid | text | foreign key to task id |
 | query | text | candidate SQL query |
 
-### Procedure
 
-1. Get the Enumerator running following the instructions under the **Run Tests** section above.
-2. Get the main Duoquest queue manager running using `python3 main.py`.
-3. Add new tasks using the CLI (`python3 cli.py`) or the web front-end (`flask run`, see [docs](https://flask.palletsprojects.com/en/1.1.x/quickstart/), or run on [gunicorn](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-14-04)).
+## Build Process for Docker Images (Development Only)
+
+1. Save the version number as a variable.
+```
+export DQ_VERSION=<version_number_here>
+```
+2. Build data image.
+```
+docker build -t chrisjbaik/duoquest-data:$DQ_VERSION data/
+```
+3. Load/build Enumerator image.
+```
+cd enum/syntaxSQL
+git submodule init        # only if submodule not initialized yet
+git submodule update      # only if submodule not initialized yet
+docker build -t chrisjbaik/duoquest-enum:$DQ_VERSION .
+cd ../../
+```
+4. Build task database image.
+```
+docker build -t chrisjbaik/duoquest-task-db:$DQ_VERSION -f task_db/Dockerfile .
+```
+5. Build web interface image.
+```
+docker build -t chrisjbaik/duoquest-web:$DQ_VERSION -f web/Dockerfile .
+```
+6. Build main image.
+```
+docker build -t chrisjbaik/duoquest-main:$DQ_VERSION .
+```
