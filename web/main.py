@@ -1,6 +1,8 @@
 import configparser
 import json
 import os
+import psycopg2
+import psycopg2.extras
 import random
 import sqlite3
 import time
@@ -23,7 +25,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 app.config['UPLOAD_FOLDER'] = os.path.join(dir_path, 'uploads')
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('docker_cfg.ini')
 
 redis = Redis(host=config['redis']['host'], port=config['redis']['port'], db=0)
 
@@ -225,9 +227,9 @@ def autocomplete(db_name, term):
             f'[{term.lower()}\xff', start=0, num=10))))
 
 def reset_autocomplete(db_name):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = connect_task_db()
     cur = conn.cursor()
-    cur.execute('SELECT schema_proto, path FROM databases WHERE name = ?',
+    cur.execute('SELECT schema_proto, path FROM databases WHERE name = %s',
         (db_name,))
     row = cur.fetchone()
     if not row:
@@ -242,10 +244,21 @@ def reset_autocomplete(db_name):
     conn.close()
     return True, None
 
+def connect_task_db():
+    return psycopg2.connect(database=config['db']['name'],
+            user=config['db']['user'],
+            password=config['db']['password'],
+            host=config['db']['host'],
+            port=config['db']['port'])
+
 def load_tasks():
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
+    conn = connect_task_db()
+    conn = psycopg2.connect(database=config['db']['name'],
+            user=config['db']['user'],
+            password=config['db']['password'],
+            host=config['db']['host'],
+            port=config['db']['port'])
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute('''SELECT tid, db, nlq, status, error_msg, tsq_proto FROM tasks
                    ORDER BY time ASC''')
     tasks = cur.fetchall()
@@ -253,20 +266,18 @@ def load_tasks():
     return tasks
 
 def load_databases():
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
+    conn = connect_task_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute('SELECT name, path FROM databases ORDER BY name')
     databases = cur.fetchall()
     conn.close()
     return databases
 
 def load_task(tid):
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = dict_factory
-    cur = conn.cursor()
+    conn = connect_task_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute('''SELECT tid, db, nlq, tsq_proto, nlq_with_literals, status,
-                   error_msg FROM tasks WHERE tid = ?''', (tid,))
+                   error_msg FROM tasks WHERE tid = %s''', (tid,))
     task = cur.fetchone()
 
     if not task:
@@ -278,15 +289,14 @@ def load_task(tid):
     return task
 
 def load_results(tid, offset):
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = dict_factory
-    cur = conn.cursor()
-    cur.execute('SELECT status FROM tasks t WHERE t.tid = ?', (tid,))
+    conn = connect_task_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute('SELECT status FROM tasks t WHERE t.tid = %s', (tid,))
     status = cur.fetchone()['status']
 
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute('''SELECT rid, query FROM results r
-                   WHERE tid = ? AND rid > ? ORDER BY rid ASC LIMIT 20''',
+                   WHERE tid = %s AND rid > %s ORDER BY rid ASC LIMIT 20''',
                    (tid, offset))
     results = cur.fetchall()
 
@@ -295,13 +305,12 @@ def load_results(tid, offset):
     return output
 
 def result_query_view(rid, limit=None):
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = dict_factory
-    cur = conn.cursor()
+    conn = connect_task_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute('''SELECT d.path, r.query FROM results r
                      JOIN tasks t ON r.tid = t.tid
                      JOIN databases d ON t.db = d.name
-                   WHERE rid = ?''', (rid,))
+                   WHERE rid = %s''', (rid,))
     query_info = cur.fetchone()
     conn.close()
 
@@ -321,21 +330,22 @@ def result_query_view(rid, limit=None):
     return output
 
 def add_task(db_name, nlq, literals_proto, nlq_with_literals, tsq=None):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = connect_task_db()
     cur = conn.cursor()
+
     tid = str(uuid.uuid4())
     try:
         if tsq:
             tsq_proto = tsq.to_proto().SerializeToString()
             cur.execute('''INSERT INTO tasks (tid, db, nlq, tsq_proto,
                            literals_proto, nlq_with_literals, status, time)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
                            (tid, db_name, nlq, tsq_proto, literals_proto,
                             nlq_with_literals, 'waiting', int(time.time())))
         else:
             cur.execute('''INSERT INTO tasks (tid, db, nlq,
                            literals_proto, nlq_with_literals, status, time)
-                           VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
                            (tid, db_name, nlq, literals_proto,
                             nlq_with_literals, 'waiting', int(time.time())))
     except Exception as e:
@@ -348,39 +358,51 @@ def add_task(db_name, nlq, literals_proto, nlq_with_literals, tsq=None):
     return tid, True
 
 def delete_task(tid):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = connect_task_db()
     cur = conn.cursor()
-    cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
-    cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
+    cur.execute('DELETE FROM results WHERE tid = %s', (tid,))
+    cur.execute('DELETE FROM tasks WHERE tid = %s', (tid,))
 
     conn.commit()
     conn.close()
 
 def stop_task(tid):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = psycopg2.connect(database=config['db']['name'],
+            user=config['db']['user'],
+            password=config['db']['password'],
+            host=config['db']['host'],
+            port=config['db']['port'])
+
     cur = conn.cursor()
-    cur.execute('UPDATE tasks SET status = ? WHERE tid = ?',
+    cur.execute('UPDATE tasks SET status = %s WHERE tid = %s',
         ('done', tid))
 
     conn.commit()
     conn.close()
 
 def rerun_task(tid):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = psycopg2.connect(database=config['db']['name'],
+            user=config['db']['user'],
+            password=config['db']['password'],
+            host=config['db']['host'],
+            port=config['db']['port'])
     cur = conn.cursor()
-    cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
-    cur.execute('UPDATE tasks SET status = ?, error_msg = ? WHERE tid = ?',
+    cur.execute('DELETE FROM results WHERE tid = %s', (tid,))
+    cur.execute('UPDATE tasks SET status = %s, error_msg = %s WHERE tid = %s',
         ('waiting', None, tid))
 
     conn.commit()
     conn.close()
 
 def load_database(name):
-    conn = sqlite3.connect(config['db']['path'])
-    conn.row_factory = dict_factory
-    cur = conn.cursor()
+    conn = psycopg2.connect(database=config['db']['name'],
+            user=config['db']['user'],
+            password=config['db']['password'],
+            host=config['db']['host'],
+            port=config['db']['port'])
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute('''SELECT name, schema_proto, path FROM databases
-                   WHERE name = ?''', (name,))
+                   WHERE name = %s''', (name,))
     db = cur.fetchone()
 
     if not db:
@@ -399,10 +421,10 @@ def load_database(name):
 
 def edit_database_fkpks(name, fkpks):
     try:
-        conn = sqlite3.connect(config['db']['path'])
+        conn = connect_task_db()
         cur = conn.cursor()
         cur.execute('''SELECT schema_proto FROM databases
-                       WHERE name = ?''', (name,))
+                       WHERE name = %s''', (name,))
         row = cur.fetchone()
         if not row:
             raise Exception(f'Database {name} does not exist')
@@ -415,7 +437,7 @@ def edit_database_fkpks(name, fkpks):
 
         schema_proto = schema.to_proto().SerializeToString()
         cur = conn.cursor()
-        cur.execute('UPDATE databases SET schema_proto = ? WHERE name = ?',
+        cur.execute('UPDATE databases SET schema_proto = %s WHERE name = %s',
                     (schema_proto, name))
         conn.commit()
     except Exception as e:
@@ -424,19 +446,20 @@ def edit_database_fkpks(name, fkpks):
 
 def delete_database(db_name):
     try:
-        conn = sqlite3.connect(config['db']['path'])
+        conn = connect_task_db()
         cur = conn.cursor()
-        cur.execute('SELECT tid FROM tasks WHERE db = ?', (db_name,))
+        cur.execute('SELECT tid FROM tasks WHERE db = %s', (db_name,))
         for tid in cur.fetchall():
-            cur.execute('DELETE FROM results WHERE tid = ?', (tid,))
-            cur.execute('DELETE FROM tasks WHERE tid = ?', (tid,))
+            cur.execute('DELETE FROM results WHERE tid = %s', (tid,))
+            cur.execute('DELETE FROM tasks WHERE tid = %s', (tid,))
 
-        cur.execute('SELECT path FROM databases WHERE name = ?', (db_name,))
+        cur.execute('SELECT path FROM databases WHERE name = %s', (db_name,))
         row = cur.fetchone()
+
         if row and os.path.exists(row[0]):
             os.remove(row[0])
 
-        cur.execute('DELETE FROM databases WHERE name = ?', (db_name,))
+        cur.execute('DELETE FROM databases WHERE name = %s', (db_name,))
 
         redis.delete(db_name)
 
@@ -447,9 +470,9 @@ def delete_database(db_name):
     return True, None
 
 def database_exists(db_name):
-    conn = sqlite3.connect(config['db']['path'])
+    conn = connect_task_db()
     cur = conn.cursor()
-    cur.execute('SELECT name FROM databases WHERE name = ? LIMIT 1', (db_name,))
+    cur.execute('SELECT name FROM databases WHERE name = %s LIMIT 1', (db_name,))
 
     if cur.fetchone():
         return True
@@ -462,10 +485,10 @@ def add_new_database(db_name, db_path):
 
     init_autocomplete(schema, db_path, redis)
 
-    conn = sqlite3.connect(config['db']['path'])
+    conn = connect_task_db()
     cur = conn.cursor()
     cur.execute('''INSERT INTO databases (name, schema_proto, path)
-                   VALUES (?, ?, ?)''', (db_name, schema_proto_str, db_path))
+                   VALUES (%s, %s, %s)''', (db_name, schema_proto_str, db_path))
     conn.commit()
     return True
 

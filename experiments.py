@@ -26,6 +26,7 @@ def main():
     parser.add_argument('dataset', choices=DATASETS)
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
+    parser.add_argument('--config_path', default='docker_cfg.ini')
     parser.add_argument('--tsq_rows', type=int, default=1)
     parser.add_argument('--timeout', default=DEFAULT_TIMEOUT, type=int,
         help='Timeout if search does not terminate')
@@ -49,7 +50,7 @@ def main():
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(args.config_path)
 
     # Load dataset
     data = None
@@ -86,7 +87,7 @@ def main():
     schemas, kmaps = load_schemas(schemas_path)
     db = Database(db_path, args.dataset)
 
-    nlqc = NLQClient(int(config['nlq']['port']),
+    nlqc = NLQClient(config['nlq']['host'], int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'), args.dataset, args.mode)
     server.run_experiments(schemas, db, nlqc, data, args.tsq_level,
         args.tsq_rows, tid=args.tid, compare=args.compare,

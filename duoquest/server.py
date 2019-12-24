@@ -1,6 +1,6 @@
 import json
 import math
-import sqlite3
+import psycopg2
 import threading
 import time
 import traceback
@@ -40,37 +40,45 @@ def get_literals(pq, schema):
     return literals
 
 class DuoquestServer:
-    def __init__(self, port, authkey, verifier, out_base=None, task_db=None,
+    def __init__(self, port, authkey, verifier, out_base=None, db_cfg=None,
         minimal_join_paths=False):
         self.port = port
         self.authkey = authkey
         self.verifier = verifier
         self.out_base = out_base
-        self.task_db = task_db
+        self.db_cfg = db_cfg
 
         self.minimal_join_paths = minimal_join_paths
 
     def reset_any_running(self):
-        conn = sqlite3.connect(self.task_db)
+        conn = psycopg2.connect(database=self.db_cfg['name'],
+                host=self.db_cfg['host'],
+                port=self.db_cfg['port'],
+                user=self.db_cfg['user'],
+                password=self.db_cfg['password'])
         cur = conn.cursor()
-        cur.execute("SELECT tid FROM tasks WHERE status = ?", ('running',))
+        cur.execute("SELECT tid FROM tasks WHERE status = %s", ('running',))
         for row in cur.fetchall():
             results_cur = conn.cursor()
-            results_cur.execute('DELETE FROM results WHERE tid = ?', (row[0],))
+            results_cur.execute('DELETE FROM results WHERE tid = %s', (row[0],))
 
             status_cur = conn.cursor()
-            status_cur.execute('''UPDATE tasks SET status = ?, error_msg = ?
-                                  WHERE tid = ?''', ('waiting', None, row[0]))
+            status_cur.execute('''UPDATE tasks SET status = %s, error_msg = %s
+                                  WHERE tid = %s''', ('waiting', None, row[0]))
         conn.commit()
         conn.close()
 
     def run_next_in_queue(self, nlqc, timeout=None):
-        conn = sqlite3.connect(self.task_db)
+        conn = psycopg2.connect(database=self.db_cfg['name'],
+                host=self.db_cfg['host'],
+                port=self.db_cfg['port'],
+                user=self.db_cfg['user'],
+                password=self.db_cfg['password'])
         cur = conn.cursor()
         cur.execute('''SELECT t.tid, t.db, d.path, t.nlq, t.tsq_proto,
                               t.literals_proto, d.schema_proto
                        FROM tasks t JOIN databases d ON d.name = t.db
-                       WHERE status = ? ORDER BY time ASC LIMIT 1''',
+                       WHERE status = %s ORDER BY time ASC LIMIT 1''',
                     ('waiting',))
         row = cur.fetchone()
 
@@ -92,7 +100,7 @@ class DuoquestServer:
         print(literals)
 
         cur = conn.cursor()
-        cur.execute('UPDATE tasks SET status = ? WHERE tid = ?',
+        cur.execute('UPDATE tasks SET status = %s WHERE tid = %s',
                     ('running', tid))
         conn.commit()
 
@@ -130,7 +138,7 @@ class DuoquestServer:
 
         print('Updating database with results...', end='')
         cur = conn.cursor()
-        cur.execute('UPDATE tasks SET status = ?, error_msg = ? WHERE tid = ?',
+        cur.execute('UPDATE tasks SET status = %s, error_msg = %s WHERE tid = %s',
                     (status, error_msg, tid))
         conn.commit()
         print('Done')
@@ -255,9 +263,13 @@ class DuoquestServer:
         print_cdf(ranks, times)
 
     def live_thread(self, tid, db, schema, tsq, literals, ready, tsq_level):
-        task_conn = sqlite3.connect(self.task_db)
+        task_conn = psycopg2.connect(database=self.db_cfg['name'],
+                host=self.db_cfg['host'],
+                port=self.db_cfg['port'],
+                user=self.db_cfg['user'],
+                password=self.db_cfg['password'])
 
-        address = ('localhost', self.port)
+        address = ('', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
         print(f'DuoquestServer listening on port {self.port}...')
@@ -289,7 +301,7 @@ class DuoquestServer:
             cur_time = time.time()
             if (cur_time - last_done_check) > 2:
                 cur = task_conn.cursor()
-                cur.execute('SELECT status FROM tasks WHERE tid = ?', (tid,))
+                cur.execute('SELECT status FROM tasks WHERE tid = %s', (tid,))
                 row = cur.fetchone()
                 if row[0] == 'done':
                     response.results.append(TRUE)
@@ -320,7 +332,7 @@ class DuoquestServer:
                     sql_str = generate_sql_str(query, schema)
                     if sql_str not in seen_queries:
                         cur = task_conn.cursor()
-                        cur.execute('INSERT INTO results (tid, query) VALUES (?,?)',
+                        cur.execute('INSERT INTO results (tid, query) VALUES (%s,%s)',
                                     (tid, sql_str))
                         task_conn.commit()
                         seen_queries.add(sql_str)
@@ -334,7 +346,7 @@ class DuoquestServer:
 
     def experiment_thread(self, db, schema, tsq, literals, ready, tsq_level,
         gold):
-        address = ('localhost', self.port)
+        address = ('', self.port)
         listener = Listener(address, authkey=self.authkey)
         ready.set()
         print(f'DuoquestServer listening on port {self.port}...')

@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('dataset', choices=DATASETS)
     parser.add_argument('mode', choices=MODES)
     parser.add_argument('tsq_level', choices=TSQ_LEVELS)
+    parser.add_argument('--config_path', default='docker_cfg.ini')
     parser.add_argument('--tsq_rows', type=int, default=1)
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--n', default=None, type=int,
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(args.config_path)
 
     out_base = results_path(config, args.dataset, args.mode, args.tsq_level,
         args.tsq_rows, args.timeout, args.disable_clauses,

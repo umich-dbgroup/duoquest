@@ -7,10 +7,12 @@ host = localhost
 port = 6379
 
 [nlq]
+host = localhost
 port = 6000
 authkey = duoquest
 
 [duoquest]
+host = localhost
 port = 6001
 authkey = duoquest
 results_dir = results

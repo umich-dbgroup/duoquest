@@ -10,10 +10,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--timeout', default=30)
     parser.add_argument('--debug', action='store_true', help='Debugging output')
+    parser.add_argument('--config_path', default='docker_cfg.ini')
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(args.config_path)
 
     print('Initializing Duoquest...')
     verifier = DuoquestVerifier(debug=args.debug,
@@ -31,9 +32,9 @@ def main():
         literals_given=True)
     server = DuoquestServer(int(config['duoquest']['port']),
         config['duoquest']['authkey'].encode('utf-8'), verifier,
-        task_db=config['db']['path'],
+        db_cfg=config['db'],
         minimal_join_paths=True)
-    nlqc = NLQClient(int(config['nlq']['port']),
+    nlqc = NLQClient(config['nlq']['host'], int(config['nlq']['port']),
         config['nlq']['authkey'].encode('utf-8'))
 
     print('Cleaning up any old tasks...')

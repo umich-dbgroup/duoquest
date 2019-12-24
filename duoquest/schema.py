@@ -298,7 +298,7 @@ class Schema(object):
         return schema_proto
 
     @staticmethod
-    def from_db_path(db_name, db_path):
+    def from_sqlite(db_name, db_path):
         schema = Schema()
         schema.db_id = db_name
         schema.tables = []
@@ -328,8 +328,36 @@ class Schema(object):
                 table.add_col(column)
                 schema.columns.append(column)
 
+        for table in schema.tables:
+            cur = conn.cursor()
+            cur.execute(f'PRAGMA foreign_key_list({table.syn_name})')
+            for row in cur.fetchall():
+                fk_tbl_name = row[2]
+                pk_col_name = row[3]
+                fk_col_name = row[4]
+
+                pk_col = schema.find_col_by_syn_name(table.syn_name, pk_col_name)
+                fk_col = schema.find_col_by_syn_name(fk_tbl_name, fk_col_name)
+
+                pk_col.fk_ref = fk_col.id
+
         conn.close()
         return schema
+
+    def find_col_by_syn_name(self, tbl_syn_name, col_syn_name):
+        for col in self.columns:
+            if not col.table:
+                continue
+
+            if col.syn_name.lower() != col_syn_name.lower():
+                continue
+
+            if col.table.syn_name.lower() != tbl_syn_name.lower():
+                continue
+
+            return col
+
+        return None
 
     @staticmethod
     def from_proto(schema_proto_str):

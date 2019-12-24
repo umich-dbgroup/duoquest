@@ -7,14 +7,15 @@ from .proto.duoquest_pb2 import ProtoTask, ProtoCandidates
 from .query import generate_sql_str
 
 class NLQClient:
-    def __init__(self, port, authkey, dataset=None, mode=None):
+    def __init__(self, host, port, authkey, dataset=None, mode=None):
+        self.host = host
         self.port = port
         self.authkey = authkey
         self.dataset = dataset
         self.mode = mode
 
     def connect(self):
-        address = ('localhost', self.port)
+        address = (self.host, self.port)
         while True:
             try:
                 self.conn = Client(address, authkey=self.authkey)
@@ -35,7 +36,7 @@ class NLQClient:
         task.db_name = schema.db_id
         task.timeout = timeout or 0
         task.minimal_join_paths = minimal_join_paths
-        
+
         if isinstance(nlq, list):
             for token in nlq:
                 task.nlq_tokens.append(token)
