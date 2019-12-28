@@ -269,7 +269,7 @@ $('#tsq-del-row').on('click', function (e) {
   }
 });
 
-$('#task-form').on('submit', function(e) {
+var submitHandler = function () {
 	$("input[name=num_cols]").remove();
   $("<input />").attr("type", "hidden")
           .attr("name", "num_cols")
@@ -330,6 +330,21 @@ $('#task-form').on('submit', function(e) {
           .attr("name", "nlq_with_literals")
           .attr("value", nlq['nlq_with_literals'])
           .appendTo("#task-form");
+}
+
+$('#task-form').on('submit', function(e) {
+	var form = $(this);
+	var tid_attr = $(this).attr('data-tid');
+
+	if (typeof tid_attr !== typeof undefined && tid_attr !== false) {
+		$(this).val('Stopping current query...');
+		$(this).prop('disabled', true);
+		$.get(`/tasks/${tid}/stop`, function (data) {
+	    submitHandler();
+			form.submit();
+	  });
+	}
+	submitHandler();
   return true;
 });
 
@@ -339,8 +354,6 @@ function init_addons(active, editor) {
 					.attr('title', active.attr('title'))
 					.tooltip();
 	}
-
-
 
 	if (active.parents('#tsq-type-row').length) {
 		editor.cache = ['text', 'number'];

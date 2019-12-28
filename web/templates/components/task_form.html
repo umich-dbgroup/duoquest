@@ -95,6 +95,10 @@
     </div>
   </div>
   {% endif %}
-  <input type='submit' class='btn btn-block btn-primary btn-lg'
+  <input type='submit'
+    {% if task and 'tid' in task %}
+    data-tid="{{ task['tid'] }}"
+    {% endif %}
+    class='btn btn-block btn-primary btn-lg'
     value='Run new query >'></input>
 </form>
