@@ -70,6 +70,8 @@ def main():
         'hard': 0
     }
     squid_multi_projections = 0
+    squid_dbs = set()
+
     dbs = set()
 
     num_preds_acc = 0
@@ -90,6 +92,7 @@ def main():
 
                 if len(pq.select) > 1:
                     squid_multi_projections += 1
+                    squid_dbs.add(task['db_id'])
 
             tsq = db.generate_tsq(i+1, schemas[task['db_id']], query, pq,
                 'default', 1)
@@ -132,6 +135,7 @@ def main():
     for level, num in squid_tasks_by_level.items():
         print(f' - {level}: {num}')
     print(f'SQUID MULTI PROJECTIONS: {squid_multi_projections}')
+    print(f'SQUID DBS ({len(squid_dbs)}): {squid_dbs}')
 
     print(f'\nUNIQUE DATABASES: {len(dbs)}')
 
