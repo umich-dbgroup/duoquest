@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for db in dog_kennels car_1 employee_hire_evaluation poker_player orchestra cre_Doc_Template_Mgt wta_1 battle_death student_transcripts_tracking course_teach flight_2 tvshow concert_singer singer
+do
+  createdb -O afariha $db
+  pgloader sqlite:///Users/cjbaik/dev/spider/database/$db/$db.sqlite postgresql://afariha:123456@localhost:5432/$db;
+done
