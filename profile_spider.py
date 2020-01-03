@@ -9,9 +9,20 @@ from experiments import load_schemas
 
 from duoquest.database import Database
 from duoquest.eval import detect_level
+from duoquest.proto.duoquest_pb2 import NO_AGG
 from duoquest.query import *
 from duoquest.schema import JoinPathException
 from duoquest.tasks import *
+
+def is_squid_valid(schema, pq):
+    for agg_col in pq.select:
+        if agg_col.agg != NO_AGG:
+            return False
+        col = schema.get_col(agg_col.col_id)
+        if col.type != 'text':
+            return False
+
+    return True
 
 def main():
     parser = argparse.ArgumentParser()
@@ -51,21 +62,37 @@ def main():
         'medium': 0,
         'hard': 0
     }
+
+    squid_valid = 0
+    squid_tasks_by_level = {
+        'easy': 0,
+        'medium': 0,
+        'hard': 0
+    }
+    squid_multi_projections = 0
     dbs = set()
 
     num_preds_acc = 0
     by_op = {}
 
-    for task in tqdm(data):
+    for i, task in enumerate(tqdm(data)):
         try:
-            query, pq = is_valid_task(schemas[task['db_id']], db, task['sql'])
+            schema = schemas[task['db_id']]
+            query, pq = is_valid_task(schema, db, task['sql'])
             dbs.add(task['db_id'])
             level = detect_level(pq)
             tasks_by_level[level] += 1
-
             valid += 1
-            tsq = db.generate_tsq(schemas[task['db_id']], query, pq, 'default',
-                1)
+
+            if is_squid_valid(schema, pq):
+                squid_valid += 1
+                squid_tasks_by_level[level] += 1
+
+                if len(pq.select) > 1:
+                    squid_multi_projections += 1
+
+            tsq = db.generate_tsq(i+1, schemas[task['db_id']], query, pq,
+                'default', 1)
         except AggTypeMismatchException as e:
             errors['agg_type'] += 1
         except OpTypeMismatchException as e:
@@ -97,11 +124,16 @@ def main():
         except InconsistentPredicateException as e:
             errors['inconsistent_predicate'] += 1
 
-    print(f'VALID: {valid}')
+    print(f'\nVALID: {valid}')
     for level, num in tasks_by_level.items():
         print(f' - {level}: {num}')
 
-    print(f'UNIQUE DATABASES: {len(dbs)}')
+    print(f'\nSQUID VALID: {squid_valid}')
+    for level, num in squid_tasks_by_level.items():
+        print(f' - {level}: {num}')
+    print(f'SQUID MULTI PROJECTIONS: {squid_multi_projections}')
+
+    print(f'\nUNIQUE DATABASES: {len(dbs)}')
 
     cum_tables = 0
     cum_cols = 0
