@@ -12,7 +12,8 @@ for filename in os.listdir(LIB_PATH):
     if filename.endswith('.jar'):
         CLASSPATH += ':' + os.path.join(LIB_PATH, filename)
 
-db_name = 'smallimdb'
+# db_name = 'smallimdb'
+db_name = 'concert_singer'
 db_user = 'afariha'
 db_pw = '123456'
 log_level = 'SEVERE'
@@ -22,7 +23,8 @@ gamma = '1'
 tau_a = '0'
 tau_s = '0'
 
-pbe_spec = '"forrest gump","tom hanks"\n"cast away","tom hanks"'
+# pbe_spec = '"forrest gump","tom hanks"\n"cast away","tom hanks"'
+pbe_spec = '"joe sharp"\n"timbaland"'
 
 output = subprocess.check_output(['java', '-cp', CLASSPATH, 'main.ConsoleMain',
     pbe_spec,

@@ -1,0 +1,12 @@
+{
+  "dimensionObject": ["model_list", "car_names", "cars_data"],
+  "dimensionConcept": ["continents", "countries", "car_makers"],
+  "factObjectObject": [],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["car_makers:fullname", "cars_data:mpg",
+    "cars_data:cylinders", "cars_data:edispl", "cars_data:horsepower",
+    "cars_data:weight", "cars_data:accelerate", "cars_data:year"],
+  "primaryAttributeWithinDimension": ["continents:continent",
+    "countries:countryname", "car_makers:maker", "model_list:model"],
+  "additionalFreqConcept": []
+}

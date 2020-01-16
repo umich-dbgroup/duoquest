@@ -1,0 +1,1 @@
+ALTER TABLE Ref_Template_Types ADD COLUMN type_id SERIAL PRIMARY KEY;

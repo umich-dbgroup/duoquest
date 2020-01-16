@@ -1,0 +1,11 @@
+{
+  "dimensionObject": ["course", "teacher"],
+  "dimensionConcept": [],
+  "factObjectObject": ["course_arrange"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["course:staring_date", "teacher:age",
+    "teacher:hometown"],
+  "primaryAttributeWithinDimension": ["course:course", "teacher:name",
+    "course_arrange:grade"],
+  "additionalFreqConcept": []
+}
