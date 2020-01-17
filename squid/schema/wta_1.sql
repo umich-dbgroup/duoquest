@@ -69,7 +69,7 @@ CREATE TABLE matches (
     round text,
     score text,
     surface text,
-    tourney_date date,
+    tourney_date text,
     tourney_id text,
     tourney_level text,
     tourney_name text,
@@ -158,11 +158,11 @@ ALTER TABLE ONLY _invertedcolumnindex
 
 
 --
--- Name: players idx_45552_sqlite_autoindex_players_1; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: players idx_45600_sqlite_autoindex_players_1; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY players
-    ADD CONSTRAINT idx_45552_sqlite_autoindex_players_1 PRIMARY KEY (player_id);
+    ADD CONSTRAINT idx_45600_sqlite_autoindex_players_1 PRIMARY KEY (player_id);
 
 
 --

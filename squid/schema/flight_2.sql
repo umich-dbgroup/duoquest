@@ -54,14 +54,36 @@ ALTER TABLE airlines OWNER TO afariha;
 
 CREATE TABLE airports (
     city text,
-    airportcode text NOT NULL,
+    airportcode text,
     airportname text,
     country text,
-    countryabbrev text
+    countryabbrev text,
+    airport_id integer NOT NULL
 );
 
 
 ALTER TABLE airports OWNER TO afariha;
+
+--
+-- Name: airports_airport_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE airports_airport_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE airports_airport_id_seq OWNER TO afariha;
+
+--
+-- Name: airports_airport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE airports_airport_id_seq OWNED BY airports.airport_id;
+
 
 --
 -- Name: flights; Type: TABLE; Schema: public; Owner: afariha
@@ -70,49 +92,80 @@ ALTER TABLE airports OWNER TO afariha;
 CREATE TABLE flights (
     airline bigint NOT NULL,
     flightno bigint NOT NULL,
-    sourceairport text,
-    destairport text
+    sourceairport_id integer,
+    destairport_id integer
 );
 
 
 ALTER TABLE flights OWNER TO afariha;
 
 --
+-- Name: airports airport_id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY airports ALTER COLUMN airport_id SET DEFAULT nextval('airports_airport_id_seq'::regclass);
+
+
+--
 -- Name: airports airports_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY airports
-    ADD CONSTRAINT airports_pkey PRIMARY KEY (airportcode);
+    ADD CONSTRAINT airports_pkey PRIMARY KEY (airport_id);
 
 
 --
--- Name: airlines idx_44861_airlines_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: airlines idx_45967_airlines_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY airlines
-    ADD CONSTRAINT idx_44861_airlines_pkey PRIMARY KEY (uid);
+    ADD CONSTRAINT idx_45967_airlines_pkey PRIMARY KEY (uid);
 
 
 --
--- Name: flights idx_44873_flights_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: flights idx_45979_flights_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY flights
-    ADD CONSTRAINT idx_44873_flights_pkey PRIMARY KEY (airline, flightno);
+    ADD CONSTRAINT idx_45979_flights_pkey PRIMARY KEY (airline, flightno);
 
 
 --
--- Name: idx_44867_sqlite_autoindex_airports_1; Type: INDEX; Schema: public; Owner: afariha
+-- Name: idx_45973_sqlite_autoindex_airports_1; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE UNIQUE INDEX idx_44867_sqlite_autoindex_airports_1 ON airports USING btree (airportcode);
+CREATE UNIQUE INDEX idx_45973_sqlite_autoindex_airports_1 ON airports USING btree (airportcode);
 
 
 --
--- Name: idx_44873_sqlite_autoindex_flights_1; Type: INDEX; Schema: public; Owner: afariha
+-- Name: idx_45979_sqlite_autoindex_flights_1; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE UNIQUE INDEX idx_44873_sqlite_autoindex_flights_1 ON flights USING btree (airline, flightno);
+CREATE UNIQUE INDEX idx_45979_sqlite_autoindex_flights_1 ON flights USING btree (airline, flightno);
+
+
+--
+-- Name: flights flights_airline_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY flights
+    ADD CONSTRAINT flights_airline_fk FOREIGN KEY (airline) REFERENCES airlines(uid);
+
+
+--
+-- Name: flights flights_dest_airport_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY flights
+    ADD CONSTRAINT flights_dest_airport_fk FOREIGN KEY (destairport_id) REFERENCES airports(airport_id);
+
+
+--
+-- Name: flights flights_source_airport_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY flights
+    ADD CONSTRAINT flights_source_airport_fk FOREIGN KEY (sourceairport_id) REFERENCES airports(airport_id);
 
 
 --
