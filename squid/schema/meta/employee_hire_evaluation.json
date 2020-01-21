@@ -1,0 +1,12 @@
+{
+  "dimensionObject": ["employee", "evaluation", "shop"],
+  "dimensionConcept": ["hiring"],
+  "factObjectObject": [],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["employee:age", "employee:city", "shop:location",
+    "shop:district", "shop:number_products", "shop:manager_name",
+    "hiring:start_from", "hiring:is_full_time", "evaluation:bonus"],
+  "primaryAttributeWithinDimension": ["employee:name", "shop:name",
+    "evaluation:year_awarded"],
+  "additionalFreqConcept": []
+}

@@ -1,0 +1,10 @@
+{
+  "dimensionObject": ["airlines", "airports"],
+  "dimensionConcept": [],
+  "factObjectObject": ["flights"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["airlines:abbreviation", "airlines:country", "airports:city",
+    "airports:airportcode", "airports:country", "airports:countryabbrev"],
+  "primaryAttributeWithinDimension": ["airlines:airline", "airports:airportname"],
+  "additionalFreqConcept": []
+}

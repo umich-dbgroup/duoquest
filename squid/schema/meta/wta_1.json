@@ -1,0 +1,16 @@
+{
+  "dimensionObject": ["matches"],
+  "dimensionConcept": [],
+  "factObjectObject": [],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["matches:best_of", "matches:draw_size", "matches:loser_age",
+    "matches:loser_entry", "matches:loser_hand", "matches:loser_ht", "matches:loser_id",
+    "matches:loser_ioc", "matches:loser_rank", "matches:loser_rank_points",
+    "matches:loser_seed", "matches:minutes", "matches:round", "matches:score", "matches:surface",
+    "matches:tourney_date", "matches:tourney_id", "matches:tourney_level", "matches:tourney_name",
+    "matches:winner_age", "matches:winner_entry", "matches:winner_hand", "matches:winner_ht", "matches:winner_id",
+    "matches:winner_ioc", "matches:winner_rank", "matches:winner_rank_points",
+    "matches:winner_seed", "matches:year", "matches:match_num", "matches:loser_name"],
+  "primaryAttributeWithinDimension": ["matches:winner_name"],
+  "additionalFreqConcept": []
+}

@@ -1,0 +1,22 @@
+{
+  "dimensionObject": ["addresses", "courses", "departments", "degree_programs",
+    "sections", "semesters", "students", "transcripts"],
+  "dimensionConcept": [],
+  "factObjectObject": ["transcript_contents"],
+  "factObjectConcept": ["student_enrolment", "student_enrolment_courses"],
+  "conceptWithinDimension": ["addresses:line_2", "addresses:line_3",
+    "addresses:city", "addresses:zip_postcode", "addresses:state_province_county",
+    "addresses:country", "addresses:other_address_details", "courses:course_description",
+    "courses:other_details", "departments:department_description",
+    "departments:other_details", "degree_programs:degree_summary_description",
+    "degree_programs:other_details", "sections:section_description", "sections:other_details",
+    "semesters:semester_description", "semesters:other_details", "students:middle_name",
+    "students:last_name", "students:cell_mobile_number", "students:email_address",
+    "students:ssn", "students:date_first_registered", "students:date_left",
+    "students:other_student_details", "transcripts:other_details"],
+  "primaryAttributeWithinDimension": ["addresses:line_1", "courses:course_name",
+    "departments:department_name", "degree_programs:degree_summary_name",
+    "sections:section_name", "semesters:semester_name", "students:first_name",
+    "transcripts:transcript_date"],
+  "additionalFreqConcept": []
+}

@@ -1,0 +1,10 @@
+{
+  "dimensionObject": ["poker_player", "people"],
+  "dimensionConcept": [],
+  "factObjectObject": [],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["poker_player:final_table_made", "poker_player:best_finish",
+    "poker_player:earnings", "people:nationality", "people:birth_date", "people:height"],
+  "primaryAttributeWithinDimension": ["poker_player:money_rank", "people:name"],
+  "additionalFreqConcept": []
+}

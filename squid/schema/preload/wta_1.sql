@@ -1,0 +1,3 @@
+ALTER TABLE matches ADD COLUMN match_id SERIAL PRIMARY KEY;
+
+ALTER TABLE matches ALTER COLUMN tourney_date TYPE text;

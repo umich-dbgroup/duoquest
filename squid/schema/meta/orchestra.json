@@ -1,0 +1,12 @@
+{
+  "dimensionObject": ["conductor", "orchestra", "performance"],
+  "dimensionConcept": [],
+  "factObjectObject": ["show"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["conductor:age", "conductor:nationality",
+    "conductor:year_of_work", "orchestra:record_company", "orchestra:year_of_founded",
+    "orchestra:Major_Record_Format", "performance:type", "performance:date",
+    "performance:Weekly_rank", "performance:share", "show:If_first_show", "show:result", "show:attendance"],
+  "primaryAttributeWithinDimension": ["conductor:name", "orchestra:orchestra"],
+  "additionalFreqConcept": []
+}
