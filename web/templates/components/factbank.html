@@ -12,7 +12,7 @@
           <h4>Task {{task}}</h4>
           <ol>
           {% for fact in factbank[task] %}
-          <li>{{ fact }}</li>
+          <li>{{ fact|safe }}</li>
           {% endfor %}
           </ol>
         {% endfor %}
