@@ -4,8 +4,9 @@
   "factObjectObject": ["singer_in_concert"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["stadium:Location", "stadium:Capacity", "stadium:Highest",
-          "stadium:Lowest", "stadium:Average", "singer:Country", "singer:Song_Name",
-          "singer:Song_release_year", "singer:Age", "concert:Theme", "concert:Year"],
-  "primaryAttributeWithinDimension": ["stadium:Name", "singer:Name", "concert:concert_Name"],
+          "stadium:Lowest", "stadium:Average", "singer:Song_Name",
+          "singer:Age", "concert:Theme", "concert:Year", "singer:Song_release_year", "singer:Song_Name"],
+  "primaryAttributeWithinDimension": ["stadium:Name", "singer:Name", "concert:concert_Name", "singer:Song_release_year", "singer:Song_Name",
+    "singer:Country"],
   "additionalFreqConcept": []
 }

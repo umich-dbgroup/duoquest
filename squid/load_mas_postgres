@@ -1,0 +1,15 @@
+#!/bin/bash
+
+MAS_PATH=/Users/cjbaik/dev/duoquest/mas_smallest.sqlite
+db=mas_smallest
+SCHEMA_DIR=/Users/cjbaik/dev/duoquest/squid/schema
+PSQL_USER=afariha
+PSQL_PW=123456
+PSQL_HOST=localhost
+PSQL_PORT=5432
+
+createdb -O $PSQL_USER $db
+pgloader sqlite://$MAS_PATH postgresql://$PSQL_USER:$PSQL_PW@$PSQL_HOST:$PSQL_PORT/$db;
+PGPASSWORD=$PSQL_PW psql -h $PSQL_HOST -p $PSQL_PORT -U $PSQL_USER -d $db < $SCHEMA_DIR/preload/$db.sql
+pg_dump $db -s > $SCHEMA_DIR/$db.sql
+sed -i '' -e 's/public\.//g' $SCHEMA_DIR/$db.sql    # complete hack: to eliminate 'public.' from dump file

@@ -4,9 +4,10 @@
   "factObjectObject": [],
   "factObjectConcept": [],
   "conceptWithinDimension": ["car_makers:fullname", "cars_data:mpg",
-    "cars_data:cylinders", "cars_data:edispl", "cars_data:horsepower",
-    "cars_data:weight", "cars_data:accelerate", "cars_data:year"],
+    "cars_data:cylinders", "cars_data:edispl",
+    "cars_data:accelerate", "cars_data:year"],
   "primaryAttributeWithinDimension": ["continents:continent",
-    "countries:countryname", "car_makers:maker", "model_list:model"],
+    "countries:countryname", "car_makers:maker", "model_list:model",
+    "cars_data:horsepower", "car_names:make"],
   "additionalFreqConcept": []
 }

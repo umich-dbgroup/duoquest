@@ -22,6 +22,9 @@ def is_squid_valid(schema, pq):
         if col.type != 'text':
             return False
 
+    if len(pq.order_by) > 0:
+        return False
+
     return True
 
 def main():
@@ -89,10 +92,10 @@ def main():
             if is_squid_valid(schema, pq):
                 squid_valid += 1
                 squid_tasks_by_level[level] += 1
+                squid_dbs.add(task['db_id'])
 
                 if len(pq.select) > 1:
                     squid_multi_projections += 1
-                    squid_dbs.add(task['db_id'])
 
             tsq = db.generate_tsq(i+1, schemas[task['db_id']], query, pq,
                 'default', 1)

@@ -1,5 +1,9 @@
 import os
 
+def squid_results_path(config, dataset, mode, tsq_rows):
+    basename = '_'.join([dataset, mode, f'r{tsq_rows}'])
+    return os.path.join(config['duoquest']['results_dir'], f'{basename}')
+
 def results_path(config, dataset, mode, tsq_level, tsq_rows, timeout,
     disable_clauses, disable_semantics, disable_column, disable_literals):
 

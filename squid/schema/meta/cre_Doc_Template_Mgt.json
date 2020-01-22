@@ -8,6 +8,7 @@
     "Templates:Date_Effective_To", "Documents:Document_Description",
     "Documents:Other_Details", "Paragraphs:Other_Details"],
   "primaryAttributeWithinDimension": ["Ref_Template_Types:Template_Type_Description",
-    "Templates:Template_Details", "Documents:Document_Name", "Paragraphs:Paragraph_Text"],
+    "Templates:Template_Details", "Documents:Document_Name", "Paragraphs:Paragraph_Text",
+    "Ref_Template_Types:Template_Type_Code"],
   "additionalFreqConcept": []
 }

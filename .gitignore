@@ -6,3 +6,5 @@ config.ini
 uploads/*
 .DS_Store
 results/
+mas_smallest.sqlite
+squid/data
