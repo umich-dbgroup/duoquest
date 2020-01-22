@@ -8,9 +8,11 @@ from duoquest.vars import *
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--timeout', default=30)
+    parser.add_argument('--timeout', default=60)
     parser.add_argument('--debug', action='store_true', help='Debugging output')
     parser.add_argument('--config_path', default='docker_cfg.ini')
+    parser.add_argument('--project_ineq', action='store_true')
+    parser.add_argument('--project_agg', action='store_true')
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -23,8 +25,8 @@ def main():
         no_fk_having=True,
         no_fk_group_by=True,
         no_pk_where=True,
-        agg_projected=True,
-        inequality_projected=True,
+        agg_projected=args.project_agg,
+        inequality_projected=args.project_ineq,
         group_by_in_select=True,
         max_group_by=1,
         disable_subquery=True,
