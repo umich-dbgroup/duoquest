@@ -211,7 +211,7 @@ def result_view(rid):
 
 @app.route('/results/<rid>/preview')
 def result_preview(rid):
-    return json.dumps(result_query_view(rid, limit=10))
+    return json.dumps(result_query_view(rid, limit=30))
 
 def dict_factory(cursor, row):
     d = {}

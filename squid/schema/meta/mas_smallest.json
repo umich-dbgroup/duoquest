@@ -1,11 +1,12 @@
 {
   "dimensionObject": ["author", "publication"],
-  "dimensionConcept": ["domain", "conference", "organization"],
+  "dimensionConcept": ["domain_of_author", "conference_of_publication",
+    "organization_of_author"],
   "factObjectObject": ["writes"],
   "factObjectConcept": ["publication_conference", "domain_author",
     "author_organization"],
-  "conceptWithinDimension": ["publication:year"],
-  "primaryAttributeWithinDimension": ["author:name", "conference:name",
-    "domain:name", "organization:name", "publication:title"],
+  "conceptWithinDimension": ["publication:publication_year"],
+  "primaryAttributeWithinDimension": ["author:name", "conference_of_publication:name",
+    "domain_of_author:name", "organization_of_author:name", "publication:title"],
   "additionalFreqConcept": []
 }

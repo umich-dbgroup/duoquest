@@ -100,10 +100,10 @@ CREATE TABLE _aggr_aoo_writes_publication_idtoauthor_id (
 ALTER TABLE _aggr_aoo_writes_publication_idtoauthor_id OWNER TO afariha;
 
 --
--- Name: _authortoconference; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _authortoconference_of_publication; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _authortoconference (
+CREATE TABLE _authortoconference_of_publication (
     author_author_id integer NOT NULL,
     conference_id integer,
     freq integer,
@@ -111,35 +111,21 @@ CREATE TABLE _authortoconference (
 );
 
 
-ALTER TABLE _authortoconference OWNER TO afariha;
+ALTER TABLE _authortoconference_of_publication OWNER TO afariha;
 
 --
--- Name: _authortodomain_author_domain_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _authortopublication_year; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _authortodomain_author_domain_id (
-    author_id integer NOT NULL,
-    domain_id integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _authortodomain_author_domain_id OWNER TO afariha;
-
---
--- Name: _authortoyear; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _authortoyear (
+CREATE TABLE _authortopublication_year (
     author_author_id integer NOT NULL,
-    year integer,
+    publication_year integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _authortoyear OWNER TO afariha;
+ALTER TABLE _authortopublication_year OWNER TO afariha;
 
 --
 -- Name: _invertedcolumnindex; Type: TABLE; Schema: public; Owner: afariha
@@ -155,10 +141,10 @@ CREATE TABLE _invertedcolumnindex (
 ALTER TABLE _invertedcolumnindex OWNER TO afariha;
 
 --
--- Name: _publicationtodomain; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _publicationtodomain_of_author; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _publicationtodomain (
+CREATE TABLE _publicationtodomain_of_author (
     publication_publication_id integer NOT NULL,
     domain_id integer,
     freq integer,
@@ -166,13 +152,13 @@ CREATE TABLE _publicationtodomain (
 );
 
 
-ALTER TABLE _publicationtodomain OWNER TO afariha;
+ALTER TABLE _publicationtodomain_of_author OWNER TO afariha;
 
 --
--- Name: _publicationtoorganization; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _publicationtoorganization_of_author; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _publicationtoorganization (
+CREATE TABLE _publicationtoorganization_of_author (
     publication_publication_id integer NOT NULL,
     organization_id integer,
     freq integer,
@@ -180,7 +166,7 @@ CREATE TABLE _publicationtoorganization (
 );
 
 
-ALTER TABLE _publicationtoorganization OWNER TO afariha;
+ALTER TABLE _publicationtoorganization_of_author OWNER TO afariha;
 
 --
 -- Name: author; Type: TABLE; Schema: public; Owner: afariha
@@ -207,28 +193,16 @@ CREATE TABLE author_organization (
 ALTER TABLE author_organization OWNER TO afariha;
 
 --
--- Name: conference; Type: TABLE; Schema: public; Owner: afariha
+-- Name: conference_of_publication; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE conference (
+CREATE TABLE conference_of_publication (
     conference_id integer NOT NULL,
     name text
 );
 
 
-ALTER TABLE conference OWNER TO afariha;
-
---
--- Name: domain; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE domain (
-    domain_id integer NOT NULL,
-    name text
-);
-
-
-ALTER TABLE domain OWNER TO afariha;
+ALTER TABLE conference_of_publication OWNER TO afariha;
 
 --
 -- Name: domain_author; Type: TABLE; Schema: public; Owner: afariha
@@ -243,17 +217,29 @@ CREATE TABLE domain_author (
 ALTER TABLE domain_author OWNER TO afariha;
 
 --
--- Name: organization; Type: TABLE; Schema: public; Owner: afariha
+-- Name: domain_of_author; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE organization (
+CREATE TABLE domain_of_author (
+    domain_id integer NOT NULL,
+    name text
+);
+
+
+ALTER TABLE domain_of_author OWNER TO afariha;
+
+--
+-- Name: organization_of_author; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE organization_of_author (
     organization_id integer NOT NULL,
     name text,
     continent text
 );
 
 
-ALTER TABLE organization OWNER TO afariha;
+ALTER TABLE organization_of_author OWNER TO afariha;
 
 --
 -- Name: publication; Type: TABLE; Schema: public; Owner: afariha
@@ -262,7 +248,7 @@ ALTER TABLE organization OWNER TO afariha;
 CREATE TABLE publication (
     publication_id integer NOT NULL,
     title text,
-    year integer
+    publication_year integer
 );
 
 
@@ -309,18 +295,18 @@ ALTER TABLE ONLY author
 
 
 --
--- Name: conference idx_49568_conference_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: conference_of_publication idx_49568_conference_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY conference
+ALTER TABLE ONLY conference_of_publication
     ADD CONSTRAINT idx_49568_conference_pkey PRIMARY KEY (conference_id);
 
 
 --
--- Name: domain idx_49574_domain_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: domain_of_author idx_49574_domain_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY domain
+ALTER TABLE ONLY domain_of_author
     ADD CONSTRAINT idx_49574_domain_pkey PRIMARY KEY (domain_id);
 
 
@@ -333,10 +319,10 @@ ALTER TABLE ONLY domain_author
 
 
 --
--- Name: organization idx_49607_organization_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: organization_of_author idx_49607_organization_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY organization
+ALTER TABLE ONLY organization_of_author
     ADD CONSTRAINT idx_49607_organization_pkey PRIMARY KEY (organization_id);
 
 
@@ -392,51 +378,35 @@ CREATE INDEX _aggr_aoo_writes_publication_idtoauthor_id_idx ON _aggr_aoo_writes_
 
 
 --
--- Name: _authortoconference_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _authortoconference_of_publication_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _authortoconference_idx ON _authortoconference USING btree (conference_id, freq);
+CREATE INDEX _authortoconference_of_publication_idx ON _authortoconference_of_publication USING btree (conference_id, freq);
 
-ALTER TABLE _authortoconference CLUSTER ON _authortoconference_idx;
-
-
---
--- Name: _authortoconference_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _authortoconference_idx_2 ON _authortoconference USING btree (author_author_id);
+ALTER TABLE _authortoconference_of_publication CLUSTER ON _authortoconference_of_publication_idx;
 
 
 --
--- Name: _authortodomain_author_domain_id_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _authortoconference_of_publication_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _authortodomain_author_domain_id_idx ON _authortodomain_author_domain_id USING btree (domain_id, freq);
-
-ALTER TABLE _authortodomain_author_domain_id CLUSTER ON _authortodomain_author_domain_id_idx;
+CREATE INDEX _authortoconference_of_publication_idx_2 ON _authortoconference_of_publication USING btree (author_author_id);
 
 
 --
--- Name: _authortodomain_author_domain_id_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _authortopublication_year_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _authortodomain_author_domain_id_idx_2 ON _authortodomain_author_domain_id USING btree (author_id);
+CREATE INDEX _authortopublication_year_idx ON _authortopublication_year USING btree (publication_year, freq);
 
-
---
--- Name: _authortoyear_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _authortoyear_idx ON _authortoyear USING btree (year, freq);
-
-ALTER TABLE _authortoyear CLUSTER ON _authortoyear_idx;
+ALTER TABLE _authortopublication_year CLUSTER ON _authortopublication_year_idx;
 
 
 --
--- Name: _authortoyear_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _authortopublication_year_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _authortoyear_idx_2 ON _authortoyear USING btree (author_author_id);
+CREATE INDEX _authortopublication_year_idx_2 ON _authortopublication_year USING btree (author_author_id);
 
 
 --
@@ -449,35 +419,35 @@ ALTER TABLE _invertedcolumnindex CLUSTER ON _invertedcolumnindex_word_idx;
 
 
 --
--- Name: _publicationtodomain_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _publicationtodomain_of_author_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _publicationtodomain_idx ON _publicationtodomain USING btree (domain_id, freq);
+CREATE INDEX _publicationtodomain_of_author_idx ON _publicationtodomain_of_author USING btree (domain_id, freq);
 
-ALTER TABLE _publicationtodomain CLUSTER ON _publicationtodomain_idx;
-
-
---
--- Name: _publicationtodomain_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _publicationtodomain_idx_2 ON _publicationtodomain USING btree (publication_publication_id);
+ALTER TABLE _publicationtodomain_of_author CLUSTER ON _publicationtodomain_of_author_idx;
 
 
 --
--- Name: _publicationtoorganization_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _publicationtodomain_of_author_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _publicationtoorganization_idx ON _publicationtoorganization USING btree (organization_id, freq);
-
-ALTER TABLE _publicationtoorganization CLUSTER ON _publicationtoorganization_idx;
+CREATE INDEX _publicationtodomain_of_author_idx_2 ON _publicationtodomain_of_author USING btree (publication_publication_id);
 
 
 --
--- Name: _publicationtoorganization_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _publicationtoorganization_of_author_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _publicationtoorganization_idx_2 ON _publicationtoorganization USING btree (publication_publication_id);
+CREATE INDEX _publicationtoorganization_of_author_idx ON _publicationtoorganization_of_author USING btree (organization_id, freq);
+
+ALTER TABLE _publicationtoorganization_of_author CLUSTER ON _publicationtoorganization_of_author_idx;
+
+
+--
+-- Name: _publicationtoorganization_of_author_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _publicationtoorganization_of_author_idx_2 ON _publicationtoorganization_of_author USING btree (publication_publication_id);
 
 
 --
@@ -505,14 +475,14 @@ CREATE INDEX idx_49559_author_name ON author USING btree (name);
 -- Name: idx_49568_conf_name; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX idx_49568_conf_name ON conference USING btree (name);
+CREATE INDEX idx_49568_conf_name ON conference_of_publication USING btree (name);
 
 
 --
 -- Name: idx_49574_domain_name; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX idx_49574_domain_name ON domain USING btree (name);
+CREATE INDEX idx_49574_domain_name ON domain_of_author USING btree (name);
 
 
 --
@@ -533,14 +503,14 @@ CREATE INDEX idx_49580_da_did ON domain_author USING btree (domain_id);
 -- Name: idx_49607_org_continent; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX idx_49607_org_continent ON organization USING btree (continent);
+CREATE INDEX idx_49607_org_continent ON organization_of_author USING btree (continent);
 
 
 --
 -- Name: idx_49607_organization_id; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX idx_49607_organization_id ON organization USING btree (name);
+CREATE INDEX idx_49607_organization_id ON organization_of_author USING btree (name);
 
 
 --
@@ -612,75 +582,59 @@ ALTER TABLE ONLY _aggr_aoo_writes_publication_idtoauthor_id
 
 
 --
--- Name: _authortoconference _authortoconference_author_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _authortoconference_of_publication _authortoconference_of_publication_author_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY _authortoconference
-    ADD CONSTRAINT _authortoconference_author_author_id_fkey FOREIGN KEY (author_author_id) REFERENCES author(author_id);
-
-
---
--- Name: _authortoconference _authortoconference_conference_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY _authortoconference
-    ADD CONSTRAINT _authortoconference_conference_id_fkey FOREIGN KEY (conference_id) REFERENCES conference(conference_id);
+ALTER TABLE ONLY _authortoconference_of_publication
+    ADD CONSTRAINT _authortoconference_of_publication_author_author_id_fkey FOREIGN KEY (author_author_id) REFERENCES author(author_id);
 
 
 --
--- Name: _authortodomain_author_domain_id _authortodomain_author_domain_id_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _authortoconference_of_publication _authortoconference_of_publication_conference_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY _authortodomain_author_domain_id
-    ADD CONSTRAINT _authortodomain_author_domain_id_author_id_fkey FOREIGN KEY (author_id) REFERENCES author(author_id);
-
-
---
--- Name: _authortodomain_author_domain_id _authortodomain_author_domain_id_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY _authortodomain_author_domain_id
-    ADD CONSTRAINT _authortodomain_author_domain_id_domain_id_fkey FOREIGN KEY (domain_id) REFERENCES domain(domain_id);
+ALTER TABLE ONLY _authortoconference_of_publication
+    ADD CONSTRAINT _authortoconference_of_publication_conference_id_fkey FOREIGN KEY (conference_id) REFERENCES conference_of_publication(conference_id);
 
 
 --
--- Name: _authortoyear _authortoyear_author_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _authortopublication_year _authortopublication_year_author_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY _authortoyear
-    ADD CONSTRAINT _authortoyear_author_author_id_fkey FOREIGN KEY (author_author_id) REFERENCES author(author_id);
-
-
---
--- Name: _publicationtodomain _publicationtodomain_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY _publicationtodomain
-    ADD CONSTRAINT _publicationtodomain_domain_id_fkey FOREIGN KEY (domain_id) REFERENCES domain(domain_id);
+ALTER TABLE ONLY _authortopublication_year
+    ADD CONSTRAINT _authortopublication_year_author_author_id_fkey FOREIGN KEY (author_author_id) REFERENCES author(author_id);
 
 
 --
--- Name: _publicationtodomain _publicationtodomain_publication_publication_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _publicationtodomain_of_author _publicationtodomain_of_author_domain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY _publicationtodomain
-    ADD CONSTRAINT _publicationtodomain_publication_publication_id_fkey FOREIGN KEY (publication_publication_id) REFERENCES publication(publication_id);
-
-
---
--- Name: _publicationtoorganization _publicationtoorganization_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY _publicationtoorganization
-    ADD CONSTRAINT _publicationtoorganization_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(organization_id);
+ALTER TABLE ONLY _publicationtodomain_of_author
+    ADD CONSTRAINT _publicationtodomain_of_author_domain_id_fkey FOREIGN KEY (domain_id) REFERENCES domain_of_author(domain_id);
 
 
 --
--- Name: _publicationtoorganization _publicationtoorganization_publication_publication_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _publicationtodomain_of_author _publicationtodomain_of_author_publication_publication_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY _publicationtoorganization
-    ADD CONSTRAINT _publicationtoorganization_publication_publication_id_fkey FOREIGN KEY (publication_publication_id) REFERENCES publication(publication_id);
+ALTER TABLE ONLY _publicationtodomain_of_author
+    ADD CONSTRAINT _publicationtodomain_of_author_publication_publication_id_fkey FOREIGN KEY (publication_publication_id) REFERENCES publication(publication_id);
+
+
+--
+-- Name: _publicationtoorganization_of_author _publicationtoorganization_of_a_publication_publication_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _publicationtoorganization_of_author
+    ADD CONSTRAINT _publicationtoorganization_of_a_publication_publication_id_fkey FOREIGN KEY (publication_publication_id) REFERENCES publication(publication_id);
+
+
+--
+-- Name: _publicationtoorganization_of_author _publicationtoorganization_of_author_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _publicationtoorganization_of_author
+    ADD CONSTRAINT _publicationtoorganization_of_author_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization_of_author(organization_id);
 
 
 --
@@ -696,7 +650,7 @@ ALTER TABLE ONLY author_organization
 --
 
 ALTER TABLE ONLY author_organization
-    ADD CONSTRAINT author_org_oid FOREIGN KEY (organization_id) REFERENCES organization(organization_id);
+    ADD CONSTRAINT author_org_oid FOREIGN KEY (organization_id) REFERENCES organization_of_author(organization_id);
 
 
 --
@@ -712,7 +666,7 @@ ALTER TABLE ONLY domain_author
 --
 
 ALTER TABLE ONLY domain_author
-    ADD CONSTRAINT domain_author_did FOREIGN KEY (domain_id) REFERENCES domain(domain_id);
+    ADD CONSTRAINT domain_author_did FOREIGN KEY (domain_id) REFERENCES domain_of_author(domain_id);
 
 
 --
@@ -720,7 +674,7 @@ ALTER TABLE ONLY domain_author
 --
 
 ALTER TABLE ONLY publication_conference
-    ADD CONSTRAINT pub_conf_cid FOREIGN KEY (conference_id) REFERENCES conference(conference_id);
+    ADD CONSTRAINT pub_conf_cid FOREIGN KEY (conference_id) REFERENCES conference_of_publication(conference_id);
 
 
 --

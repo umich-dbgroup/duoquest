@@ -64,3 +64,8 @@ ALTER TABLE writes ADD CONSTRAINT writes_aid FOREIGN KEY (author_id) REFERENCES 
 ALTER TABLE writes ADD CONSTRAINT writes_pid FOREIGN KEY (publication_id) REFERENCES publication(publication_id);
 ALTER TABLE writes ALTER COLUMN author_id TYPE integer;
 ALTER TABLE writes ALTER COLUMN publication_id TYPE integer;
+
+ALTER TABLE domain RENAME TO domain_of_author;
+ALTER TABLE conference RENAME TO conference_of_publication;
+ALTER TABLE organization RENAME TO organization_of_author;
+ALTER TABLE publication RENAME COLUMN year TO publication_year;
