@@ -9,3 +9,4 @@ results/
 mas_smallest.sqlite
 squid/data/*
 squid/schema_test
+squid/load_spider_test_postgres
