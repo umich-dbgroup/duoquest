@@ -1,6 +1,6 @@
 # SQuID Baseline Comparison
 
-This folder includes information for a baseline comparison. Only the development set for Spider is included, please contact the authors of the Spider benchmark directly if you seek access to the test set.
+This folder includes information for the simulation study with the SQuID system. Only the development set for Spider is included, please contact the authors of the Spider benchmark directly if you seek access to the test set.
 
 ## Running SQuID Comparison
 
