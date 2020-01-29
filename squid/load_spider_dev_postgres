@@ -7,8 +7,7 @@ PSQL_PW=123456
 PSQL_HOST=localhost
 PSQL_PORT=5432
 
-for db in tvshow
-# for db in dog_kennels car_1 poker_player orchestra student_transcripts_tracking course_teach tvshow concert_singer singer battle_death cre_Doc_Template_Mgt pets_1 real_estate_properties network_1 voter_1 world_1 flight_2
+for db in dog_kennels car_1 poker_player orchestra student_transcripts_tracking course_teach tvshow concert_singer singer battle_death cre_Doc_Template_Mgt pets_1 real_estate_properties network_1 voter_1 world_1 flight_2
 do
   createdb -O $PSQL_USER $db
   pgloader sqlite://$SPIDER_DB_DIR/$db/$db.sqlite postgresql://$PSQL_USER:$PSQL_PW@$PSQL_HOST:$PSQL_PORT/$db;
