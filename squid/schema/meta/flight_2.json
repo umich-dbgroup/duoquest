@@ -1,11 +1,15 @@
 {
-  "dimensionObject": ["airlines", "airports"],
+  "dimensionObject": ["airlines", "airports", "airline_country", "airline_abbrev"],
   "dimensionConcept": [],
-  "factObjectObject": ["flights"],
+  "factObjectObject": ["flights", "airline_to_country", "airline_to_abbrev"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["airports:city", "airports:airportcode",
     "airports:country", "airports:countryabbrev"],
-  "primaryAttributeWithinDimension": ["airlines:airline", "airports:airportname",
-    "airlines:country", "airlines:abbreviation"],
-  "additionalFreqConcept": []
+  "primaryAttributeWithinDimension": ["airlines:airline",
+    "airports:airportname", "airline_country:name", "airline_abbrev:abbrev"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["airlines:country", "airline_country:name"],
+    ["airlines:abbreviation", "airline_abbrev:abbrev"]
+  ]
 }

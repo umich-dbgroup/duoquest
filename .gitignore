@@ -7,4 +7,5 @@ uploads/*
 .DS_Store
 results/
 mas_smallest.sqlite
-squid/data
+squid/data/*
+squid/schema_test

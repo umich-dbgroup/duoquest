@@ -1,13 +1,16 @@
 {
-  "dimensionObject": ["model_list", "car_names", "cars_data"],
-  "dimensionConcept": ["continents", "countries", "car_makers"],
-  "factObjectObject": [],
+  "dimensionObject": ["cars_data", "car_makers", "countries", "model_list"],
+  "dimensionConcept": ["continents"],
+  "factObjectObject": ["maker_to_model", "maker_to_country", "maker_to_car"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["car_makers:fullname", "cars_data:mpg",
-    "cars_data:cylinders", "cars_data:edispl",
-    "cars_data:accelerate", "cars_data:year"],
+    "cars_data:cylinders", "cars_data:edispl", "cars_data:accelerate",
+    "cars_data:year", "cars_data:horsepower", "cars_data:weight"],
   "primaryAttributeWithinDimension": ["continents:continent",
     "countries:countryname", "car_makers:maker", "model_list:model",
-    "cars_data:horsepower", "car_names:make"],
-  "additionalFreqConcept": []
+    "cars_data:model"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["car_names:make", "cars_data:model"]
+  ]
 }

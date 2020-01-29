@@ -35,6 +35,126 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: _aggr_aoo_documents_to_templates_document_idtotemplate_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_documents_to_templates_document_idtotemplate_id (
+    document_id integer,
+    template_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_documents_to_templates_document_idtotemplate_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_documents_to_templates_template_idtodocument_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_documents_to_templates_template_idtodocument_id (
+    template_id integer,
+    document_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_documents_to_templates_template_idtodocument_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_templates_to_types_template_idtotype_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_templates_to_types_template_idtotype_id (
+    template_id integer,
+    type_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_templates_to_types_template_idtotype_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_templates_to_types_type_idtotemplate_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_templates_to_types_type_idtotemplate_id (
+    type_id integer,
+    template_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_templates_to_types_type_idtotemplate_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_description_idtotype_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_types_to_descriptions_description_idtotype_id (
+    description_id integer,
+    type_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_types_to_descriptions_description_idtotype_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_type_idtodescription_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_types_to_descriptions_type_idtodescription_id (
+    type_id integer,
+    description_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_types_to_descriptions_type_idtodescription_id OWNER TO afariha;
+
+--
+-- Name: _documentstodate_effective_from; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _documentstodate_effective_from (
+    documents_document_id integer NOT NULL,
+    date_effective_from text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _documentstodate_effective_from OWNER TO afariha;
+
+--
+-- Name: _documentstodate_effective_to; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _documentstodate_effective_to (
+    documents_document_id integer NOT NULL,
+    date_effective_to text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _documentstodate_effective_to OWNER TO afariha;
+
+--
+-- Name: _documentstoversion_number; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _documentstoversion_number (
+    documents_document_id integer NOT NULL,
+    version_number integer,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _documentstoversion_number OWNER TO afariha;
+
+--
 -- Name: _invertedcolumnindex; Type: TABLE; Schema: public; Owner: afariha
 --
 
@@ -48,12 +168,81 @@ CREATE TABLE _invertedcolumnindex (
 ALTER TABLE _invertedcolumnindex OWNER TO afariha;
 
 --
+-- Name: _ref_template_typestodate_effective_from; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _ref_template_typestodate_effective_from (
+    ref_template_types_type_id integer NOT NULL,
+    date_effective_from text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _ref_template_typestodate_effective_from OWNER TO afariha;
+
+--
+-- Name: _ref_template_typestodate_effective_to; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _ref_template_typestodate_effective_to (
+    ref_template_types_type_id integer NOT NULL,
+    date_effective_to text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _ref_template_typestodate_effective_to OWNER TO afariha;
+
+--
+-- Name: _ref_template_typestoversion_number; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _ref_template_typestoversion_number (
+    ref_template_types_type_id integer NOT NULL,
+    version_number integer,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _ref_template_typestoversion_number OWNER TO afariha;
+
+--
+-- Name: _templatestodocument_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _templatestodocument_description (
+    templates_template_id integer NOT NULL,
+    document_description text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _templatestodocument_description OWNER TO afariha;
+
+--
+-- Name: _templatestoother_details; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _templatestoother_details (
+    templates_template_id integer NOT NULL,
+    other_details text,
+    freq integer,
+    normalized_freq integer
+);
+
+
+ALTER TABLE _templatestoother_details OWNER TO afariha;
+
+--
 -- Name: documents; Type: TABLE; Schema: public; Owner: afariha
 --
 
 CREATE TABLE documents (
     document_id bigint NOT NULL,
-    template_id bigint,
     document_name text,
     document_description text,
     other_details text
@@ -61,6 +250,18 @@ CREATE TABLE documents (
 
 
 ALTER TABLE documents OWNER TO afariha;
+
+--
+-- Name: documents_to_templates; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE documents_to_templates (
+    document_id integer,
+    template_id integer
+);
+
+
+ALTER TABLE documents_to_templates OWNER TO afariha;
 
 --
 -- Name: paragraphs; Type: TABLE; Schema: public; Owner: afariha
@@ -82,7 +283,6 @@ ALTER TABLE paragraphs OWNER TO afariha;
 
 CREATE TABLE ref_template_types (
     template_type_code text,
-    template_type_description text,
     type_id integer NOT NULL
 );
 
@@ -117,9 +317,8 @@ ALTER SEQUENCE ref_template_types_type_id_seq OWNED BY ref_template_types.type_i
 CREATE TABLE templates (
     template_id bigint NOT NULL,
     version_number bigint,
-    template_type_code text,
-    date_effective_from timestamp with time zone,
-    date_effective_to timestamp with time zone,
+    date_effective_from text,
+    date_effective_to text,
     template_details text
 );
 
@@ -127,10 +326,74 @@ CREATE TABLE templates (
 ALTER TABLE templates OWNER TO afariha;
 
 --
+-- Name: templates_to_types; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE templates_to_types (
+    template_id integer,
+    type_id integer
+);
+
+
+ALTER TABLE templates_to_types OWNER TO afariha;
+
+--
+-- Name: type_descriptions; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE type_descriptions (
+    id integer NOT NULL,
+    description text
+);
+
+
+ALTER TABLE type_descriptions OWNER TO afariha;
+
+--
+-- Name: type_descriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE type_descriptions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE type_descriptions_id_seq OWNER TO afariha;
+
+--
+-- Name: type_descriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE type_descriptions_id_seq OWNED BY type_descriptions.id;
+
+
+--
+-- Name: types_to_descriptions; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE types_to_descriptions (
+    type_id integer,
+    description_id integer
+);
+
+
+ALTER TABLE types_to_descriptions OWNER TO afariha;
+
+--
 -- Name: ref_template_types type_id; Type: DEFAULT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY ref_template_types ALTER COLUMN type_id SET DEFAULT nextval('ref_template_types_type_id_seq'::regclass);
+
+
+--
+-- Name: type_descriptions id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY type_descriptions ALTER COLUMN id SET DEFAULT nextval('type_descriptions_id_seq'::regclass);
 
 
 --
@@ -142,27 +405,27 @@ ALTER TABLE ONLY _invertedcolumnindex
 
 
 --
--- Name: templates idx_45422_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: templates idx_67391_templates_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY templates
-    ADD CONSTRAINT idx_45422_templates_pkey PRIMARY KEY (template_id);
+    ADD CONSTRAINT idx_67391_templates_pkey PRIMARY KEY (template_id);
 
 
 --
--- Name: documents idx_45428_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: documents idx_67397_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY documents
-    ADD CONSTRAINT idx_45428_documents_pkey PRIMARY KEY (document_id);
+    ADD CONSTRAINT idx_67397_documents_pkey PRIMARY KEY (document_id);
 
 
 --
--- Name: paragraphs idx_45434_paragraphs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: paragraphs idx_67403_paragraphs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY paragraphs
-    ADD CONSTRAINT idx_45434_paragraphs_pkey PRIMARY KEY (paragraph_id);
+    ADD CONSTRAINT idx_67403_paragraphs_pkey PRIMARY KEY (paragraph_id);
 
 
 --
@@ -171,6 +434,104 @@ ALTER TABLE ONLY paragraphs
 
 ALTER TABLE ONLY ref_template_types
     ADD CONSTRAINT ref_template_types_pkey PRIMARY KEY (type_id);
+
+
+--
+-- Name: type_descriptions type_descriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY type_descriptions
+    ADD CONSTRAINT type_descriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: _aggr_aoo_documents_to_templates_document_idtotemplate_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_documents_to_templates_document_idtotemplate_id_idx ON _aggr_aoo_documents_to_templates_document_idtotemplate_id USING btree (document_id);
+
+
+--
+-- Name: _aggr_aoo_documents_to_templates_template_idtodocument_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_documents_to_templates_template_idtodocument_id_idx ON _aggr_aoo_documents_to_templates_template_idtodocument_id USING btree (template_id);
+
+
+--
+-- Name: _aggr_aoo_templates_to_types_template_idtotype_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_templates_to_types_template_idtotype_id_idx ON _aggr_aoo_templates_to_types_template_idtotype_id USING btree (template_id);
+
+
+--
+-- Name: _aggr_aoo_templates_to_types_type_idtotemplate_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_templates_to_types_type_idtotemplate_id_idx ON _aggr_aoo_templates_to_types_type_idtotemplate_id USING btree (type_id);
+
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_description_idtotype_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_types_to_descriptions_description_idtotype_id_idx ON _aggr_aoo_types_to_descriptions_description_idtotype_id USING btree (description_id);
+
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_type_idtodescription_id_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _aggr_aoo_types_to_descriptions_type_idtodescription_id_idx ON _aggr_aoo_types_to_descriptions_type_idtodescription_id USING btree (type_id);
+
+
+--
+-- Name: _documentstodate_effective_from_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstodate_effective_from_idx ON _documentstodate_effective_from USING btree (date_effective_from, freq);
+
+ALTER TABLE _documentstodate_effective_from CLUSTER ON _documentstodate_effective_from_idx;
+
+
+--
+-- Name: _documentstodate_effective_from_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstodate_effective_from_idx_2 ON _documentstodate_effective_from USING btree (documents_document_id);
+
+
+--
+-- Name: _documentstodate_effective_to_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstodate_effective_to_idx ON _documentstodate_effective_to USING btree (date_effective_to, freq);
+
+ALTER TABLE _documentstodate_effective_to CLUSTER ON _documentstodate_effective_to_idx;
+
+
+--
+-- Name: _documentstodate_effective_to_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstodate_effective_to_idx_2 ON _documentstodate_effective_to USING btree (documents_document_id);
+
+
+--
+-- Name: _documentstoversion_number_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstoversion_number_idx ON _documentstoversion_number USING btree (version_number, freq);
+
+ALTER TABLE _documentstoversion_number CLUSTER ON _documentstoversion_number_idx;
+
+
+--
+-- Name: _documentstoversion_number_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _documentstoversion_number_idx_2 ON _documentstoversion_number USING btree (documents_document_id);
 
 
 --
@@ -183,46 +544,218 @@ ALTER TABLE _invertedcolumnindex CLUSTER ON _invertedcolumnindex_word_idx;
 
 
 --
--- Name: _invertedcolumnindex_word_idx1; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ref_template_typestodate_effective_from_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _invertedcolumnindex_word_idx1 ON _invertedcolumnindex USING btree (word);
+CREATE INDEX _ref_template_typestodate_effective_from_idx ON _ref_template_typestodate_effective_from USING btree (date_effective_from, freq);
 
-
---
--- Name: _invertedcolumnindex_word_idx2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _invertedcolumnindex_word_idx2 ON _invertedcolumnindex USING btree (word);
+ALTER TABLE _ref_template_typestodate_effective_from CLUSTER ON _ref_template_typestodate_effective_from_idx;
 
 
 --
--- Name: _invertedcolumnindex_word_idx3; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ref_template_typestodate_effective_from_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _invertedcolumnindex_word_idx3 ON _invertedcolumnindex USING btree (word);
-
-
---
--- Name: _invertedcolumnindex_word_idx4; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _invertedcolumnindex_word_idx4 ON _invertedcolumnindex USING btree (word);
+CREATE INDEX _ref_template_typestodate_effective_from_idx_2 ON _ref_template_typestodate_effective_from USING btree (ref_template_types_type_id);
 
 
 --
--- Name: idx_45416_sqlite_autoindex_ref_template_types_1; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ref_template_typestodate_effective_to_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE UNIQUE INDEX idx_45416_sqlite_autoindex_ref_template_types_1 ON ref_template_types USING btree (template_type_code);
+CREATE INDEX _ref_template_typestodate_effective_to_idx ON _ref_template_typestodate_effective_to USING btree (date_effective_to, freq);
+
+ALTER TABLE _ref_template_typestodate_effective_to CLUSTER ON _ref_template_typestodate_effective_to_idx;
 
 
 --
--- Name: documents documents_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _ref_template_typestodate_effective_to_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY documents
-    ADD CONSTRAINT documents_template_id_fkey FOREIGN KEY (template_id) REFERENCES templates(template_id);
+CREATE INDEX _ref_template_typestodate_effective_to_idx_2 ON _ref_template_typestodate_effective_to USING btree (ref_template_types_type_id);
+
+
+--
+-- Name: _ref_template_typestoversion_number_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _ref_template_typestoversion_number_idx ON _ref_template_typestoversion_number USING btree (version_number, freq);
+
+ALTER TABLE _ref_template_typestoversion_number CLUSTER ON _ref_template_typestoversion_number_idx;
+
+
+--
+-- Name: _ref_template_typestoversion_number_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _ref_template_typestoversion_number_idx_2 ON _ref_template_typestoversion_number USING btree (ref_template_types_type_id);
+
+
+--
+-- Name: _templatestodocument_description_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _templatestodocument_description_idx ON _templatestodocument_description USING btree (document_description, freq);
+
+ALTER TABLE _templatestodocument_description CLUSTER ON _templatestodocument_description_idx;
+
+
+--
+-- Name: _templatestodocument_description_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _templatestodocument_description_idx_2 ON _templatestodocument_description USING btree (templates_template_id);
+
+
+--
+-- Name: _templatestoother_details_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _templatestoother_details_idx ON _templatestoother_details USING btree (other_details, freq);
+
+ALTER TABLE _templatestoother_details CLUSTER ON _templatestoother_details_idx;
+
+
+--
+-- Name: _templatestoother_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _templatestoother_details_idx_2 ON _templatestoother_details USING btree (templates_template_id);
+
+
+--
+-- Name: idx_67385_sqlite_autoindex_ref_template_types_1; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE UNIQUE INDEX idx_67385_sqlite_autoindex_ref_template_types_1 ON ref_template_types USING btree (template_type_code);
+
+
+--
+-- Name: _aggr_aoo_documents_to_templates_document_idtotemplate_id _aggr_aoo_documents_to_templates_document_idtotemplate_id_docum; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_documents_to_templates_document_idtotemplate_id
+    ADD CONSTRAINT _aggr_aoo_documents_to_templates_document_idtotemplate_id_docum FOREIGN KEY (document_id) REFERENCES documents(document_id);
+
+
+--
+-- Name: _aggr_aoo_documents_to_templates_template_idtodocument_id _aggr_aoo_documents_to_templates_template_idtodocument_id_templ; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_documents_to_templates_template_idtodocument_id
+    ADD CONSTRAINT _aggr_aoo_documents_to_templates_template_idtodocument_id_templ FOREIGN KEY (template_id) REFERENCES templates(template_id);
+
+
+--
+-- Name: _aggr_aoo_templates_to_types_template_idtotype_id _aggr_aoo_templates_to_types_template_idtotype_id_template_id_f; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_templates_to_types_template_idtotype_id
+    ADD CONSTRAINT _aggr_aoo_templates_to_types_template_idtotype_id_template_id_f FOREIGN KEY (template_id) REFERENCES templates(template_id);
+
+
+--
+-- Name: _aggr_aoo_templates_to_types_type_idtotemplate_id _aggr_aoo_templates_to_types_type_idtotemplate_id_type_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_templates_to_types_type_idtotemplate_id
+    ADD CONSTRAINT _aggr_aoo_templates_to_types_type_idtotemplate_id_type_id_fk FOREIGN KEY (type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_description_idtotype_id _aggr_aoo_types_to_descriptions_description_idtotype_id_descrip; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_types_to_descriptions_description_idtotype_id
+    ADD CONSTRAINT _aggr_aoo_types_to_descriptions_description_idtotype_id_descrip FOREIGN KEY (description_id) REFERENCES type_descriptions(id);
+
+
+--
+-- Name: _aggr_aoo_types_to_descriptions_type_idtodescription_id _aggr_aoo_types_to_descriptions_type_idtodescription_id_type_id; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_types_to_descriptions_type_idtodescription_id
+    ADD CONSTRAINT _aggr_aoo_types_to_descriptions_type_idtodescription_id_type_id FOREIGN KEY (type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: _documentstodate_effective_from _documentstodate_effective_from_documents_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _documentstodate_effective_from
+    ADD CONSTRAINT _documentstodate_effective_from_documents_document_id_fkey FOREIGN KEY (documents_document_id) REFERENCES documents(document_id);
+
+
+--
+-- Name: _documentstodate_effective_to _documentstodate_effective_to_documents_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _documentstodate_effective_to
+    ADD CONSTRAINT _documentstodate_effective_to_documents_document_id_fkey FOREIGN KEY (documents_document_id) REFERENCES documents(document_id);
+
+
+--
+-- Name: _documentstoversion_number _documentstoversion_number_documents_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _documentstoversion_number
+    ADD CONSTRAINT _documentstoversion_number_documents_document_id_fkey FOREIGN KEY (documents_document_id) REFERENCES documents(document_id);
+
+
+--
+-- Name: _ref_template_typestodate_effective_to _ref_template_typestodate_effe_ref_template_types_type_id_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ref_template_typestodate_effective_to
+    ADD CONSTRAINT _ref_template_typestodate_effe_ref_template_types_type_id_fkey1 FOREIGN KEY (ref_template_types_type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: _ref_template_typestodate_effective_from _ref_template_typestodate_effec_ref_template_types_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ref_template_typestodate_effective_from
+    ADD CONSTRAINT _ref_template_typestodate_effec_ref_template_types_type_id_fkey FOREIGN KEY (ref_template_types_type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: _ref_template_typestoversion_number _ref_template_typestoversion_nu_ref_template_types_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ref_template_typestoversion_number
+    ADD CONSTRAINT _ref_template_typestoversion_nu_ref_template_types_type_id_fkey FOREIGN KEY (ref_template_types_type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: _templatestodocument_description _templatestodocument_description_templates_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _templatestodocument_description
+    ADD CONSTRAINT _templatestodocument_description_templates_template_id_fkey FOREIGN KEY (templates_template_id) REFERENCES templates(template_id);
+
+
+--
+-- Name: _templatestoother_details _templatestoother_details_templates_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _templatestoother_details
+    ADD CONSTRAINT _templatestoother_details_templates_template_id_fkey FOREIGN KEY (templates_template_id) REFERENCES templates(template_id);
+
+
+--
+-- Name: documents_to_templates documents_to_templates_document_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY documents_to_templates
+    ADD CONSTRAINT documents_to_templates_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(document_id);
+
+
+--
+-- Name: documents_to_templates documents_to_templates_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY documents_to_templates
+    ADD CONSTRAINT documents_to_templates_template_id_fkey FOREIGN KEY (template_id) REFERENCES templates(template_id);
 
 
 --
@@ -234,11 +767,35 @@ ALTER TABLE ONLY paragraphs
 
 
 --
--- Name: templates templates_template_type_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: templates_to_types templates_to_types_template_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY templates
-    ADD CONSTRAINT templates_template_type_code_fkey FOREIGN KEY (template_type_code) REFERENCES ref_template_types(template_type_code);
+ALTER TABLE ONLY templates_to_types
+    ADD CONSTRAINT templates_to_types_template_id_fkey FOREIGN KEY (template_id) REFERENCES templates(template_id);
+
+
+--
+-- Name: templates_to_types templates_to_types_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY templates_to_types
+    ADD CONSTRAINT templates_to_types_type_id_fkey FOREIGN KEY (type_id) REFERENCES ref_template_types(type_id);
+
+
+--
+-- Name: types_to_descriptions types_to_descriptions_description_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY types_to_descriptions
+    ADD CONSTRAINT types_to_descriptions_description_id_fkey FOREIGN KEY (description_id) REFERENCES type_descriptions(id);
+
+
+--
+-- Name: types_to_descriptions types_to_descriptions_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY types_to_descriptions
+    ADD CONSTRAINT types_to_descriptions_type_id_fkey FOREIGN KEY (type_id) REFERENCES ref_template_types(type_id);
 
 
 --

@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import json
+import traceback
 
 from pprint import pprint
 from tqdm import tqdm
@@ -9,17 +10,24 @@ from experiments import load_schemas
 
 from duoquest.database import Database
 from duoquest.eval import detect_level
-from duoquest.proto.duoquest_pb2 import NO_AGG
+from duoquest.proto.duoquest_pb2 import NO_AGG, NEQ, NOT_IN, LIKE
 from duoquest.query import *
 from duoquest.schema import JoinPathException
 from duoquest.tasks import *
 
 def is_squid_valid(schema, pq):
+    if len(pq.select) >= 3:
+        return False
+
     for agg_col in pq.select:
         if agg_col.agg != NO_AGG:
             return False
         col = schema.get_col(agg_col.col_id)
         if col.type != 'text':
+            return False
+
+    for pred in pq.where.predicates:
+        if pred.op in (NEQ, NOT_IN, LIKE):
             return False
 
     if len(pq.order_by) > 0:
@@ -58,6 +66,7 @@ def main():
         'set_op': 0,
         'join_path': 0,
         'value': 0,
+        'misc': 0
     }
     valid = 0
     tasks_by_level = {
@@ -87,7 +96,6 @@ def main():
             dbs.add(task['db_id'])
             level = detect_level(pq)
             tasks_by_level[level] += 1
-            valid += 1
 
             if is_squid_valid(schema, pq):
                 squid_valid += 1
@@ -99,6 +107,7 @@ def main():
 
             tsq = db.generate_tsq(i+1, schemas[task['db_id']], query, pq,
                 'default', 1)
+            valid += 1
         except AggTypeMismatchException as e:
             errors['agg_type'] += 1
         except OpTypeMismatchException as e:
@@ -129,6 +138,9 @@ def main():
             errors['value'] += 1
         except InconsistentPredicateException as e:
             errors['inconsistent_predicate'] += 1
+        except Exception as e:
+            traceback.print_exc()
+            errors['misc'] += 1
 
     print(f'\nVALID: {valid}')
     for level, num in tasks_by_level.items():

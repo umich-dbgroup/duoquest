@@ -1,12 +1,17 @@
 {
   "dimensionObject": ["battle", "ship"],
-  "dimensionConcept": [],
+  "dimensionConcept": ["date_of_battle", "result_of_battle"],
   "factObjectObject": ["death"],
-  "factObjectConcept": [],
-  "conceptWithinDimension": ["battle:date", "battle:bulgarian_commander",
-    "battle:latin_commander", "battle:result", "ship:lost_in_battle",
-    "ship:tonnage", "ship:ship_type", "ship:location", "ship:disposition_of_ship",
-    "death:note", "death:killed", "death:injured"],
-  "primaryAttributeWithinDimension": ["battle:name", "ship:name"],
-  "additionalFreqConcept": []
+  "factObjectConcept": ["battle_to_date", "battle_to_result"],
+  "conceptWithinDimension": ["battle:bulgarian_commander", "battle:latin_commander",
+    "ship:lost_in_battle", "ship:tonnage", "ship:ship_type",
+    "ship:location", "ship:disposition_of_ship", "death:killed",
+    "death:injured"],
+  "primaryAttributeWithinDimension": ["battle:name", "ship:name",
+    "date_of_battle:date", "result_of_battle:result", "death:note"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["battle:date", "date_of_battle:date"],
+    ["battle:result", "result_of_battle:result"]
+  ]
 }

@@ -5,10 +5,11 @@ import os
 from pprint import pprint
 import subprocess
 import time
+import traceback
 
 from duoquest.database import Database
 from duoquest.files import squid_results_path
-from duoquest.proto.duoquest_pb2 import NO_AGG
+from duoquest.proto.duoquest_pb2 import NO_AGG, NEQ, NOT_IN, LIKE
 from duoquest.schema import Schema
 from duoquest.server import get_literals
 from duoquest.tasks import is_valid_task
@@ -18,6 +19,7 @@ from duoquest.vars import *
 # CONFIGURATION VARIABLES
 #########################
 SQUID_DIR = '/Users/cjbaik/dev/squid-public/'
+SQUID_SCHEMAS = '/Users/cjbaik/dev/duoquest/squid/schema/'
 CLASSPATH = '/Users/cjbaik/dev/squid-public/out/production/squid-public/'
 LIB_PATH = '/Users/cjbaik/dev/squid-public/lib'
 PG_DUMP_PATH = '/usr/local/opt/postgresql@9.6/bin/pg_dump'
@@ -72,9 +74,61 @@ def main():
     run_squid_experiments(tasks, db, schemas, args.tsq_rows, tid=args.tid,
         start_tid=args.start_tid)
 
+def get_primary_attr_from_meta(meta, table):
+    for attr in meta['primaryAttributeWithinDimension']:
+        attr_tbl, attr_col = attr.split(':')
+        if attr_tbl.lower() == table.lower():
+            return attr_col.lower()
+    return None
+
+def check_attribute_changes(meta, table, attr):
+    for change in meta['attributeChanges']:
+        orig_tbl, orig_col = change[0].split(':')
+        if orig_tbl.lower() == table.lower() and \
+            orig_col.lower() == attr.lower():
+            return change[1].lower().split(':')
+    return table.lower(), attr.lower()
+
+def eval_squid(schema, pq, filters):
+    if len(pq.where.predicates) == 0:
+        return True
+    else:
+        if len(filters) == 0:
+            return False
+
+        meta = json.load(open(os.path.join(SQUID_SCHEMAS, 'meta',
+            f'{schema.db_id}.json')))
+
+        answer_set = set()
+        for pred in pq.where.predicates:
+            col = schema.get_col(pred.col_id)
+            table, attr = check_attribute_changes(meta, col.table.syn_name,
+                col.syn_name)
+            answer_set.add(f'{table}:{attr}'.lower())
+
+        filter_set = set()
+        for f in filters:
+            table, attr = check_attribute_changes(meta, f['table'], f['attr'])
+
+            if 'id' in attr:
+                primary_attr = get_primary_attr_from_meta(meta, f['table'])
+                if primary_attr:
+                    attr = primary_attr
+
+            filter_set.add(f'{table}:{attr}'.lower())
+
+        print(answer_set)
+        print(filter_set)
+
+        return filter_set >= answer_set
+
 def run_squid_experiments(tasks, db, schemas, tsq_rows, tid=None,
     start_tid=None):
-    ranks = []
+    invalid_count = 0
+    squid_unsupported_count = 0
+    correct_count = 0
+    incorrect_count = 0
+
     times = []
 
     for i, task in enumerate(tasks):
@@ -86,13 +140,32 @@ def run_squid_experiments(tasks, db, schemas, tsq_rows, tid=None,
 
         schema = schemas[task['db_id']]
         start = time.time()
-        cqs, squid_unsupported = run_experiment(task_id, len(tasks), task, db,
-            schema, tsq_rows)
+        filters, invalid, squid_unsupported = run_experiment(task_id, len(tasks), task,
+            db, schema, tsq_rows)
         task_time = time.time() - start
 
-        # TODO: count differently if unsupported by squid
-        if squid_unsupported:
-            pass
+        if invalid:
+            invalid_count += 1
+        elif squid_unsupported:
+            squid_unsupported_count += 1
+        else:
+            correct = eval_squid(schema, task['pq'], filters)
+
+            if correct:
+                correct_count += 1
+                print('CORRECT :D')
+            else:
+                incorrect_count += 1
+                print('INCORRECT !!!')
+
+            times.append(task_time)
+
+    total_count = len(tasks) - invalid_count
+    print(f'CORRECT: {correct_count}/{total_count} ({correct_count/total_count*100:.2f}%)')
+    print(f'INCORRECT: {incorrect_count}/{total_count} ({incorrect_count/total_count*100:.2f}%)')
+    print(f'UNSUPPORTED: {squid_unsupported_count}/{total_count} ({squid_unsupported_count/total_count*100:.2f}%)')
+
+    print(f'AVG TIME: {sum(times)/len(times):.2f} s')
 
 def tsq_to_squid_spec(tsq):
     rows = []
@@ -107,11 +180,16 @@ class SquidException(Exception):
     pass
 
 def is_valid_squid_task(schema, pq):
+    if len(pq.select) >= 3:
+        raise SquidException()
     for agg_col in pq.select:
         if agg_col.agg != NO_AGG:
             raise SquidException()
         col = schema.get_col(agg_col.col_id)
         if col.type != 'text':
+            raise SquidException()
+    for pred in pq.where.predicates:
+        if pred.op in (NEQ, NOT_IN, LIKE):
             raise SquidException()
     if len(pq.order_by) > 0:
         raise SquidException()
@@ -125,10 +203,11 @@ def run_experiment(task_id, task_count, task, db, schema, tsq_rows):
         is_valid_squid_task(schema, task['pq'])
     except SquidException:
         print('SQuID does not support this type of task.')
-        return None, True
+        return None, False, True
     except Exception:
+        # traceback.print_exc()
         print('Skipping task because it is out of scope.')
-        return None, False
+        return None, True, False
 
     literals = get_literals(task['pq'], schema)
 
@@ -145,14 +224,13 @@ def run_experiment(task_id, task_count, task, db, schema, tsq_rows):
         '--rho', RHO, '--eta', ETA, '--gamma', GAMMA, '--tau_a', TAU_A,
         '--tau_s', TAU_S, '--disambiguateActive', '--useSkewness'], cwd=SQUID_DIR)
 
-    cqs = []
+    result = []
     for line in output.decode('utf-8').split('\n'):
         if line:
-            cqs.append(json.loads(line))
+            result.append(json.loads(line))
 
-    pprint(cqs)
-    # TODO: return something meaningful
-    return [], False
+    pprint(result)
+    return result[0]['filters'], False, False
 
 if __name__ == '__main__':
     main()

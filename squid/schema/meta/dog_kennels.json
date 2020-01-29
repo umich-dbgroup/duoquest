@@ -1,19 +1,12 @@
 {
-  "dimensionObject": ["breeds", "owners", "dogs", "professionals"],
-  "dimensionConcept": ["sizes", "treatment_types", "charges", "treatments"],
-  "factObjectObject": [],
-  "factObjectConcept": [],
-  "conceptWithinDimension": ["charges:charge_amount", "owners:last_name",
-    "owners:street", "owners:city", "owners:state", "owners:zip_code",
-    "owners:email_address", "owners:home_phone", "owners:cell_number", "dogs:abandoned_yn",
-    "dogs:age", "dogs:date_of_birth", "dogs:gender", "dogs:weight", "dogs:date_arrived",
-    "dogs:date_adopted", "dogs:date_departed", "professionals:last_name",
-    "professionals:street", "professionals:city", "professionals:state",
-    "professionals:zip_code", "professionals:email_address",
-    "professionals:home_phone", "professionals:cell_number",
-    "treatments:date_of_treatment", "treatments:cost_of_treatment"],
-  "primaryAttributeWithinDimension": ["breeds:breed_name", "charges:charge_type",
-    "sizes:size_description", "treatment_types:treatment_type_description", "owners:first_name",
+  "dimensionObject": ["owners", "dogs", "professionals", "breeds"],
+  "dimensionConcept": ["sizes", "treatment_types", "charges"],
+  "factObjectObject": ["owners_to_dogs", "dogs_to_breeds", "treatments"],
+  "factObjectConcept": ["dogs_to_sizes"],
+  "conceptWithinDimension": [],
+  "primaryAttributeWithinDimension": ["breeds:breed_code", "charges:charge_type",
+    "sizes:size_code", "treatment_types:treatment_type_description", "owners:first_name",
     "dogs:name", "professionals:first_name"],
-  "additionalFreqConcept": []
+  "additionalFreqConcept": [],
+  "attributeChanges": []
 }

@@ -1,0 +1,11 @@
+{
+  "dimensionObject": ["ref_feature_types", "other_available_features"],
+  "dimensionConcept": [],
+  "factObjectObject": ["features_to_types"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": [],
+  "primaryAttributeWithinDimension": ["ref_feature_types:feature_type_name",
+    "other_available_features:feature_name"],
+  "additionalFreqConcept": [],
+  "attributeChanges": []
+}

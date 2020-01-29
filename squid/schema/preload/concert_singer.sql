@@ -9,3 +9,21 @@ ALTER TABLE ONLY concert ADD CONSTRAINT concert_stadium_id_fkey FOREIGN KEY (sta
 
 ALTER TABLE singer_in_concert ALTER COLUMN singer_id TYPE INTEGER USING singer_id::integer;
 ALTER TABLE ONLY singer_in_concert ADD CONSTRAINT singer_in_concert_singer_id_fkey FOREIGN KEY (singer_id) REFERENCES singer(singer_id);
+
+CREATE TABLE country (
+  id SERIAL PRIMARY KEY,
+  name TEXT
+);
+
+CREATE TABLE singer_to_country (
+  country_id INTEGER REFERENCES country(id),
+  singer_id INTEGER REFERENCES singer(singer_id)
+);
+
+INSERT INTO country (name)
+SELECT DISTINCT country FROM singer;
+
+INSERT INTO singer_to_country (country_id, singer_id)
+SELECT c.id, s.singer_id FROM country c JOIN singer s ON c.name = s.country;
+
+ALTER TABLE singer DROP COLUMN country;

@@ -1,0 +1,10 @@
+{
+  "dimensionObject": ["highschooler"],
+  "dimensionConcept": [],
+  "factObjectObject": ["likes", "friend"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": [],
+  "primaryAttributeWithinDimension": ["highschooler:name"],
+  "additionalFreqConcept": [],
+  "attributeChanges": []
+}

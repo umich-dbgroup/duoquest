@@ -35,116 +35,109 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: _dogstocell_number; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_dogs_to_sizes; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _dogstocell_number (
-    dogs_dog_id integer NOT NULL,
-    cell_number text,
+CREATE TABLE _aggr_aoc_dogs_to_sizes (
+    dog_id integer,
+    size_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoc_dogs_to_sizes OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_dogs_to_breeds_breed_idtodog_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_dogs_to_breeds_breed_idtodog_id (
+    breed_id integer,
+    dog_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_dogs_to_breeds_breed_idtodog_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_dogs_to_breeds_dog_idtobreed_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_dogs_to_breeds_dog_idtobreed_id (
+    dog_id integer,
+    breed_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_dogs_to_breeds_dog_idtobreed_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_owners_to_dogs_dog_idtoowner_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_owners_to_dogs_dog_idtoowner_id (
+    dog_id integer,
+    owner_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_owners_to_dogs_dog_idtoowner_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_owners_to_dogs_owner_idtodog_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_owners_to_dogs_owner_idtodog_id (
+    owner_id integer,
+    dog_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_owners_to_dogs_owner_idtodog_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_treatments_dog_idtoprofessional_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_treatments_dog_idtoprofessional_id (
+    dog_id bigint,
+    professional_id_aggr bigint[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_treatments_dog_idtoprofessional_id OWNER TO afariha;
+
+--
+-- Name: _aggr_aoo_treatments_professional_idtodog_id; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoo_treatments_professional_idtodog_id (
+    professional_id bigint,
+    dog_id_aggr bigint[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoo_treatments_professional_idtodog_id OWNER TO afariha;
+
+--
+-- Name: _breedstosizes; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _breedstosizes (
+    breeds_breed_id integer NOT NULL,
+    size_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _dogstocell_number OWNER TO afariha;
-
---
--- Name: _dogstocity; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstocity (
-    dogs_dog_id integer NOT NULL,
-    city text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstocity OWNER TO afariha;
-
---
--- Name: _dogstoemail_address; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstoemail_address (
-    dogs_dog_id integer NOT NULL,
-    email_address text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstoemail_address OWNER TO afariha;
-
---
--- Name: _dogstohome_phone; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstohome_phone (
-    dogs_dog_id integer NOT NULL,
-    home_phone text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstohome_phone OWNER TO afariha;
-
---
--- Name: _dogstolast_name; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstolast_name (
-    dogs_dog_id integer NOT NULL,
-    last_name text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstolast_name OWNER TO afariha;
-
---
--- Name: _dogstostate; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstostate (
-    dogs_dog_id integer NOT NULL,
-    state text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstostate OWNER TO afariha;
-
---
--- Name: _dogstostreet; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstostreet (
-    dogs_dog_id integer NOT NULL,
-    street text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstostreet OWNER TO afariha;
-
---
--- Name: _dogstozip_code; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _dogstozip_code (
-    dogs_dog_id integer NOT NULL,
-    zip_code text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _dogstozip_code OWNER TO afariha;
+ALTER TABLE _breedstosizes OWNER TO afariha;
 
 --
 -- Name: _invertedcolumnindex; Type: TABLE; Schema: public; Owner: afariha
@@ -160,128 +153,66 @@ CREATE TABLE _invertedcolumnindex (
 ALTER TABLE _invertedcolumnindex OWNER TO afariha;
 
 --
--- Name: _professionalstoabandoned_yn; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _ownerstosizes; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _professionalstoabandoned_yn (
-    professionals_professional_id integer NOT NULL,
-    abandoned_yn text,
+CREATE TABLE _ownerstosizes (
+    owners_owner_id integer NOT NULL,
+    size_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _professionalstoabandoned_yn OWNER TO afariha;
+ALTER TABLE _ownerstosizes OWNER TO afariha;
 
 --
--- Name: _professionalstoage; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _professionalstosizes; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _professionalstoage (
+CREATE TABLE _professionalstosizes (
     professionals_professional_id integer NOT NULL,
-    age text,
+    size_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _professionalstoage OWNER TO afariha;
-
---
--- Name: _professionalstodate_adopted; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstodate_adopted (
-    professionals_professional_id integer NOT NULL,
-    date_adopted integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstodate_adopted OWNER TO afariha;
-
---
--- Name: _professionalstodate_arrived; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstodate_arrived (
-    professionals_professional_id integer NOT NULL,
-    date_arrived integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstodate_arrived OWNER TO afariha;
-
---
--- Name: _professionalstodate_departed; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstodate_departed (
-    professionals_professional_id integer NOT NULL,
-    date_departed integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstodate_departed OWNER TO afariha;
-
---
--- Name: _professionalstodate_of_birth; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstodate_of_birth (
-    professionals_professional_id integer NOT NULL,
-    date_of_birth integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstodate_of_birth OWNER TO afariha;
-
---
--- Name: _professionalstogender; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstogender (
-    professionals_professional_id integer NOT NULL,
-    gender text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstogender OWNER TO afariha;
-
---
--- Name: _professionalstoweight; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _professionalstoweight (
-    professionals_professional_id integer NOT NULL,
-    weight text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _professionalstoweight OWNER TO afariha;
+ALTER TABLE _professionalstosizes OWNER TO afariha;
 
 --
 -- Name: breeds; Type: TABLE; Schema: public; Owner: afariha
 --
 
 CREATE TABLE breeds (
-    breed_code text NOT NULL,
+    breed_id integer NOT NULL,
+    breed_code text,
     breed_name text
 );
 
 
 ALTER TABLE breeds OWNER TO afariha;
+
+--
+-- Name: breeds_breed_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE breeds_breed_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE breeds_breed_id_seq OWNER TO afariha;
+
+--
+-- Name: breeds_breed_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE breeds_breed_id_seq OWNED BY breeds.breed_id;
+
 
 --
 -- Name: charges; Type: TABLE; Schema: public; Owner: afariha
@@ -302,10 +233,7 @@ ALTER TABLE charges OWNER TO afariha;
 
 CREATE TABLE dogs (
     dog_id bigint NOT NULL,
-    owner_id bigint,
     abandoned_yn text,
-    breed_code text,
-    size_code text,
     name text,
     age text,
     date_of_birth text,
@@ -318,6 +246,30 @@ CREATE TABLE dogs (
 
 
 ALTER TABLE dogs OWNER TO afariha;
+
+--
+-- Name: dogs_to_breeds; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE dogs_to_breeds (
+    dog_id integer,
+    breed_id integer
+);
+
+
+ALTER TABLE dogs_to_breeds OWNER TO afariha;
+
+--
+-- Name: dogs_to_sizes; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE dogs_to_sizes (
+    dog_id integer,
+    size_id integer
+);
+
+
+ALTER TABLE dogs_to_sizes OWNER TO afariha;
 
 --
 -- Name: owners; Type: TABLE; Schema: public; Owner: afariha
@@ -338,6 +290,18 @@ CREATE TABLE owners (
 
 
 ALTER TABLE owners OWNER TO afariha;
+
+--
+-- Name: owners_to_dogs; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE owners_to_dogs (
+    owner_id integer,
+    dog_id integer
+);
+
+
+ALTER TABLE owners_to_dogs OWNER TO afariha;
 
 --
 -- Name: professionals; Type: TABLE; Schema: public; Owner: afariha
@@ -365,7 +329,8 @@ ALTER TABLE professionals OWNER TO afariha;
 --
 
 CREATE TABLE sizes (
-    size_code text NOT NULL,
+    size_id integer NOT NULL,
+    size_code text,
     size_description text
 );
 
@@ -373,16 +338,59 @@ CREATE TABLE sizes (
 ALTER TABLE sizes OWNER TO afariha;
 
 --
+-- Name: sizes_size_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE sizes_size_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE sizes_size_id_seq OWNER TO afariha;
+
+--
+-- Name: sizes_size_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE sizes_size_id_seq OWNED BY sizes.size_id;
+
+
+--
 -- Name: treatment_types; Type: TABLE; Schema: public; Owner: afariha
 --
 
 CREATE TABLE treatment_types (
-    treatment_type_code text NOT NULL,
+    treatment_type_id integer NOT NULL,
+    treatment_type_code text,
     treatment_type_description text
 );
 
 
 ALTER TABLE treatment_types OWNER TO afariha;
+
+--
+-- Name: treatment_types_treatment_type_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE treatment_types_treatment_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE treatment_types_treatment_type_id_seq OWNER TO afariha;
+
+--
+-- Name: treatment_types_treatment_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE treatment_types_treatment_type_id_seq OWNED BY treatment_types.treatment_type_id;
+
 
 --
 -- Name: treatments; Type: TABLE; Schema: public; Owner: afariha
@@ -392,13 +400,34 @@ CREATE TABLE treatments (
     treatment_id bigint NOT NULL,
     dog_id bigint,
     professional_id bigint,
-    treatment_type_code text,
     date_of_treatment text,
-    cost_of_treatment numeric(19,4)
+    cost_of_treatment numeric(19,4),
+    treatment_type_id integer
 );
 
 
 ALTER TABLE treatments OWNER TO afariha;
+
+--
+-- Name: breeds breed_id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY breeds ALTER COLUMN breed_id SET DEFAULT nextval('breeds_breed_id_seq'::regclass);
+
+
+--
+-- Name: sizes size_id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY sizes ALTER COLUMN size_id SET DEFAULT nextval('sizes_size_id_seq'::regclass);
+
+
+--
+-- Name: treatment_types treatment_type_id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY treatment_types ALTER COLUMN treatment_type_id SET DEFAULT nextval('treatment_types_treatment_type_id_seq'::regclass);
+
 
 --
 -- Name: _invertedcolumnindex _invertedcolumnindex_word_tabname_colname_key; Type: CONSTRAINT; Schema: public; Owner: afariha
@@ -409,195 +438,132 @@ ALTER TABLE ONLY _invertedcolumnindex
 
 
 --
--- Name: breeds idx_44088_sqlite_autoindex_breeds_1; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: breeds breeds_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY breeds
-    ADD CONSTRAINT idx_44088_sqlite_autoindex_breeds_1 PRIMARY KEY (breed_code);
+    ADD CONSTRAINT breeds_pkey PRIMARY KEY (breed_id);
 
 
 --
--- Name: charges idx_44094_charges_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: charges idx_88451_charges_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY charges
-    ADD CONSTRAINT idx_44094_charges_pkey PRIMARY KEY (charge_id);
+    ADD CONSTRAINT idx_88451_charges_pkey PRIMARY KEY (charge_id);
 
 
 --
--- Name: sizes idx_44100_sqlite_autoindex_sizes_1; Type: CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY sizes
-    ADD CONSTRAINT idx_44100_sqlite_autoindex_sizes_1 PRIMARY KEY (size_code);
-
-
---
--- Name: treatment_types idx_44106_sqlite_autoindex_treatment_types_1; Type: CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY treatment_types
-    ADD CONSTRAINT idx_44106_sqlite_autoindex_treatment_types_1 PRIMARY KEY (treatment_type_code);
-
-
---
--- Name: owners idx_44112_owners_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: owners idx_88469_owners_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY owners
-    ADD CONSTRAINT idx_44112_owners_pkey PRIMARY KEY (owner_id);
+    ADD CONSTRAINT idx_88469_owners_pkey PRIMARY KEY (owner_id);
 
 
 --
--- Name: dogs idx_44118_dogs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: dogs idx_88475_dogs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY dogs
-    ADD CONSTRAINT idx_44118_dogs_pkey PRIMARY KEY (dog_id);
+    ADD CONSTRAINT idx_88475_dogs_pkey PRIMARY KEY (dog_id);
 
 
 --
--- Name: professionals idx_44124_professionals_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: professionals idx_88481_professionals_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY professionals
-    ADD CONSTRAINT idx_44124_professionals_pkey PRIMARY KEY (professional_id);
+    ADD CONSTRAINT idx_88481_professionals_pkey PRIMARY KEY (professional_id);
 
 
 --
--- Name: treatments idx_44130_treatments_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: treatments idx_88487_treatments_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY treatments
-    ADD CONSTRAINT idx_44130_treatments_pkey PRIMARY KEY (treatment_id);
+    ADD CONSTRAINT idx_88487_treatments_pkey PRIMARY KEY (treatment_id);
 
 
 --
--- Name: _dogstocell_number_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: sizes sizes_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstocell_number_idx ON _dogstocell_number USING btree (cell_number, freq);
-
-ALTER TABLE _dogstocell_number CLUSTER ON _dogstocell_number_idx;
-
-
---
--- Name: _dogstocell_number_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstocell_number_idx_2 ON _dogstocell_number USING btree (dogs_dog_id);
+ALTER TABLE ONLY sizes
+    ADD CONSTRAINT sizes_pkey PRIMARY KEY (size_id);
 
 
 --
--- Name: _dogstocity_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: treatment_types treatment_types_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstocity_idx ON _dogstocity USING btree (city, freq);
-
-ALTER TABLE _dogstocity CLUSTER ON _dogstocity_idx;
-
-
---
--- Name: _dogstocity_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstocity_idx_2 ON _dogstocity USING btree (dogs_dog_id);
+ALTER TABLE ONLY treatment_types
+    ADD CONSTRAINT treatment_types_pkey PRIMARY KEY (treatment_type_id);
 
 
 --
--- Name: _dogstoemail_address_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_dogs_to_sizes_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstoemail_address_idx ON _dogstoemail_address USING btree (email_address, freq);
-
-ALTER TABLE _dogstoemail_address CLUSTER ON _dogstoemail_address_idx;
+CREATE INDEX _aggr_aoc_dogs_to_sizes_idx ON _aggr_aoc_dogs_to_sizes USING btree (dog_id);
 
 
 --
--- Name: _dogstoemail_address_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_dogs_to_breeds_breed_idtodog_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstoemail_address_idx_2 ON _dogstoemail_address USING btree (dogs_dog_id);
-
-
---
--- Name: _dogstohome_phone_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstohome_phone_idx ON _dogstohome_phone USING btree (home_phone, freq);
-
-ALTER TABLE _dogstohome_phone CLUSTER ON _dogstohome_phone_idx;
+CREATE INDEX _aggr_aoo_dogs_to_breeds_breed_idtodog_id_idx ON _aggr_aoo_dogs_to_breeds_breed_idtodog_id USING btree (breed_id);
 
 
 --
--- Name: _dogstohome_phone_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_dogs_to_breeds_dog_idtobreed_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstohome_phone_idx_2 ON _dogstohome_phone USING btree (dogs_dog_id);
-
-
---
--- Name: _dogstolast_name_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstolast_name_idx ON _dogstolast_name USING btree (last_name, freq);
-
-ALTER TABLE _dogstolast_name CLUSTER ON _dogstolast_name_idx;
+CREATE INDEX _aggr_aoo_dogs_to_breeds_dog_idtobreed_id_idx ON _aggr_aoo_dogs_to_breeds_dog_idtobreed_id USING btree (dog_id);
 
 
 --
--- Name: _dogstolast_name_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_owners_to_dogs_dog_idtoowner_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstolast_name_idx_2 ON _dogstolast_name USING btree (dogs_dog_id);
-
-
---
--- Name: _dogstostate_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstostate_idx ON _dogstostate USING btree (state, freq);
-
-ALTER TABLE _dogstostate CLUSTER ON _dogstostate_idx;
+CREATE INDEX _aggr_aoo_owners_to_dogs_dog_idtoowner_id_idx ON _aggr_aoo_owners_to_dogs_dog_idtoowner_id USING btree (dog_id);
 
 
 --
--- Name: _dogstostate_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_owners_to_dogs_owner_idtodog_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstostate_idx_2 ON _dogstostate USING btree (dogs_dog_id);
-
-
---
--- Name: _dogstostreet_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstostreet_idx ON _dogstostreet USING btree (street, freq);
-
-ALTER TABLE _dogstostreet CLUSTER ON _dogstostreet_idx;
+CREATE INDEX _aggr_aoo_owners_to_dogs_owner_idtodog_id_idx ON _aggr_aoo_owners_to_dogs_owner_idtodog_id USING btree (owner_id);
 
 
 --
--- Name: _dogstostreet_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_treatments_dog_idtoprofessional_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstostreet_idx_2 ON _dogstostreet USING btree (dogs_dog_id);
-
-
---
--- Name: _dogstozip_code_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _dogstozip_code_idx ON _dogstozip_code USING btree (zip_code, freq);
-
-ALTER TABLE _dogstozip_code CLUSTER ON _dogstozip_code_idx;
+CREATE INDEX _aggr_aoo_treatments_dog_idtoprofessional_id_idx ON _aggr_aoo_treatments_dog_idtoprofessional_id USING btree (dog_id);
 
 
 --
--- Name: _dogstozip_code_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_treatments_professional_idtodog_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _dogstozip_code_idx_2 ON _dogstozip_code USING btree (dogs_dog_id);
+CREATE INDEX _aggr_aoo_treatments_professional_idtodog_id_idx ON _aggr_aoo_treatments_professional_idtodog_id USING btree (professional_id);
+
+
+--
+-- Name: _breedstosizes_idx; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _breedstosizes_idx ON _breedstosizes USING btree (size_id, freq);
+
+ALTER TABLE _breedstosizes CLUSTER ON _breedstosizes_idx;
+
+
+--
+-- Name: _breedstosizes_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _breedstosizes_idx_2 ON _breedstosizes USING btree (breeds_breed_id);
 
 
 --
@@ -610,198 +576,187 @@ ALTER TABLE _invertedcolumnindex CLUSTER ON _invertedcolumnindex_word_idx;
 
 
 --
--- Name: _invertedcolumnindex_word_idx1; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ownerstosizes_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _invertedcolumnindex_word_idx1 ON _invertedcolumnindex USING btree (word);
+CREATE INDEX _ownerstosizes_idx ON _ownerstosizes USING btree (size_id, freq);
 
-
---
--- Name: _invertedcolumnindex_word_idx2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _invertedcolumnindex_word_idx2 ON _invertedcolumnindex USING btree (word);
+ALTER TABLE _ownerstosizes CLUSTER ON _ownerstosizes_idx;
 
 
 --
--- Name: _invertedcolumnindex_word_idx3; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ownerstosizes_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _invertedcolumnindex_word_idx3 ON _invertedcolumnindex USING btree (word);
-
-
---
--- Name: _invertedcolumnindex_word_idx4; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _invertedcolumnindex_word_idx4 ON _invertedcolumnindex USING btree (word);
+CREATE INDEX _ownerstosizes_idx_2 ON _ownerstosizes USING btree (owners_owner_id);
 
 
 --
--- Name: _invertedcolumnindex_word_idx5; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _professionalstosizes_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _invertedcolumnindex_word_idx5 ON _invertedcolumnindex USING btree (word);
+CREATE INDEX _professionalstosizes_idx ON _professionalstosizes USING btree (size_id, freq);
 
-
---
--- Name: _professionalstoabandoned_yn_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstoabandoned_yn_idx ON _professionalstoabandoned_yn USING btree (abandoned_yn, freq);
-
-ALTER TABLE _professionalstoabandoned_yn CLUSTER ON _professionalstoabandoned_yn_idx;
+ALTER TABLE _professionalstosizes CLUSTER ON _professionalstosizes_idx;
 
 
 --
--- Name: _professionalstoabandoned_yn_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _professionalstosizes_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstoabandoned_yn_idx_2 ON _professionalstoabandoned_yn USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstoage_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstoage_idx ON _professionalstoage USING btree (age, freq);
-
-ALTER TABLE _professionalstoage CLUSTER ON _professionalstoage_idx;
+CREATE INDEX _professionalstosizes_idx_2 ON _professionalstosizes USING btree (professionals_professional_id);
 
 
 --
--- Name: _professionalstoage_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_dogs_to_sizes _aggr_aocdogs_to_sizes_dog_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstoage_idx_2 ON _professionalstoage USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstodate_adopted_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstodate_adopted_idx ON _professionalstodate_adopted USING btree (date_adopted, freq);
-
-ALTER TABLE _professionalstodate_adopted CLUSTER ON _professionalstodate_adopted_idx;
+ALTER TABLE ONLY _aggr_aoc_dogs_to_sizes
+    ADD CONSTRAINT _aggr_aocdogs_to_sizes_dog_id_fk FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
 
 
 --
--- Name: _professionalstodate_adopted_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_dogs_to_breeds_breed_idtodog_id _aggr_aoo_dogs_to_breeds_breed_idtodog_id_breed_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstodate_adopted_idx_2 ON _professionalstodate_adopted USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstodate_arrived_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstodate_arrived_idx ON _professionalstodate_arrived USING btree (date_arrived, freq);
-
-ALTER TABLE _professionalstodate_arrived CLUSTER ON _professionalstodate_arrived_idx;
+ALTER TABLE ONLY _aggr_aoo_dogs_to_breeds_breed_idtodog_id
+    ADD CONSTRAINT _aggr_aoo_dogs_to_breeds_breed_idtodog_id_breed_id_fk FOREIGN KEY (breed_id) REFERENCES breeds(breed_id);
 
 
 --
--- Name: _professionalstodate_arrived_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_dogs_to_breeds_dog_idtobreed_id _aggr_aoo_dogs_to_breeds_dog_idtobreed_id_dog_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstodate_arrived_idx_2 ON _professionalstodate_arrived USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstodate_departed_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstodate_departed_idx ON _professionalstodate_departed USING btree (date_departed, freq);
-
-ALTER TABLE _professionalstodate_departed CLUSTER ON _professionalstodate_departed_idx;
+ALTER TABLE ONLY _aggr_aoo_dogs_to_breeds_dog_idtobreed_id
+    ADD CONSTRAINT _aggr_aoo_dogs_to_breeds_dog_idtobreed_id_dog_id_fk FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
 
 
 --
--- Name: _professionalstodate_departed_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_owners_to_dogs_dog_idtoowner_id _aggr_aoo_owners_to_dogs_dog_idtoowner_id_dog_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstodate_departed_idx_2 ON _professionalstodate_departed USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstodate_of_birth_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstodate_of_birth_idx ON _professionalstodate_of_birth USING btree (date_of_birth, freq);
-
-ALTER TABLE _professionalstodate_of_birth CLUSTER ON _professionalstodate_of_birth_idx;
+ALTER TABLE ONLY _aggr_aoo_owners_to_dogs_dog_idtoowner_id
+    ADD CONSTRAINT _aggr_aoo_owners_to_dogs_dog_idtoowner_id_dog_id_fk FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
 
 
 --
--- Name: _professionalstodate_of_birth_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_owners_to_dogs_owner_idtodog_id _aggr_aoo_owners_to_dogs_owner_idtodog_id_owner_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstodate_of_birth_idx_2 ON _professionalstodate_of_birth USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstogender_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstogender_idx ON _professionalstogender USING btree (gender, freq);
-
-ALTER TABLE _professionalstogender CLUSTER ON _professionalstogender_idx;
+ALTER TABLE ONLY _aggr_aoo_owners_to_dogs_owner_idtodog_id
+    ADD CONSTRAINT _aggr_aoo_owners_to_dogs_owner_idtodog_id_owner_id_fk FOREIGN KEY (owner_id) REFERENCES owners(owner_id);
 
 
 --
--- Name: _professionalstogender_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_treatments_dog_idtoprofessional_id _aggr_aoo_treatments_dog_idtoprofessional_id_dog_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstogender_idx_2 ON _professionalstogender USING btree (professionals_professional_id);
-
-
---
--- Name: _professionalstoweight_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _professionalstoweight_idx ON _professionalstoweight USING btree (weight, freq);
-
-ALTER TABLE _professionalstoweight CLUSTER ON _professionalstoweight_idx;
+ALTER TABLE ONLY _aggr_aoo_treatments_dog_idtoprofessional_id
+    ADD CONSTRAINT _aggr_aoo_treatments_dog_idtoprofessional_id_dog_id_fk FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
 
 
 --
--- Name: _professionalstoweight_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_treatments_professional_idtodog_id _aggr_aoo_treatments_professional_idtodog_id_professional_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _professionalstoweight_idx_2 ON _professionalstoweight USING btree (professionals_professional_id);
-
-
---
--- Name: dogs dogs_breed_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY dogs
-    ADD CONSTRAINT dogs_breed_code_fkey FOREIGN KEY (breed_code) REFERENCES breeds(breed_code);
+ALTER TABLE ONLY _aggr_aoo_treatments_professional_idtodog_id
+    ADD CONSTRAINT _aggr_aoo_treatments_professional_idtodog_id_professional_id_fk FOREIGN KEY (professional_id) REFERENCES professionals(professional_id);
 
 
 --
--- Name: dogs dogs_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _breedstosizes _breedstosizes_breeds_breed_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY dogs
-    ADD CONSTRAINT dogs_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES owners(owner_id);
-
-
---
--- Name: dogs dogs_owner_id_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: afariha
---
-
-ALTER TABLE ONLY dogs
-    ADD CONSTRAINT dogs_owner_id_fkey1 FOREIGN KEY (owner_id) REFERENCES owners(owner_id);
+ALTER TABLE ONLY _breedstosizes
+    ADD CONSTRAINT _breedstosizes_breeds_breed_id_fkey FOREIGN KEY (breeds_breed_id) REFERENCES breeds(breed_id);
 
 
 --
--- Name: dogs dogs_size_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: _breedstosizes _breedstosizes_size_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-ALTER TABLE ONLY dogs
-    ADD CONSTRAINT dogs_size_code_fkey FOREIGN KEY (size_code) REFERENCES sizes(size_code);
+ALTER TABLE ONLY _breedstosizes
+    ADD CONSTRAINT _breedstosizes_size_id_fkey FOREIGN KEY (size_id) REFERENCES sizes(size_id);
+
+
+--
+-- Name: _ownerstosizes _ownerstosizes_owners_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ownerstosizes
+    ADD CONSTRAINT _ownerstosizes_owners_owner_id_fkey FOREIGN KEY (owners_owner_id) REFERENCES owners(owner_id);
+
+
+--
+-- Name: _ownerstosizes _ownerstosizes_size_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ownerstosizes
+    ADD CONSTRAINT _ownerstosizes_size_id_fkey FOREIGN KEY (size_id) REFERENCES sizes(size_id);
+
+
+--
+-- Name: _professionalstosizes _professionalstosizes_professionals_professional_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _professionalstosizes
+    ADD CONSTRAINT _professionalstosizes_professionals_professional_id_fkey FOREIGN KEY (professionals_professional_id) REFERENCES professionals(professional_id);
+
+
+--
+-- Name: _professionalstosizes _professionalstosizes_size_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _professionalstosizes
+    ADD CONSTRAINT _professionalstosizes_size_id_fkey FOREIGN KEY (size_id) REFERENCES sizes(size_id);
+
+
+--
+-- Name: dogs_to_breeds dogs_to_breeds_breed_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY dogs_to_breeds
+    ADD CONSTRAINT dogs_to_breeds_breed_id_fkey FOREIGN KEY (breed_id) REFERENCES breeds(breed_id);
+
+
+--
+-- Name: dogs_to_breeds dogs_to_breeds_dog_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY dogs_to_breeds
+    ADD CONSTRAINT dogs_to_breeds_dog_id_fkey FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
+
+
+--
+-- Name: dogs_to_sizes dogs_to_sizes_dog_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY dogs_to_sizes
+    ADD CONSTRAINT dogs_to_sizes_dog_id_fkey FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
+
+
+--
+-- Name: dogs_to_sizes dogs_to_sizes_size_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY dogs_to_sizes
+    ADD CONSTRAINT dogs_to_sizes_size_id_fkey FOREIGN KEY (size_id) REFERENCES sizes(size_id);
+
+
+--
+-- Name: owners_to_dogs owners_to_dogs_dog_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY owners_to_dogs
+    ADD CONSTRAINT owners_to_dogs_dog_id_fkey FOREIGN KEY (dog_id) REFERENCES dogs(dog_id);
+
+
+--
+-- Name: owners_to_dogs owners_to_dogs_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY owners_to_dogs
+    ADD CONSTRAINT owners_to_dogs_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES owners(owner_id);
 
 
 --
@@ -821,11 +776,11 @@ ALTER TABLE ONLY treatments
 
 
 --
--- Name: treatments treatments_treatment_type_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+-- Name: treatments treatments_treatment_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY treatments
-    ADD CONSTRAINT treatments_treatment_type_code_fkey FOREIGN KEY (treatment_type_code) REFERENCES treatment_types(treatment_type_code);
+    ADD CONSTRAINT treatments_treatment_type_id_fkey FOREIGN KEY (treatment_type_id) REFERENCES treatment_types(treatment_type_id);
 
 
 --

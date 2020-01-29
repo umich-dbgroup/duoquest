@@ -35,222 +35,122 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: _aggr_aoo_student_enrolment_degree_program_idtosemester_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_addresses_to_line_2; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_degree_program_idtosemester_id (
-    degree_program_id bigint,
-    semester_id_aggr bigint[],
+CREATE TABLE _aggr_aoc_addresses_to_line_2 (
+    address_id integer,
+    line_2_id_aggr integer[],
     count bigint
 );
 
 
-ALTER TABLE _aggr_aoo_student_enrolment_degree_program_idtosemester_id OWNER TO afariha;
+ALTER TABLE _aggr_aoc_addresses_to_line_2 OWNER TO afariha;
 
 --
--- Name: _aggr_aoo_student_enrolment_degree_program_idtostudent_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_course_to_description; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_degree_program_idtostudent_id (
-    degree_program_id bigint,
+CREATE TABLE _aggr_aoc_course_to_description (
+    description_id integer,
+    course_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoc_course_to_description OWNER TO afariha;
+
+--
+-- Name: _aggr_aoc_department_to_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoc_department_to_description (
+    description_id integer,
+    department_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoc_department_to_description OWNER TO afariha;
+
+--
+-- Name: _aggr_aoc_section_to_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoc_section_to_description (
+    description_id integer,
+    section_id_aggr integer[],
+    count bigint
+);
+
+
+ALTER TABLE _aggr_aoc_section_to_description OWNER TO afariha;
+
+--
+-- Name: _aggr_aoc_student_enrolment; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE _aggr_aoc_student_enrolment (
+    semester_id bigint,
     student_id_aggr bigint[],
     count bigint
 );
 
 
-ALTER TABLE _aggr_aoo_student_enrolment_degree_program_idtostudent_id OWNER TO afariha;
+ALTER TABLE _aggr_aoc_student_enrolment OWNER TO afariha;
 
 --
--- Name: _aggr_aoo_student_enrolment_semester_idtodegree_program_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_student_to_cell_mobile_number; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_semester_idtodegree_program_id (
-    semester_id bigint,
-    degree_program_id_aggr bigint[],
+CREATE TABLE _aggr_aoc_student_to_cell_mobile_number (
+    cell_mobile_number_id integer,
+    student_id_aggr integer[],
     count bigint
 );
 
 
-ALTER TABLE _aggr_aoo_student_enrolment_semester_idtodegree_program_id OWNER TO afariha;
+ALTER TABLE _aggr_aoc_student_to_cell_mobile_number OWNER TO afariha;
 
 --
--- Name: _aggr_aoo_student_enrolment_semester_idtostudent_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_addresses_to_zip_address_idtozip_id; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_semester_idtostudent_id (
-    semester_id bigint,
-    student_id_aggr bigint[],
+CREATE TABLE _aggr_aoo_addresses_to_zip_address_idtozip_id (
+    address_id integer,
+    zip_id_aggr integer[],
     count bigint
 );
 
 
-ALTER TABLE _aggr_aoo_student_enrolment_semester_idtostudent_id OWNER TO afariha;
+ALTER TABLE _aggr_aoo_addresses_to_zip_address_idtozip_id OWNER TO afariha;
 
 --
--- Name: _aggr_aoo_student_enrolment_student_idtodegree_program_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_addresses_to_zip_zip_idtoaddress_id; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_student_idtodegree_program_id (
-    student_id bigint,
-    degree_program_id_aggr bigint[],
+CREATE TABLE _aggr_aoo_addresses_to_zip_zip_idtoaddress_id (
+    zip_id integer,
+    address_id_aggr integer[],
     count bigint
 );
 
 
-ALTER TABLE _aggr_aoo_student_enrolment_student_idtodegree_program_id OWNER TO afariha;
+ALTER TABLE _aggr_aoo_addresses_to_zip_zip_idtoaddress_id OWNER TO afariha;
 
 --
--- Name: _aggr_aoo_student_enrolment_student_idtosemester_id; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _degree_programstostudents; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _aggr_aoo_student_enrolment_student_idtosemester_id (
-    student_id bigint,
-    semester_id_aggr bigint[],
-    count bigint
-);
-
-
-ALTER TABLE _aggr_aoo_student_enrolment_student_idtosemester_id OWNER TO afariha;
-
---
--- Name: _degree_programstocell_mobile_number; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstocell_mobile_number (
+CREATE TABLE _degree_programstostudents (
     degree_programs_degree_program_id integer NOT NULL,
-    cell_mobile_number text,
+    student_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _degree_programstocell_mobile_number OWNER TO afariha;
-
---
--- Name: _degree_programstodate_first_registered; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstodate_first_registered (
-    degree_programs_degree_program_id integer NOT NULL,
-    date_first_registered integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstodate_first_registered OWNER TO afariha;
-
---
--- Name: _degree_programstodate_left; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstodate_left (
-    degree_programs_degree_program_id integer NOT NULL,
-    date_left integer,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstodate_left OWNER TO afariha;
-
---
--- Name: _degree_programstoemail_address; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstoemail_address (
-    degree_programs_degree_program_id integer NOT NULL,
-    email_address text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstoemail_address OWNER TO afariha;
-
---
--- Name: _degree_programstolast_name; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstolast_name (
-    degree_programs_degree_program_id integer NOT NULL,
-    last_name text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstolast_name OWNER TO afariha;
-
---
--- Name: _degree_programstomiddle_name; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstomiddle_name (
-    degree_programs_degree_program_id integer NOT NULL,
-    middle_name text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstomiddle_name OWNER TO afariha;
-
---
--- Name: _degree_programstoother_details; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstoother_details (
-    degree_programs_degree_program_id integer NOT NULL,
-    other_details text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstoother_details OWNER TO afariha;
-
---
--- Name: _degree_programstoother_student_details; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstoother_student_details (
-    degree_programs_degree_program_id integer NOT NULL,
-    other_student_details text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstoother_student_details OWNER TO afariha;
-
---
--- Name: _degree_programstosemester_description; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstosemester_description (
-    degree_programs_degree_program_id integer NOT NULL,
-    semester_description text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstosemester_description OWNER TO afariha;
-
---
--- Name: _degree_programstossn; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _degree_programstossn (
-    degree_programs_degree_program_id integer NOT NULL,
-    ssn text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _degree_programstossn OWNER TO afariha;
+ALTER TABLE _degree_programstostudents OWNER TO afariha;
 
 --
 -- Name: _invertedcolumnindex; Type: TABLE; Schema: public; Owner: afariha
@@ -266,186 +166,60 @@ CREATE TABLE _invertedcolumnindex (
 ALTER TABLE _invertedcolumnindex OWNER TO afariha;
 
 --
--- Name: _semesterstocell_mobile_number; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _semesterstodepartment_id; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _semesterstocell_mobile_number (
+CREATE TABLE _semesterstodepartment_id (
     semesters_semester_id integer NOT NULL,
-    cell_mobile_number text,
+    department_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _semesterstocell_mobile_number OWNER TO afariha;
+ALTER TABLE _semesterstodepartment_id OWNER TO afariha;
 
 --
--- Name: _semesterstodate_first_registered; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _semesterstostudents; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _semesterstodate_first_registered (
+CREATE TABLE _semesterstostudents (
     semesters_semester_id integer NOT NULL,
-    date_first_registered integer,
+    student_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _semesterstodate_first_registered OWNER TO afariha;
+ALTER TABLE _semesterstostudents OWNER TO afariha;
 
 --
--- Name: _semesterstodate_left; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _ziptoaddresses_line_2; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _semesterstodate_left (
-    semesters_semester_id integer NOT NULL,
-    date_left integer,
+CREATE TABLE _ziptoaddresses_line_2 (
+    zip_id integer NOT NULL,
+    line_2_id integer,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _semesterstodate_left OWNER TO afariha;
+ALTER TABLE _ziptoaddresses_line_2 OWNER TO afariha;
 
 --
--- Name: _semesterstodegree_summary_description; Type: TABLE; Schema: public; Owner: afariha
+-- Name: _ziptocity; Type: TABLE; Schema: public; Owner: afariha
 --
 
-CREATE TABLE _semesterstodegree_summary_description (
-    semesters_semester_id integer NOT NULL,
-    degree_summary_description text,
+CREATE TABLE _ziptocity (
+    zip_id integer NOT NULL,
+    city text,
     freq integer,
     normalized_freq integer
 );
 
 
-ALTER TABLE _semesterstodegree_summary_description OWNER TO afariha;
-
---
--- Name: _semesterstoemail_address; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstoemail_address (
-    semesters_semester_id integer NOT NULL,
-    email_address text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstoemail_address OWNER TO afariha;
-
---
--- Name: _semesterstolast_name; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstolast_name (
-    semesters_semester_id integer NOT NULL,
-    last_name text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstolast_name OWNER TO afariha;
-
---
--- Name: _semesterstomiddle_name; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstomiddle_name (
-    semesters_semester_id integer NOT NULL,
-    middle_name text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstomiddle_name OWNER TO afariha;
-
---
--- Name: _semesterstoother_details; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstoother_details (
-    semesters_semester_id integer NOT NULL,
-    other_details text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstoother_details OWNER TO afariha;
-
---
--- Name: _semesterstoother_student_details; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstoother_student_details (
-    semesters_semester_id integer NOT NULL,
-    other_student_details text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstoother_student_details OWNER TO afariha;
-
---
--- Name: _semesterstossn; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _semesterstossn (
-    semesters_semester_id integer NOT NULL,
-    ssn text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _semesterstossn OWNER TO afariha;
-
---
--- Name: _studentstodegree_summary_description; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _studentstodegree_summary_description (
-    students_student_id integer NOT NULL,
-    degree_summary_description text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _studentstodegree_summary_description OWNER TO afariha;
-
---
--- Name: _studentstoother_details; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _studentstoother_details (
-    students_student_id integer NOT NULL,
-    other_details text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _studentstoother_details OWNER TO afariha;
-
---
--- Name: _studentstosemester_description; Type: TABLE; Schema: public; Owner: afariha
---
-
-CREATE TABLE _studentstosemester_description (
-    students_student_id integer NOT NULL,
-    semester_description text,
-    freq integer,
-    normalized_freq integer
-);
-
-
-ALTER TABLE _studentstosemester_description OWNER TO afariha;
+ALTER TABLE _ziptocity OWNER TO afariha;
 
 --
 -- Name: addresses; Type: TABLE; Schema: public; Owner: afariha
@@ -454,10 +228,8 @@ ALTER TABLE _studentstosemester_description OWNER TO afariha;
 CREATE TABLE addresses (
     address_id bigint NOT NULL,
     line_1 text,
-    line_2 text,
     line_3 text,
     city text,
-    zip_postcode text,
     state_province_county text,
     country text,
     other_address_details text
@@ -467,13 +239,114 @@ CREATE TABLE addresses (
 ALTER TABLE addresses OWNER TO afariha;
 
 --
+-- Name: addresses_line_2; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE addresses_line_2 (
+    id integer NOT NULL,
+    line_2 text
+);
+
+
+ALTER TABLE addresses_line_2 OWNER TO afariha;
+
+--
+-- Name: addresses_line_2_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE addresses_line_2_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE addresses_line_2_id_seq OWNER TO afariha;
+
+--
+-- Name: addresses_line_2_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE addresses_line_2_id_seq OWNED BY addresses_line_2.id;
+
+
+--
+-- Name: addresses_to_line_2; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE addresses_to_line_2 (
+    address_id integer,
+    line_2_id integer
+);
+
+
+ALTER TABLE addresses_to_line_2 OWNER TO afariha;
+
+--
+-- Name: addresses_to_zip; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE addresses_to_zip (
+    address_id integer,
+    zip_id integer
+);
+
+
+ALTER TABLE addresses_to_zip OWNER TO afariha;
+
+--
+-- Name: course_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE course_description (
+    id integer NOT NULL,
+    description text
+);
+
+
+ALTER TABLE course_description OWNER TO afariha;
+
+--
+-- Name: course_description_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE course_description_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE course_description_id_seq OWNER TO afariha;
+
+--
+-- Name: course_description_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE course_description_id_seq OWNED BY course_description.id;
+
+
+--
+-- Name: course_to_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE course_to_description (
+    course_id integer,
+    description_id integer
+);
+
+
+ALTER TABLE course_to_description OWNER TO afariha;
+
+--
 -- Name: courses; Type: TABLE; Schema: public; Owner: afariha
 --
 
 CREATE TABLE courses (
     course_id bigint NOT NULL,
     course_name text,
-    course_description text,
     other_details text
 );
 
@@ -496,18 +369,107 @@ CREATE TABLE degree_programs (
 ALTER TABLE degree_programs OWNER TO afariha;
 
 --
+-- Name: department_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE department_description (
+    id integer NOT NULL,
+    description text
+);
+
+
+ALTER TABLE department_description OWNER TO afariha;
+
+--
+-- Name: department_description_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE department_description_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE department_description_id_seq OWNER TO afariha;
+
+--
+-- Name: department_description_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE department_description_id_seq OWNED BY department_description.id;
+
+
+--
+-- Name: department_to_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE department_to_description (
+    department_id integer,
+    description_id integer
+);
+
+
+ALTER TABLE department_to_description OWNER TO afariha;
+
+--
 -- Name: departments; Type: TABLE; Schema: public; Owner: afariha
 --
 
 CREATE TABLE departments (
     department_id bigint NOT NULL,
     department_name text,
-    department_description text,
     other_details text
 );
 
 
 ALTER TABLE departments OWNER TO afariha;
+
+--
+-- Name: section_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE section_description (
+    id integer NOT NULL,
+    description text
+);
+
+
+ALTER TABLE section_description OWNER TO afariha;
+
+--
+-- Name: section_description_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE section_description_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE section_description_id_seq OWNER TO afariha;
+
+--
+-- Name: section_description_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE section_description_id_seq OWNED BY section_description.id;
+
+
+--
+-- Name: section_to_description; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE section_to_description (
+    section_id integer,
+    description_id integer
+);
+
+
+ALTER TABLE section_to_description OWNER TO afariha;
 
 --
 -- Name: sections; Type: TABLE; Schema: public; Owner: afariha
@@ -517,7 +479,6 @@ CREATE TABLE sections (
     section_id bigint NOT NULL,
     course_id bigint,
     section_name text,
-    section_description text,
     other_details text
 );
 
@@ -537,6 +498,39 @@ CREATE TABLE semesters (
 
 
 ALTER TABLE semesters OWNER TO afariha;
+
+--
+-- Name: student_cell_mobile_number; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_cell_mobile_number (
+    id integer NOT NULL,
+    cell_mobile_number text
+);
+
+
+ALTER TABLE student_cell_mobile_number OWNER TO afariha;
+
+--
+-- Name: student_cell_mobile_number_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE student_cell_mobile_number_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE student_cell_mobile_number_id_seq OWNER TO afariha;
+
+--
+-- Name: student_cell_mobile_number_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE student_cell_mobile_number_id_seq OWNED BY student_cell_mobile_number.id;
+
 
 --
 -- Name: student_enrolment; Type: TABLE; Schema: public; Owner: afariha
@@ -567,6 +561,108 @@ CREATE TABLE student_enrolment_courses (
 ALTER TABLE student_enrolment_courses OWNER TO afariha;
 
 --
+-- Name: student_last_name; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_last_name (
+    id integer NOT NULL,
+    last_name text
+);
+
+
+ALTER TABLE student_last_name OWNER TO afariha;
+
+--
+-- Name: student_last_name_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE student_last_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE student_last_name_id_seq OWNER TO afariha;
+
+--
+-- Name: student_last_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE student_last_name_id_seq OWNED BY student_last_name.id;
+
+
+--
+-- Name: student_middle_name; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_middle_name (
+    id integer NOT NULL,
+    middle_name text
+);
+
+
+ALTER TABLE student_middle_name OWNER TO afariha;
+
+--
+-- Name: student_middle_name_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE student_middle_name_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE student_middle_name_id_seq OWNER TO afariha;
+
+--
+-- Name: student_middle_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE student_middle_name_id_seq OWNED BY student_middle_name.id;
+
+
+--
+-- Name: student_to_cell_mobile_number; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_to_cell_mobile_number (
+    student_id integer,
+    cell_mobile_number_id integer
+);
+
+
+ALTER TABLE student_to_cell_mobile_number OWNER TO afariha;
+
+--
+-- Name: student_to_last_name; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_to_last_name (
+    student_id integer,
+    last_name_id integer
+);
+
+
+ALTER TABLE student_to_last_name OWNER TO afariha;
+
+--
+-- Name: student_to_middle_name; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE student_to_middle_name (
+    student_id integer,
+    middle_name_id integer
+);
+
+
+ALTER TABLE student_to_middle_name OWNER TO afariha;
+
+--
 -- Name: students; Type: TABLE; Schema: public; Owner: afariha
 --
 
@@ -575,9 +671,6 @@ CREATE TABLE students (
     current_address_id bigint,
     permanent_address_id bigint,
     first_name text,
-    middle_name text,
-    last_name text,
-    cell_mobile_number text,
     email_address text,
     ssn text,
     date_first_registered text,
@@ -614,6 +707,95 @@ CREATE TABLE transcripts (
 ALTER TABLE transcripts OWNER TO afariha;
 
 --
+-- Name: zip; Type: TABLE; Schema: public; Owner: afariha
+--
+
+CREATE TABLE zip (
+    id integer NOT NULL,
+    zip text
+);
+
+
+ALTER TABLE zip OWNER TO afariha;
+
+--
+-- Name: zip_id_seq; Type: SEQUENCE; Schema: public; Owner: afariha
+--
+
+CREATE SEQUENCE zip_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE zip_id_seq OWNER TO afariha;
+
+--
+-- Name: zip_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: afariha
+--
+
+ALTER SEQUENCE zip_id_seq OWNED BY zip.id;
+
+
+--
+-- Name: addresses_line_2 id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_line_2 ALTER COLUMN id SET DEFAULT nextval('addresses_line_2_id_seq'::regclass);
+
+
+--
+-- Name: course_description id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY course_description ALTER COLUMN id SET DEFAULT nextval('course_description_id_seq'::regclass);
+
+
+--
+-- Name: department_description id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY department_description ALTER COLUMN id SET DEFAULT nextval('department_description_id_seq'::regclass);
+
+
+--
+-- Name: section_description id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY section_description ALTER COLUMN id SET DEFAULT nextval('section_description_id_seq'::regclass);
+
+
+--
+-- Name: student_cell_mobile_number id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_cell_mobile_number ALTER COLUMN id SET DEFAULT nextval('student_cell_mobile_number_id_seq'::regclass);
+
+
+--
+-- Name: student_last_name id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_last_name ALTER COLUMN id SET DEFAULT nextval('student_last_name_id_seq'::regclass);
+
+
+--
+-- Name: student_middle_name id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_middle_name ALTER COLUMN id SET DEFAULT nextval('student_middle_name_id_seq'::regclass);
+
+
+--
+-- Name: zip id; Type: DEFAULT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY zip ALTER COLUMN id SET DEFAULT nextval('zip_id_seq'::regclass);
+
+
+--
 -- Name: _invertedcolumnindex _invertedcolumnindex_word_tabname_colname_key; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
@@ -622,285 +804,219 @@ ALTER TABLE ONLY _invertedcolumnindex
 
 
 --
--- Name: addresses idx_44432_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: addresses_line_2 addresses_line_2_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_line_2
+    ADD CONSTRAINT addresses_line_2_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: course_description course_description_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY course_description
+    ADD CONSTRAINT course_description_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: department_description department_description_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY department_description
+    ADD CONSTRAINT department_description_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: addresses idx_76211_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY addresses
-    ADD CONSTRAINT idx_44432_addresses_pkey PRIMARY KEY (address_id);
+    ADD CONSTRAINT idx_76211_addresses_pkey PRIMARY KEY (address_id);
 
 
 --
--- Name: courses idx_44438_courses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: courses idx_76217_courses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY courses
-    ADD CONSTRAINT idx_44438_courses_pkey PRIMARY KEY (course_id);
+    ADD CONSTRAINT idx_76217_courses_pkey PRIMARY KEY (course_id);
 
 
 --
--- Name: departments idx_44444_departments_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: departments idx_76223_departments_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY departments
-    ADD CONSTRAINT idx_44444_departments_pkey PRIMARY KEY (department_id);
+    ADD CONSTRAINT idx_76223_departments_pkey PRIMARY KEY (department_id);
 
 
 --
--- Name: degree_programs idx_44450_degree_programs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: degree_programs idx_76229_degree_programs_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY degree_programs
-    ADD CONSTRAINT idx_44450_degree_programs_pkey PRIMARY KEY (degree_program_id);
+    ADD CONSTRAINT idx_76229_degree_programs_pkey PRIMARY KEY (degree_program_id);
 
 
 --
--- Name: sections idx_44456_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: sections idx_76235_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY sections
-    ADD CONSTRAINT idx_44456_sections_pkey PRIMARY KEY (section_id);
+    ADD CONSTRAINT idx_76235_sections_pkey PRIMARY KEY (section_id);
 
 
 --
--- Name: semesters idx_44462_semesters_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: semesters idx_76241_semesters_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY semesters
-    ADD CONSTRAINT idx_44462_semesters_pkey PRIMARY KEY (semester_id);
+    ADD CONSTRAINT idx_76241_semesters_pkey PRIMARY KEY (semester_id);
 
 
 --
--- Name: students idx_44468_students_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: students idx_76247_students_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY students
-    ADD CONSTRAINT idx_44468_students_pkey PRIMARY KEY (student_id);
+    ADD CONSTRAINT idx_76247_students_pkey PRIMARY KEY (student_id);
 
 
 --
--- Name: student_enrolment idx_44474_student_enrolment_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: student_enrolment idx_76253_student_enrolment_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY student_enrolment
-    ADD CONSTRAINT idx_44474_student_enrolment_pkey PRIMARY KEY (student_enrolment_id);
+    ADD CONSTRAINT idx_76253_student_enrolment_pkey PRIMARY KEY (student_enrolment_id);
 
 
 --
--- Name: student_enrolment_courses idx_44480_student_enrolment_courses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: student_enrolment_courses idx_76259_student_enrolment_courses_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY student_enrolment_courses
-    ADD CONSTRAINT idx_44480_student_enrolment_courses_pkey PRIMARY KEY (student_course_id);
+    ADD CONSTRAINT idx_76259_student_enrolment_courses_pkey PRIMARY KEY (student_course_id);
 
 
 --
--- Name: transcripts idx_44483_transcripts_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
+-- Name: transcripts idx_76262_transcripts_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
 ALTER TABLE ONLY transcripts
-    ADD CONSTRAINT idx_44483_transcripts_pkey PRIMARY KEY (transcript_id);
+    ADD CONSTRAINT idx_76262_transcripts_pkey PRIMARY KEY (transcript_id);
 
 
 --
--- Name: _aggr_aoo_student_enrolment_degree_program_idtosemester_id_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: section_description section_description_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _aggr_aoo_student_enrolment_degree_program_idtosemester_id_idx ON _aggr_aoo_student_enrolment_degree_program_idtosemester_id USING btree (degree_program_id);
-
-
---
--- Name: _aggr_aoo_student_enrolment_degree_program_idtostudent_id_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _aggr_aoo_student_enrolment_degree_program_idtostudent_id_idx ON _aggr_aoo_student_enrolment_degree_program_idtostudent_id USING btree (degree_program_id);
+ALTER TABLE ONLY section_description
+    ADD CONSTRAINT section_description_pkey PRIMARY KEY (id);
 
 
 --
--- Name: _aggr_aoo_student_enrolment_semester_idtodegree_program_id_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: student_cell_mobile_number student_cell_mobile_number_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _aggr_aoo_student_enrolment_semester_idtodegree_program_id_idx ON _aggr_aoo_student_enrolment_semester_idtodegree_program_id USING btree (semester_id);
-
-
---
--- Name: _aggr_aoo_student_enrolment_semester_idtostudent_id_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _aggr_aoo_student_enrolment_semester_idtostudent_id_idx ON _aggr_aoo_student_enrolment_semester_idtostudent_id USING btree (semester_id);
+ALTER TABLE ONLY student_cell_mobile_number
+    ADD CONSTRAINT student_cell_mobile_number_pkey PRIMARY KEY (id);
 
 
 --
--- Name: _aggr_aoo_student_enrolment_student_idtodegree_program_id_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: student_last_name student_last_name_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _aggr_aoo_student_enrolment_student_idtodegree_program_id_idx ON _aggr_aoo_student_enrolment_student_idtodegree_program_id USING btree (student_id);
-
-
---
--- Name: _aggr_aoo_student_enrolment_student_idtosemester_id_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _aggr_aoo_student_enrolment_student_idtosemester_id_idx ON _aggr_aoo_student_enrolment_student_idtosemester_id USING btree (student_id);
+ALTER TABLE ONLY student_last_name
+    ADD CONSTRAINT student_last_name_pkey PRIMARY KEY (id);
 
 
 --
--- Name: _degree_programstocell_mobile_number_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: student_middle_name student_middle_name_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstocell_mobile_number_idx ON _degree_programstocell_mobile_number USING btree (cell_mobile_number, freq);
-
-ALTER TABLE _degree_programstocell_mobile_number CLUSTER ON _degree_programstocell_mobile_number_idx;
-
-
---
--- Name: _degree_programstocell_mobile_number_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstocell_mobile_number_idx_2 ON _degree_programstocell_mobile_number USING btree (degree_programs_degree_program_id);
+ALTER TABLE ONLY student_middle_name
+    ADD CONSTRAINT student_middle_name_pkey PRIMARY KEY (id);
 
 
 --
--- Name: _degree_programstodate_first_registered_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: zip zip_pkey; Type: CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstodate_first_registered_idx ON _degree_programstodate_first_registered USING btree (date_first_registered, freq);
-
-ALTER TABLE _degree_programstodate_first_registered CLUSTER ON _degree_programstodate_first_registered_idx;
-
-
---
--- Name: _degree_programstodate_first_registered_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstodate_first_registered_idx_2 ON _degree_programstodate_first_registered USING btree (degree_programs_degree_program_id);
+ALTER TABLE ONLY zip
+    ADD CONSTRAINT zip_pkey PRIMARY KEY (id);
 
 
 --
--- Name: _degree_programstodate_left_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_addresses_to_line_2_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstodate_left_idx ON _degree_programstodate_left USING btree (date_left, freq);
-
-ALTER TABLE _degree_programstodate_left CLUSTER ON _degree_programstodate_left_idx;
+CREATE INDEX _aggr_aoc_addresses_to_line_2_idx ON _aggr_aoc_addresses_to_line_2 USING btree (address_id);
 
 
 --
--- Name: _degree_programstodate_left_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_course_to_description_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstodate_left_idx_2 ON _degree_programstodate_left USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstoemail_address_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstoemail_address_idx ON _degree_programstoemail_address USING btree (email_address, freq);
-
-ALTER TABLE _degree_programstoemail_address CLUSTER ON _degree_programstoemail_address_idx;
+CREATE INDEX _aggr_aoc_course_to_description_idx ON _aggr_aoc_course_to_description USING btree (description_id);
 
 
 --
--- Name: _degree_programstoemail_address_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_department_to_description_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstoemail_address_idx_2 ON _degree_programstoemail_address USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstolast_name_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstolast_name_idx ON _degree_programstolast_name USING btree (last_name, freq);
-
-ALTER TABLE _degree_programstolast_name CLUSTER ON _degree_programstolast_name_idx;
+CREATE INDEX _aggr_aoc_department_to_description_idx ON _aggr_aoc_department_to_description USING btree (description_id);
 
 
 --
--- Name: _degree_programstolast_name_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_section_to_description_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstolast_name_idx_2 ON _degree_programstolast_name USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstomiddle_name_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstomiddle_name_idx ON _degree_programstomiddle_name USING btree (middle_name, freq);
-
-ALTER TABLE _degree_programstomiddle_name CLUSTER ON _degree_programstomiddle_name_idx;
+CREATE INDEX _aggr_aoc_section_to_description_idx ON _aggr_aoc_section_to_description USING btree (description_id);
 
 
 --
--- Name: _degree_programstomiddle_name_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_student_enrolment_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstomiddle_name_idx_2 ON _degree_programstomiddle_name USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstoother_details_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstoother_details_idx ON _degree_programstoother_details USING btree (other_details, freq);
-
-ALTER TABLE _degree_programstoother_details CLUSTER ON _degree_programstoother_details_idx;
+CREATE INDEX _aggr_aoc_student_enrolment_idx ON _aggr_aoc_student_enrolment USING btree (semester_id);
 
 
 --
--- Name: _degree_programstoother_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_student_to_cell_mobile_number_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstoother_details_idx_2 ON _degree_programstoother_details USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstoother_student_details_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstoother_student_details_idx ON _degree_programstoother_student_details USING btree (other_student_details, freq);
-
-ALTER TABLE _degree_programstoother_student_details CLUSTER ON _degree_programstoother_student_details_idx;
+CREATE INDEX _aggr_aoc_student_to_cell_mobile_number_idx ON _aggr_aoc_student_to_cell_mobile_number USING btree (cell_mobile_number_id);
 
 
 --
--- Name: _degree_programstoother_student_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_addresses_to_zip_address_idtozip_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstoother_student_details_idx_2 ON _degree_programstoother_student_details USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstosemester_description_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstosemester_description_idx ON _degree_programstosemester_description USING btree (semester_description, freq);
-
-ALTER TABLE _degree_programstosemester_description CLUSTER ON _degree_programstosemester_description_idx;
+CREATE INDEX _aggr_aoo_addresses_to_zip_address_idtozip_id_idx ON _aggr_aoo_addresses_to_zip_address_idtozip_id USING btree (address_id);
 
 
 --
--- Name: _degree_programstosemester_description_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoo_addresses_to_zip_zip_idtoaddress_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstosemester_description_idx_2 ON _degree_programstosemester_description USING btree (degree_programs_degree_program_id);
-
-
---
--- Name: _degree_programstossn_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _degree_programstossn_idx ON _degree_programstossn USING btree (ssn, freq);
-
-ALTER TABLE _degree_programstossn CLUSTER ON _degree_programstossn_idx;
+CREATE INDEX _aggr_aoo_addresses_to_zip_zip_idtoaddress_id_idx ON _aggr_aoo_addresses_to_zip_zip_idtoaddress_id USING btree (zip_id);
 
 
 --
--- Name: _degree_programstossn_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _degree_programstostudents_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _degree_programstossn_idx_2 ON _degree_programstossn USING btree (degree_programs_degree_program_id);
+CREATE INDEX _degree_programstostudents_idx ON _degree_programstostudents USING btree (student_id, freq);
+
+ALTER TABLE _degree_programstostudents CLUSTER ON _degree_programstostudents_idx;
+
+
+--
+-- Name: _degree_programstostudents_idx_2; Type: INDEX; Schema: public; Owner: afariha
+--
+
+CREATE INDEX _degree_programstostudents_idx_2 ON _degree_programstostudents USING btree (degree_programs_degree_program_id);
 
 
 --
@@ -913,211 +1029,251 @@ ALTER TABLE _invertedcolumnindex CLUSTER ON _invertedcolumnindex_word_idx;
 
 
 --
--- Name: _semesterstocell_mobile_number_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _semesterstodepartment_id_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstocell_mobile_number_idx ON _semesterstocell_mobile_number USING btree (cell_mobile_number, freq);
+CREATE INDEX _semesterstodepartment_id_idx ON _semesterstodepartment_id USING btree (department_id, freq);
 
-ALTER TABLE _semesterstocell_mobile_number CLUSTER ON _semesterstocell_mobile_number_idx;
-
-
---
--- Name: _semesterstocell_mobile_number_idx_2; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstocell_mobile_number_idx_2 ON _semesterstocell_mobile_number USING btree (semesters_semester_id);
+ALTER TABLE _semesterstodepartment_id CLUSTER ON _semesterstodepartment_id_idx;
 
 
 --
--- Name: _semesterstodate_first_registered_idx; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _semesterstodepartment_id_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstodate_first_registered_idx ON _semesterstodate_first_registered USING btree (date_first_registered, freq);
-
-ALTER TABLE _semesterstodate_first_registered CLUSTER ON _semesterstodate_first_registered_idx;
+CREATE INDEX _semesterstodepartment_id_idx_2 ON _semesterstodepartment_id USING btree (semesters_semester_id);
 
 
 --
--- Name: _semesterstodate_first_registered_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _semesterstostudents_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstodate_first_registered_idx_2 ON _semesterstodate_first_registered USING btree (semesters_semester_id);
+CREATE INDEX _semesterstostudents_idx ON _semesterstostudents USING btree (student_id, freq);
 
-
---
--- Name: _semesterstodate_left_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstodate_left_idx ON _semesterstodate_left USING btree (date_left, freq);
-
-ALTER TABLE _semesterstodate_left CLUSTER ON _semesterstodate_left_idx;
+ALTER TABLE _semesterstostudents CLUSTER ON _semesterstostudents_idx;
 
 
 --
--- Name: _semesterstodate_left_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _semesterstostudents_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstodate_left_idx_2 ON _semesterstodate_left USING btree (semesters_semester_id);
-
-
---
--- Name: _semesterstodegree_summary_description_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstodegree_summary_description_idx ON _semesterstodegree_summary_description USING btree (degree_summary_description, freq);
-
-ALTER TABLE _semesterstodegree_summary_description CLUSTER ON _semesterstodegree_summary_description_idx;
+CREATE INDEX _semesterstostudents_idx_2 ON _semesterstostudents USING btree (semesters_semester_id);
 
 
 --
--- Name: _semesterstodegree_summary_description_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ziptoaddresses_line_2_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstodegree_summary_description_idx_2 ON _semesterstodegree_summary_description USING btree (semesters_semester_id);
+CREATE INDEX _ziptoaddresses_line_2_idx ON _ziptoaddresses_line_2 USING btree (line_2_id, freq);
 
-
---
--- Name: _semesterstoemail_address_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstoemail_address_idx ON _semesterstoemail_address USING btree (email_address, freq);
-
-ALTER TABLE _semesterstoemail_address CLUSTER ON _semesterstoemail_address_idx;
+ALTER TABLE _ziptoaddresses_line_2 CLUSTER ON _ziptoaddresses_line_2_idx;
 
 
 --
--- Name: _semesterstoemail_address_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ziptoaddresses_line_2_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstoemail_address_idx_2 ON _semesterstoemail_address USING btree (semesters_semester_id);
-
-
---
--- Name: _semesterstolast_name_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstolast_name_idx ON _semesterstolast_name USING btree (last_name, freq);
-
-ALTER TABLE _semesterstolast_name CLUSTER ON _semesterstolast_name_idx;
+CREATE INDEX _ziptoaddresses_line_2_idx_2 ON _ziptoaddresses_line_2 USING btree (zip_id);
 
 
 --
--- Name: _semesterstolast_name_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ziptocity_idx; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstolast_name_idx_2 ON _semesterstolast_name USING btree (semesters_semester_id);
+CREATE INDEX _ziptocity_idx ON _ziptocity USING btree (city, freq);
 
-
---
--- Name: _semesterstomiddle_name_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstomiddle_name_idx ON _semesterstomiddle_name USING btree (middle_name, freq);
-
-ALTER TABLE _semesterstomiddle_name CLUSTER ON _semesterstomiddle_name_idx;
+ALTER TABLE _ziptocity CLUSTER ON _ziptocity_idx;
 
 
 --
--- Name: _semesterstomiddle_name_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _ziptocity_idx_2; Type: INDEX; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstomiddle_name_idx_2 ON _semesterstomiddle_name USING btree (semesters_semester_id);
-
-
---
--- Name: _semesterstoother_details_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstoother_details_idx ON _semesterstoother_details USING btree (other_details, freq);
-
-ALTER TABLE _semesterstoother_details CLUSTER ON _semesterstoother_details_idx;
+CREATE INDEX _ziptocity_idx_2 ON _ziptocity USING btree (zip_id);
 
 
 --
--- Name: _semesterstoother_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_addresses_to_line_2 _aggr_aocaddresses_to_line_2_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstoother_details_idx_2 ON _semesterstoother_details USING btree (semesters_semester_id);
-
-
---
--- Name: _semesterstoother_student_details_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstoother_student_details_idx ON _semesterstoother_student_details USING btree (other_student_details, freq);
-
-ALTER TABLE _semesterstoother_student_details CLUSTER ON _semesterstoother_student_details_idx;
+ALTER TABLE ONLY _aggr_aoc_addresses_to_line_2
+    ADD CONSTRAINT _aggr_aocaddresses_to_line_2_address_id_fk FOREIGN KEY (address_id) REFERENCES addresses(address_id);
 
 
 --
--- Name: _semesterstoother_student_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_course_to_description _aggr_aoccourse_to_description_description_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstoother_student_details_idx_2 ON _semesterstoother_student_details USING btree (semesters_semester_id);
-
-
---
--- Name: _semesterstossn_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _semesterstossn_idx ON _semesterstossn USING btree (ssn, freq);
-
-ALTER TABLE _semesterstossn CLUSTER ON _semesterstossn_idx;
+ALTER TABLE ONLY _aggr_aoc_course_to_description
+    ADD CONSTRAINT _aggr_aoccourse_to_description_description_id_fk FOREIGN KEY (description_id) REFERENCES course_description(id);
 
 
 --
--- Name: _semesterstossn_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_department_to_description _aggr_aocdepartment_to_description_description_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _semesterstossn_idx_2 ON _semesterstossn USING btree (semesters_semester_id);
-
-
---
--- Name: _studentstodegree_summary_description_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _studentstodegree_summary_description_idx ON _studentstodegree_summary_description USING btree (degree_summary_description, freq);
-
-ALTER TABLE _studentstodegree_summary_description CLUSTER ON _studentstodegree_summary_description_idx;
+ALTER TABLE ONLY _aggr_aoc_department_to_description
+    ADD CONSTRAINT _aggr_aocdepartment_to_description_description_id_fk FOREIGN KEY (description_id) REFERENCES department_description(id);
 
 
 --
--- Name: _studentstodegree_summary_description_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_section_to_description _aggr_aocsection_to_description_description_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _studentstodegree_summary_description_idx_2 ON _studentstodegree_summary_description USING btree (students_student_id);
-
-
---
--- Name: _studentstoother_details_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _studentstoother_details_idx ON _studentstoother_details USING btree (other_details, freq);
-
-ALTER TABLE _studentstoother_details CLUSTER ON _studentstoother_details_idx;
+ALTER TABLE ONLY _aggr_aoc_section_to_description
+    ADD CONSTRAINT _aggr_aocsection_to_description_description_id_fk FOREIGN KEY (description_id) REFERENCES section_description(id);
 
 
 --
--- Name: _studentstoother_details_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_student_enrolment _aggr_aocstudent_enrolment_semester_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _studentstoother_details_idx_2 ON _studentstoother_details USING btree (students_student_id);
-
-
---
--- Name: _studentstosemester_description_idx; Type: INDEX; Schema: public; Owner: afariha
---
-
-CREATE INDEX _studentstosemester_description_idx ON _studentstosemester_description USING btree (semester_description, freq);
-
-ALTER TABLE _studentstosemester_description CLUSTER ON _studentstosemester_description_idx;
+ALTER TABLE ONLY _aggr_aoc_student_enrolment
+    ADD CONSTRAINT _aggr_aocstudent_enrolment_semester_id_fk FOREIGN KEY (semester_id) REFERENCES semesters(semester_id);
 
 
 --
--- Name: _studentstosemester_description_idx_2; Type: INDEX; Schema: public; Owner: afariha
+-- Name: _aggr_aoc_student_to_cell_mobile_number _aggr_aocstudent_to_cell_mobile_number_cell_mobile_number_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
 --
 
-CREATE INDEX _studentstosemester_description_idx_2 ON _studentstosemester_description USING btree (students_student_id);
+ALTER TABLE ONLY _aggr_aoc_student_to_cell_mobile_number
+    ADD CONSTRAINT _aggr_aocstudent_to_cell_mobile_number_cell_mobile_number_id_fk FOREIGN KEY (cell_mobile_number_id) REFERENCES student_cell_mobile_number(id);
+
+
+--
+-- Name: _aggr_aoo_addresses_to_zip_address_idtozip_id _aggr_aoo_addresses_to_zip_address_idtozip_id_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_addresses_to_zip_address_idtozip_id
+    ADD CONSTRAINT _aggr_aoo_addresses_to_zip_address_idtozip_id_address_id_fk FOREIGN KEY (address_id) REFERENCES addresses(address_id);
+
+
+--
+-- Name: _aggr_aoo_addresses_to_zip_zip_idtoaddress_id _aggr_aoo_addresses_to_zip_zip_idtoaddress_id_zip_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _aggr_aoo_addresses_to_zip_zip_idtoaddress_id
+    ADD CONSTRAINT _aggr_aoo_addresses_to_zip_zip_idtoaddress_id_zip_id_fk FOREIGN KEY (zip_id) REFERENCES zip(id);
+
+
+--
+-- Name: _degree_programstostudents _degree_programstostudents_degree_programs_degree_program__fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _degree_programstostudents
+    ADD CONSTRAINT _degree_programstostudents_degree_programs_degree_program__fkey FOREIGN KEY (degree_programs_degree_program_id) REFERENCES degree_programs(degree_program_id);
+
+
+--
+-- Name: _degree_programstostudents _degree_programstostudents_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _degree_programstostudents
+    ADD CONSTRAINT _degree_programstostudents_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+
+--
+-- Name: _semesterstodepartment_id _semesterstodepartment_id_department_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _semesterstodepartment_id
+    ADD CONSTRAINT _semesterstodepartment_id_department_id_fkey FOREIGN KEY (department_id) REFERENCES departments(department_id);
+
+
+--
+-- Name: _semesterstodepartment_id _semesterstodepartment_id_semesters_semester_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _semesterstodepartment_id
+    ADD CONSTRAINT _semesterstodepartment_id_semesters_semester_id_fkey FOREIGN KEY (semesters_semester_id) REFERENCES semesters(semester_id);
+
+
+--
+-- Name: _semesterstostudents _semesterstostudents_semesters_semester_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _semesterstostudents
+    ADD CONSTRAINT _semesterstostudents_semesters_semester_id_fkey FOREIGN KEY (semesters_semester_id) REFERENCES semesters(semester_id);
+
+
+--
+-- Name: _semesterstostudents _semesterstostudents_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _semesterstostudents
+    ADD CONSTRAINT _semesterstostudents_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+
+--
+-- Name: _ziptoaddresses_line_2 _ziptoaddresses_line_2_line_2_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ziptoaddresses_line_2
+    ADD CONSTRAINT _ziptoaddresses_line_2_line_2_id_fkey FOREIGN KEY (line_2_id) REFERENCES addresses_line_2(id);
+
+
+--
+-- Name: _ziptoaddresses_line_2 _ziptoaddresses_line_2_zip_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ziptoaddresses_line_2
+    ADD CONSTRAINT _ziptoaddresses_line_2_zip_id_fkey FOREIGN KEY (zip_id) REFERENCES zip(id);
+
+
+--
+-- Name: _ziptocity _ziptocity_zip_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY _ziptocity
+    ADD CONSTRAINT _ziptocity_zip_id_fkey FOREIGN KEY (zip_id) REFERENCES zip(id);
+
+
+--
+-- Name: addresses_to_line_2 addresses_to_line_2_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_to_line_2
+    ADD CONSTRAINT addresses_to_line_2_address_id_fkey FOREIGN KEY (address_id) REFERENCES addresses(address_id);
+
+
+--
+-- Name: addresses_to_line_2 addresses_to_line_2_line_2_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_to_line_2
+    ADD CONSTRAINT addresses_to_line_2_line_2_id_fkey FOREIGN KEY (line_2_id) REFERENCES addresses_line_2(id);
+
+
+--
+-- Name: addresses_to_zip addresses_to_zip_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_to_zip
+    ADD CONSTRAINT addresses_to_zip_address_id_fkey FOREIGN KEY (address_id) REFERENCES addresses(address_id);
+
+
+--
+-- Name: addresses_to_zip addresses_to_zip_zip_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY addresses_to_zip
+    ADD CONSTRAINT addresses_to_zip_zip_id_fkey FOREIGN KEY (zip_id) REFERENCES zip(id);
+
+
+--
+-- Name: course_to_description course_to_description_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY course_to_description
+    ADD CONSTRAINT course_to_description_course_id_fkey FOREIGN KEY (course_id) REFERENCES courses(course_id);
+
+
+--
+-- Name: course_to_description course_to_description_description_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY course_to_description
+    ADD CONSTRAINT course_to_description_description_id_fkey FOREIGN KEY (description_id) REFERENCES course_description(id);
 
 
 --
@@ -1126,6 +1282,38 @@ CREATE INDEX _studentstosemester_description_idx_2 ON _studentstosemester_descri
 
 ALTER TABLE ONLY degree_programs
     ADD CONSTRAINT degree_programs_department_id_fkey FOREIGN KEY (department_id) REFERENCES departments(department_id);
+
+
+--
+-- Name: department_to_description department_to_description_department_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY department_to_description
+    ADD CONSTRAINT department_to_description_department_id_fkey FOREIGN KEY (department_id) REFERENCES departments(department_id);
+
+
+--
+-- Name: department_to_description department_to_description_description_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY department_to_description
+    ADD CONSTRAINT department_to_description_description_id_fkey FOREIGN KEY (description_id) REFERENCES department_description(id);
+
+
+--
+-- Name: section_to_description section_to_description_description_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY section_to_description
+    ADD CONSTRAINT section_to_description_description_id_fkey FOREIGN KEY (description_id) REFERENCES section_description(id);
+
+
+--
+-- Name: section_to_description section_to_description_section_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY section_to_description
+    ADD CONSTRAINT section_to_description_section_id_fkey FOREIGN KEY (section_id) REFERENCES sections(section_id);
 
 
 --
@@ -1174,6 +1362,54 @@ ALTER TABLE ONLY student_enrolment
 
 ALTER TABLE ONLY student_enrolment
     ADD CONSTRAINT student_enrolment_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+
+--
+-- Name: student_to_cell_mobile_number student_to_cell_mobile_number_cell_mobile_number_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_cell_mobile_number
+    ADD CONSTRAINT student_to_cell_mobile_number_cell_mobile_number_id_fkey FOREIGN KEY (cell_mobile_number_id) REFERENCES student_cell_mobile_number(id);
+
+
+--
+-- Name: student_to_cell_mobile_number student_to_cell_mobile_number_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_cell_mobile_number
+    ADD CONSTRAINT student_to_cell_mobile_number_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+
+--
+-- Name: student_to_last_name student_to_last_name_last_name_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_last_name
+    ADD CONSTRAINT student_to_last_name_last_name_id_fkey FOREIGN KEY (last_name_id) REFERENCES student_last_name(id);
+
+
+--
+-- Name: student_to_last_name student_to_last_name_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_last_name
+    ADD CONSTRAINT student_to_last_name_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+
+--
+-- Name: student_to_middle_name student_to_middle_name_middle_name_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_middle_name
+    ADD CONSTRAINT student_to_middle_name_middle_name_id_fkey FOREIGN KEY (middle_name_id) REFERENCES student_middle_name(id);
+
+
+--
+-- Name: student_to_middle_name student_to_middle_name_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: afariha
+--
+
+ALTER TABLE ONLY student_to_middle_name
+    ADD CONSTRAINT student_to_middle_name_student_id_fkey FOREIGN KEY (student_id) REFERENCES students(student_id);
 
 
 --

@@ -1,0 +1,16 @@
+{
+  "dimensionObject": ["city", "country", "countrylanguage", "continent",
+    "region"],
+  "dimensionConcept": [],
+  "factObjectObject": ["country_to_language", "city_to_country",
+    "country_to_continent", "country_to_region"],
+  "factObjectConcept": [],
+  "conceptWithinDimension": ["country:headofstate"],
+  "primaryAttributeWithinDimension": ["countrylanguage:language", "city:name",
+    "country:name", "continent:continent", "region:region"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["country:continent", "continent:continent"],
+    ["country:region", "region:region"]
+  ]
+}

@@ -14,14 +14,14 @@
   "T2": [
     "<strong>Iterative Collective Loop Fusion</strong> was published between 2006 and 2009.",
     "<strong>Comparing call graphs</strong> was published between 2007 and 2010.",
-    "<strong>Retrieval from Document Image Collections</strong> was published between 2005 and 2006.",
+    "<strong>Retrieval from Document Image Collections</strong> was published in 2006.",
     "<strong>Ontology Agent Based Rule Base Fuzzy Cognitive Maps</strong> was published between 2007 and 2009.",
     "<strong>A Design of the Simulator for Web-Based Load Balancing</strong> was published between 2006 and 2007.",
     "<strong>Acceptable System Response Times for TV and DVR</strong> was published between 2007 and 2012.",
     "<strong>High-level small-step operational semantics for transactions</strong> was published between 2007 and 2008.",
     "<strong>Incorporating user utility into sponsored-search auctions</strong> was published between 2008 and 2010.",
     "<strong>Inferring locks for atomic sections</strong> was published between 2006 and 2009.",
-    "<strong>Learning the Kernel Matrix for Superresolution</strong> was published between 2005 and 2007."
+    "<strong>Learning the Kernel Matrix for Superresolution</strong> was published in 2006."
   ],
   "C1": [
     "<strong>Answering Imprecise Queries over Web Databases</strong> was published in VLDB.",
@@ -35,18 +35,6 @@
     "<strong>Querying Complex Structured Databases</strong> was published in VLDB.",
     "<strong>OLAP over Imprecise Data with Domain Constraints</strong> was published in VLDB."
   ],
-  "D1": [
-    "<strong>H. V. Jagadish</strong> wrote <strong>DataLens: making a good first impression</strong>.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Efficient provenance storage</strong> between 2004 and 2008.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Making database systems usable</strong> between 2003 and 2008.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Effective Phrase Prediction</strong> between 2003 and 2010.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Querying Complex Structured Databases</strong> between 2007 and 2009.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Lost source provenance</strong> between 2008 and 2012.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Automating the Design and Construction of Query Forms</strong>.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>Schema Summarization</strong>.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>BATON: A Balanced Tree Structure for Peer-to-Peer Networks</strong>.",
-    "<strong>H. V. Jagadish</strong> wrote <strong>On High Dimensional Skylines</strong>."
-  ],
   "C2": [
     "<strong>Philip S. Yu</strong> does research in the databases domain.",
     "<strong>Weiwei Song</strong> is a database researcher.",
@@ -58,6 +46,42 @@
     "<strong>Jan Van Der Wal</strong> is a database researcher.",
     "<strong>Minseok Song</strong> does research in the databases domain.",
     "<strong>Shan Wang</strong> is a database researcher."
+  ],
+  "C3": [
+    "<strong>H. V. Jagadish</strong> has published at least 6 papers in <strong>VLDB</strong>.",
+    "<strong>Gerhard Weikum</strong> has published 9 papers in <strong>VLDB</strong>.",
+    "<strong>Jeffrey Xu Yu</strong> has published 7 papers in <strong>VLDB</strong>.",
+    "<strong>Nick Koudas</strong> has published over 10 papers in <strong>VLDB</strong>.",
+    "<strong>Raghu Ramakrishnan</strong> has published over 10 papers in <strong>VLDB</strong>.",
+    "<strong>Surajit Chaudhuri</strong> has published 6 papers in <strong>VLDB</strong>.",
+    "<strong>Vijayshankar Raman</strong> has published 6 papers in <strong>VLDB</strong>.",
+    "<strong>Wenfei Fan</strong> has published 7 papers in <strong>VLDB</strong>.",
+    "<strong>Jiawei Han</strong> has published at least 6 papers in <strong>VLDB</strong>.",
+    "<strong>Philip S. Yu</strong> has published 9 papers at <strong>VLDB</strong>."
+  ],
+  "C4": [
+    "<strong>A highly resilient routing algorithm for fault-tolerant NoCs</strong> has 6 authors from the <strong>University of Michigan.</strong>",
+    "<strong>A statistical approach for full-chip gate-oxide reliability analysis</strong> has more than 5 authors from the <strong>University of Michigan.</strong>",
+    "<strong>An Energy Efficient Parallel Architecture Using Near Threshold Operation</strong> has more than 7 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Checking equivalence of quantum circuits and states</strong> has 6 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Yield-driven near-threshold SRAM design</strong> has at least 8 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Soft-edge flip-flops for improved timing yield: design and optimization</strong> has 6 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Opportunities and challenges for better than worst-case design</strong> has 8 authors from the <strong>University of Michigan.</strong>",
+    "<strong>On the decreasing significance of large standard cells in technology mapping</strong> includes 6 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Circuit design advances to enable ubiquitous sensing environments</strong> has 6 authors from the <strong>University of Michigan.</strong>",
+    "<strong>Enhancing design robustness with reliability-aware resynthesis and logic simulation</strong> has 6 authors from the <strong>University of Michigan</strong>."
+  ],
+  "D1": [
+    "<strong>H. V. Jagadish</strong> wrote <strong>DataLens: making a good first impression</strong>.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Efficient provenance storage</strong> between 2004 and 2008.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Making database systems usable</strong> between 2003 and 2008.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Effective Phrase Prediction</strong> between 2003 and 2010.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Querying Complex Structured Databases</strong> between 2007 and 2009.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Lost source provenance</strong> between 2008 and 2012.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Automating the Design and Construction of Query Forms</strong>.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>Schema Summarization</strong>.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>BATON: A Balanced Tree Structure for Peer-to-Peer Networks</strong>.",
+    "<strong>H. V. Jagadish</strong> wrote <strong>On High Dimensional Skylines</strong>."
   ],
   "D2": [
     "The <strong>Africa Rice Center</strong> (http://www.warda.org/) is in <strong>Africa</strong>.",
@@ -71,41 +95,17 @@
     "<strong>Infonet College</strong> is in <strong>Africa</strong>.",
     "<strong>Joseph Ayo Babalola University</strong> is in <strong>Africa</strong>."
   ],
-  "C3": [
-    "<strong>H. V. Jagadish</strong> has published at least 6 papers in <strong>VLDB</strong>.",
-    "<strong>Gerhard Weikum</strong> has published between 8 and 10 papers in <strong>VLDB</strong>.",
-    "<strong>Jeffrey Xu Yu</strong> has published 7 papers in <strong>VLDB</strong>.",
-    "<strong>Nick Koudas</strong> has published over 10 papers in <strong>VLDB</strong>.",
-    "<strong>Raghu Ramakrishnan</strong> has published over 10 papers in <strong>VLDB</strong>.",
-    "<strong>Beng Chin Ooi</strong> has published papers in <strong>VLDB</strong>.",
-    "<strong>Ariel Fuxman</strong> has published papers in <strong>VLDB</strong>.",
-    "<strong>Badrish Chandramouli</strong> has published 1 paper in <strong>VLDB</strong>.",
-    "<strong>Anastasios Kementsietsidis</strong> has published 2 papers in <strong>VLDB</strong>.",
-    "<strong>Alan Gelfand</strong> has published at <strong>VLDB</strong>."
-  ],
   "D3": [
     "<strong>Anthony K. H. Tung</strong> has 13 papers in <strong>SIGMOD</strong>.",
     "<strong>Beng Chin Ooi</strong> has 15 papers in <strong>SIGMOD</strong>.",
     "<strong>Divesh Srivastava</strong> has at least 13 papers in <strong>SIGMOD</strong>.",
     "<strong>Donald Kossmann</strong> has 11 papers in <strong>SIGMOD</strong>.",
     "<strong>Nick Koudas</strong> has over 13 papers in <strong>SIGMOD</strong>.",
-    "<strong>H. V. Jagadish</strong> has 8 papers in <strong>SIGMOD</strong>.",
-    "<strong>Minos Garofalakis</strong> has between 5 and 7 papers in <strong>SIGMOD</strong>.",
+    "<strong>Johannes Gehrke</strong> has 9 papers in <strong>SIGMOD</strong>.",
+    "<strong>Kian-lee Tan</strong> has 13 papers in <strong>SIGMOD</strong>.",
     "<strong>Shivnath Babu</strong> has 9 papers in <strong>SIGMOD</strong>.",
-    "<strong>Wolfgang Lehner</strong> has 5 papers in <strong>SIGMOD</strong>.",
-    "<strong>Zachary G. Ives</strong> has published in <strong>SIGMOD</strong>."
-  ],
-  "C4": [
-    "<strong>A highly resilient routing algorithm for fault-tolerant NoCs</strong> has 6 authors from the <strong>University of Michigan.</strong>",
-    "<strong>A statistical approach for full-chip gate-oxide reliability analysis</strong> has more than 5 authors from the <strong>University of Michigan.</strong>",
-    "<strong>An Energy Efficient Parallel Architecture Using Near Threshold Operation</strong> has more than 7 authors from the <strong>University of Michigan.</strong>",
-    "<strong>Checking equivalence of quantum circuits and states</strong> has 6 authors from the <strong>University of Michigan.</strong>",
-    "<strong>Yield-driven near-threshold SRAM design</strong> has at least 8 authors from the <strong>University of Michigan.</strong>",
-    "<strong>X3: A Cube Operator for XML OLAP</strong> has 1 author from the <strong>University of Michigan.</strong>",
-    "<strong>ZerehCache: armoring cache architectures in high defect density technologies</strong> has less than 5 authors from the <strong>University of Michigan.</strong>",
-    "<strong>Yuri, Logic, and Computer Science</strong> includes an author from the <strong>University of Michigan.</strong>",
-    "<strong>k-nearest neighbor estimation of entropies with confidence</strong> has 2 authors from the <strong>University of Michigan.</strong>",
-    "<strong>Wide-Area IP Network Mobility</strong> has less than 3 authors from the <strong>University of Michigan</strong>."
+    "<strong>Samuel R. Madden</strong> has 10 papers in <strong>SIGMOD</strong>.",
+    "<strong>Yufei Tao</strong> has 9 papers published in <strong>SIGMOD</strong>."
   ],
   "D4": [
     "<strong>Bin Li</strong> has 37 publications after 2010.",
@@ -113,10 +113,10 @@
     "<strong>Wei Wang</strong> has more than 75 publications after 2010.",
     "<strong>Yang Liu</strong> has 67 publications after 2010.",
     "<strong>Leonard Barolli</strong> has 55 publications after 2010.",
-    "<strong>Bo Li</strong> has 34 publications after 2010.",
-    "<strong>Tao Li</strong> has 32 publications after 2010.",
-    "<strong>Xin Li</strong> has publications after 2010.",
-    "<strong>Ying Wang</strong> has less than 35 publications after 2010.",
-    "<strong>Roland Siegwart</strong> has 31 publications after 2010."
+    "<strong>Hui Li</strong> has 37 publications after 2010.",
+    "<strong>Hui Wang</strong> has 39 publications after 2010.",
+    "<strong>Jun Wang</strong> has 36 publications after 2010.",
+    "<strong>Yan Li</strong> has 39 publications after 2010.",
+    "<strong>Yan Zhang</strong> has 42 publications after 2010."
   ]
 }

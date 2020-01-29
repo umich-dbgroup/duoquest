@@ -4,7 +4,9 @@
   "factObjectObject": ["Has_Pet"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["Pets:pet_age", "Pets:weight", "Student:age",
-    "Student:sex", "Student:major", "Student:advisor", "Student:city_code"],
-  "primaryAttributeWithinDimension": ["Pets:pettype", "Student:fname", "Student:lname"],
-  "additionalFreqConcept": []
+    "Student:sex", "Student:major", "Student:advisor", "Student:city_code",
+    "Student:fname"],
+  "primaryAttributeWithinDimension": ["Pets:pettype", "Student:lname"],
+  "additionalFreqConcept": [],
+  "attributeChanges": []
 }

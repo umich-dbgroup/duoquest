@@ -1,0 +1,13 @@
+{
+  "dimensionObject": ["votes", "state"],
+  "dimensionConcept": ["area_code_state", "contestants"],
+  "factObjectObject": ["votes_to_state"],
+  "factObjectConcept": ["area_code_to_state"],
+  "conceptWithinDimension": [],
+  "primaryAttributeWithinDimension": ["area_code_state:area_code_value",
+    "votes:vote_id", "state:state", "contestants:contestant_name"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["area_code_state:state", "state:state"]
+  ]
+}

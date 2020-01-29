@@ -1,10 +1,11 @@
 {
   "dimensionObject": ["singer", "song"],
   "dimensionConcept": [],
-  "factObjectObject": [],
+  "factObjectObject": ["singer_to_song"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["singer:Birth_Year", "singer:Net_Worth_Millions",
     "singer:Citizenship", "song:Sales", "song:Highest_Position"],
   "primaryAttributeWithinDimension": ["singer:Name", "song:Title"],
-  "additionalFreqConcept": []
+  "additionalFreqConcept": [],
+  "attributeChanges": []
 }

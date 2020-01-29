@@ -1,10 +1,14 @@
 {
   "dimensionObject": ["course", "teacher"],
-  "dimensionConcept": [],
+  "dimensionConcept": ["teacher_age", "teacher_hometown"],
   "factObjectObject": ["course_arrange"],
   "factObjectConcept": [],
   "conceptWithinDimension": ["course:staring_date"],
   "primaryAttributeWithinDimension": ["course:course", "teacher:name",
-    "teacher:hometown", "teacher:age"],
-  "additionalFreqConcept": []
+    "teacher_age:age", "teacher_hometown:hometown"],
+  "additionalFreqConcept": [],
+  "attributeChanges": [
+    ["teacher:age", "teacher_age:age"],
+    ["teacher:hometown", "teacher_hometown:hometown"]
+  ]
 }

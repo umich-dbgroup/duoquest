@@ -1,9 +1,14 @@
-## Setup
+# SQuID Baseline Comparison
+
+This folder includes information for a baseline comparison. Only the development set for Spider is included, please contact the authors of the Spider benchmark directly if you seek access to the test set.
+
+## Running SQuID Comparison
 
 1. Clone the forked version of [SQuID repository](https://github.com/chrisjbaik/squid-public).
-2. Modify hard-coded directory in `/src/util/DBUtil.java` in SQuID implementation.
+2. Modify hard-coded `SCHEMA_DIR` (to the `/squid/schema` subdirectory of this repository) and `DATA_DIR` (to the `/squid/data` subdirectory of this repository) in `/src/util/DBUtil.java` in SQuID implementation.
+3. Run `python squid.py` with the appropriate arguments in the main repository (parent of this folder).
 
-## Reference
+## Adding New Schemas
 
 There is **no need to do this** because it has already done and all relevant information is stored in the `/squid/schema/` folder, but if you ever need to add a new database, these are the steps. Note that some steps may not be needed if the database already exists in PostgreSQL, this is for migration from a SQLite database.
 
