@@ -37,6 +37,6 @@ CREATE TABLE maker_to_country (
 
 INSERT INTO maker_to_country
 SELECT m.id, c.countryid
-FROM car_makers m JOIN countries c ON m.country = c.countryid;
+FROM car_makers m JOIN countries c ON m.country = c.countryname;
 
 ALTER TABLE car_makers DROP COLUMN country;

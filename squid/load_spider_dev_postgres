@@ -9,6 +9,7 @@ PSQL_PORT=5432
 
 for db in dog_kennels car_1 poker_player orchestra student_transcripts_tracking course_teach tvshow concert_singer singer battle_death cre_Doc_Template_Mgt pets_1 real_estate_properties network_1 voter_1 world_1 flight_2
 do
+  dropdb $db
   createdb -O $PSQL_USER $db
   pgloader sqlite://$SPIDER_DB_DIR/$db/$db.sqlite postgresql://$PSQL_USER:$PSQL_PW@$PSQL_HOST:$PSQL_PORT/$db;
   PGPASSWORD=$PSQL_PW psql -h $PSQL_HOST -p $PSQL_PORT -U $PSQL_USER -d $db < $SCHEMA_DIR/preload/$db.sql

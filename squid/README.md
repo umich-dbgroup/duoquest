@@ -5,8 +5,9 @@ This folder includes information for the simulation study with the SQuID system.
 ## Running SQuID Comparison
 
 1. Clone the forked version of [SQuID repository](https://github.com/chrisjbaik/squid-public).
-2. Modify hard-coded `SCHEMA_DIR` (to the `/squid/schema` subdirectory of this repository) and `DATA_DIR` (to the `/squid/data` subdirectory of this repository) in `/src/util/DBUtil.java` in SQuID implementation.
-3. Run `python squid.py` with the appropriate arguments in the main repository (parent of this folder).
+2. Compile the SQuID code and point `squid.py` in the parent directory of this repository to the appropriate `CLASSPATH`.
+3. Modify hard-coded `SCHEMA_DIR` (to the `/squid/schema` subdirectory of this repository) and `DATA_DIR` (to the `/squid/data` subdirectory of this repository) in `/src/util/DBUtil.java` in SQuID implementation.
+4. Run `python squid.py` with the appropriate arguments in the main repository (parent of this folder).
 
 ## Adding New Schemas
 

@@ -11,7 +11,6 @@ from duoquest.database import Database
 from duoquest.files import squid_results_path
 from duoquest.proto.duoquest_pb2 import NO_AGG, NEQ, NOT_IN, LIKE
 from duoquest.schema import Schema
-from duoquest.server import get_literals
 from duoquest.tasks import is_valid_task
 from duoquest.vars import *
 
@@ -19,7 +18,7 @@ from duoquest.vars import *
 # CONFIGURATION VARIABLES
 #########################
 SQUID_DIR = '/Users/cjbaik/dev/squid-public/'
-SQUID_SCHEMAS = '/Users/cjbaik/dev/duoquest/squid/schema/'
+SQUID_SCHEMAS = '/Users/cjbaik/dev/duoquest/squid/schema_test/'
 CLASSPATH = '/Users/cjbaik/dev/squid-public/out/production/squid-public/'
 LIB_PATH = '/Users/cjbaik/dev/squid-public/lib'
 PG_DUMP_PATH = '/usr/local/opt/postgresql@9.6/bin/pg_dump'
@@ -104,6 +103,12 @@ def eval_squid(schema, pq, filters):
             col = schema.get_col(pred.col_id)
             table, attr = check_attribute_changes(meta, col.table.syn_name,
                 col.syn_name)
+
+            if 'id' in attr:
+                primary_attr = get_primary_attr_from_meta(meta, table)
+                if primary_attr:
+                    attr = primary_attr
+
             answer_set.add(f'{table}:{attr}'.lower())
 
         filter_set = set()
@@ -129,6 +134,9 @@ def run_squid_experiments(tasks, db, schemas, tsq_rows, tid=None,
     correct_count = 0
     incorrect_count = 0
 
+    easy_count = 0
+    easy_correct_count = 0
+
     times = []
 
     for i, task in enumerate(tasks):
@@ -151,8 +159,13 @@ def run_squid_experiments(tasks, db, schemas, tsq_rows, tid=None,
         else:
             correct = eval_squid(schema, task['pq'], filters)
 
+            if len(task['pq'].where.predicates) == 0:
+                easy_count += 1
+
             if correct:
                 correct_count += 1
+                if len(task['pq'].where.predicates) == 0:
+                    easy_correct_count += 1
                 print('CORRECT :D')
             else:
                 incorrect_count += 1
@@ -162,6 +175,8 @@ def run_squid_experiments(tasks, db, schemas, tsq_rows, tid=None,
 
     total_count = len(tasks) - invalid_count
     print(f'CORRECT: {correct_count}/{total_count} ({correct_count/total_count*100:.2f}%)')
+    print(f'- EASY: {easy_correct_count}/{easy_count}')
+    print(f'- MEDIUM: {correct_count - easy_correct_count}/{total_count - easy_count}')
     print(f'INCORRECT: {incorrect_count}/{total_count} ({incorrect_count/total_count*100:.2f}%)')
     print(f'UNSUPPORTED: {squid_unsupported_count}/{total_count} ({squid_unsupported_count/total_count*100:.2f}%)')
 
@@ -209,7 +224,9 @@ def run_experiment(task_id, task_count, task, db, schema, tsq_rows):
         print('Skipping task because it is out of scope.')
         return None, True, False
 
-    literals = get_literals(task['pq'], schema)
+    # auto skip if correct (no predicates)
+    if len(task['pq'].where.predicates) == 0:
+        return [], False, False
 
     tsq = db.generate_tsq(task_id, schema, task['query'], task['pq'], 'default',
         tsq_rows)
@@ -230,7 +247,12 @@ def run_experiment(task_id, task_count, task, db, schema, tsq_rows):
             result.append(json.loads(line))
 
     pprint(result)
-    return result[0]['filters'], False, False
+
+    filters = []
+    for cq in result:
+        filters.extend(cq['filters'])
+
+    return filters, False, False
 
 if __name__ == '__main__':
     main()
